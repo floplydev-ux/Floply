@@ -861,3 +861,61 @@ web` OK.
 | 5 · Open raise | ✅ 5.1 · ⬜ 5.3 | ✅ 5.4 · ⬜ 5.2 · 5.5 (motor) |
 
 Próximo bloque: Nivel 3 (3.2 · 3.4 · 3.5).
+
+---
+
+## Auditoría integral previa al Nivel 3 (2026-09-09)
+
+Revisión completa del proyecto sobre la base estable **v0.1.0**
+(`887fb58`, tag `v0.1.0`) antes de arrancar el Nivel 3. Objetivo:
+arquitectura más limpia y mantenible, **sin cambiar comportamiento,
+navegación, desbloqueos, progreso, XP, mastery, guardado ni contenido
+pedagógico**, y sin branding.
+
+### Diagnóstico
+- **Nada crítico.** La arquitectura data-driven (contenido/guiones por
+  nivel + controladores `ChangeNotifier` + widgets de mesa reutilizables)
+  escala a más niveles sin copiar estructuras.
+- `flutter analyze`: 43 `info` preexistentes, **todos** en widgets de la
+  Home (`withOpacity` deprecado + `prefer_const`). Se dejan para el pase
+  de branding/Home (no se tocó la Home).
+
+### Cambios aplicados (funcionalmente equivalentes)
+1. **Código muerto eliminado:** `Lesson.isReview`,
+   `Curriculum.conceptTeachingOrder`, `Curriculum.reviewEvery`,
+   `LabSessionController.reset()`, `_isSingleChoice` +
+   import `exercise.dart` en `laboratory_screen.dart`.
+2. **`AcademyPlayers.names`**: de `Set` literal duplicado a getter
+   derivado de `roster` (una sola fuente de verdad).
+3. **Orden de imports** normalizado en `academy_controller.dart`.
+4. **`_FeltPainter` → `const`** (micro-opt real).
+5. **Rename `TableScript` → `TableBuilder`** (era un *builder* de
+   `List<SeatState>`, no un guion; colisionaba con `TableLessonScript`).
+   Archivo `scripts/script_builders.dart` → `scripts/table_builder.dart`.
+   8 archivos de guiones actualizados (cambio mecánico).
+6. **`lesson_flow.dart` (753 líneas) partido** en `lesson_flow.dart`
+   (router, ~90 líneas) + `theory_view.dart` + `exercise_view.dart` +
+   `feedback_view.dart` + `lesson_result_view.dart` + `lesson_widgets.dart`
+   (encabezado / progreso / botones compartidos). Código movido tal cual.
+7. **Mapa de niveles extraído** de `academy_screen.dart` (446 → ~70
+   líneas) a `widgets/level_map.dart` (`_MapView` → `LevelMap`).
+8. `pubspec.yaml.bak` borrado.
+
+### Pendiente (etapas futuras, no en esta tanda)
+- `dart fix --apply` en widgets de la Home → `analyze` en 0 (junto al
+  branding).
+- Colores `Color(0x…)` sueltos de la Academia → `AppColors` (junto al
+  branding).
+- `LessonContent.intro`: campo redactado pero nunca mostrado → conectar a
+  la UI (cambio de comportamiento) o eliminar.
+- Descomponer `AcademyController` (extraer `_ExerciseRun`).
+- `_gradeCheckItem`: mover strings de UI a `AppStrings`.
+- Partir `table_lesson.dart` en `table_snapshot` + `table_lesson` +
+  `table_text`.
+
+### Validación
+- `flutter test`: **119/119** (cobertura sin cambios).
+- `flutter analyze`: 43 `info` (los mismos preexistentes de la Home; 0
+  nuevos).
+- `flutter build web`: OK.
+- Sin commit / sin tag: pendiente de revisión manual.

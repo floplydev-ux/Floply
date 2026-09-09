@@ -32,10 +32,8 @@ class AcademyPlayers {
     AcademyPlayer('Agus', 9),
   ];
 
-  static const Set<String> names = {
-    'Nico', 'Sofi', 'Mateo', 'Lara', 'Bruno', //
-    'Valen', 'Tomi', 'Mica', 'Fran', 'Agus',
-  };
+  /// Nombres del elenco, derivados de [roster] (una sola fuente de verdad).
+  static Set<String> get names => {for (final p in roster) p.name};
 
   /// Elige [count] personajes distintos de forma **determinista** a partir
   /// de [seed] (así una misma lección siempre muestra el mismo elenco, y

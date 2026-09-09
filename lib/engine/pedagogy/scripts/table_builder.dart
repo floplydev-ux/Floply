@@ -1,14 +1,16 @@
 import '../table_lesson.dart';
 
-/// Helpers compartidos para armar los guiones de mesa de la Academia
-/// (teoría y ejercicios). No duplicar esta lógica por archivo.
+/// Constructor de mesas para la Academia: arma la `List<SeatState>` de una
+/// mesa 6-max a partir de mapas concisos (etiquetas, apuestas, cartas…).
+/// Lo usan tanto la teoría interactiva como los ejercicios; no duplicar
+/// esta lógica por archivo.
 ///
 /// Convención de asientos (portrait, 6 slots fijos):
 ///   slot 0 = héroe (abajo, centro)   · 1 = abajo-izq · 2 = arriba-izq
 ///   slot 3 = arriba, centro          · 4 = arriba-der · 5 = abajo-der
 /// El orden de acción preflop recorre los slots 0 → 5 → 4 → 3 → 2 → 1.
-class TableScript {
-  TableScript._();
+class TableBuilder {
+  TableBuilder._();
 
   /// Etiquetas típicas con el héroe en el BTN.
   static const Map<int, String> btnHero = {

@@ -90,7 +90,7 @@ class PokerTableView extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            Positioned.fill(child: CustomPaint(painter: _FeltPainter())),
+            const Positioned.fill(child: CustomPaint(painter: _FeltPainter())),
 
             // Board (cartas comunitarias)
             if (snapshot.board.isNotEmpty)
@@ -179,6 +179,8 @@ class PokerTableView extends StatelessWidget {
 // ===================================================================
 
 class _FeltPainter extends CustomPainter {
+  const _FeltPainter();
+
   @override
   void paint(Canvas canvas, Size size) {
     final rail = Rect.fromLTWH(

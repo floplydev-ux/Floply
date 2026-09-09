@@ -1,5 +1,5 @@
 import '../table_lesson.dart';
-import 'script_builders.dart';
+import 'table_builder.dart';
 
 /// Guiones de teoría interactiva sobre la mesa — Nivel 1 (Fundamentos).
 ///
@@ -18,13 +18,13 @@ class Level1Lessons {
   // 1.1 — Cómo se juega una mano  (héroe BTN, mano completa)
   // ---------------------------------------------------------------
   static TableLessonScript _howAHandWorks() {
-    const labels = TableScript.btnHero;
+    const labels = TableBuilder.btnHero;
     const btn = 0;
 
     return TableLessonScript([
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             cards: {for (var i = 0; i < 6; i++) i: const <String>[]},
           ),
@@ -38,7 +38,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             cards: {for (var i = 0; i < 6; i++) i: const <String>[]},
             bets: const {5: 0.5, 4: 1.0},
@@ -58,7 +58,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {5: 0.5, 4: 1.0},
             actions: const {5: 'CIEGA', 4: 'CIEGA'},
@@ -72,7 +72,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {0: 2.5, 5: 0.5, 4: 1.0},
             actions: const {
@@ -95,7 +95,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {0: 2.5, 4: 2.5, 5: 0.5},
             actions: const {0: 'SUBE', 4: 'PAGA', 5: 'FOLD'},
@@ -110,7 +110,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             folded: const {3, 2, 1, 5},
             cards: const {0: ['Kd', 'Kc']},
@@ -125,7 +125,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             folded: const {3, 2, 1, 5},
             cards: const {0: ['Kd', 'Kc']},
@@ -139,7 +139,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             folded: const {3, 2, 1, 5},
             cards: const {0: ['Kd', 'Kc'], 4: ['Ad', 'Jc']},
@@ -161,10 +161,10 @@ class Level1Lessons {
   // 1.2 — Stack, ciegas y bote  (héroe BTN)
   // ---------------------------------------------------------------
   static TableLessonScript _stackBlindsPot() {
-    const labels = TableScript.btnHero;
+    const labels = TableBuilder.btnHero;
 
     TableSnapshot base({double pot = 1.5}) => TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {5: 0.5, 4: 1.0},
             actions: const {5: 'CIEGA', 4: 'CIEGA'},
@@ -213,14 +213,14 @@ class Level1Lessons {
   // 1.3 — Las calles y las acciones  (héroe BTN)
   // ---------------------------------------------------------------
   static TableLessonScript _streetsAndActions() {
-    const labels = TableScript.btnHero;
+    const labels = TableBuilder.btnHero;
     const btn = 0;
     const heroCards = {0: ['Ah', 'Kh']};
 
     return TableLessonScript([
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {5: 0.5, 4: 1.0},
             actions: const {5: 'CIEGA', 4: 'CIEGA'},
@@ -236,7 +236,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             folded: const {3, 2, 1, 5},
             cards: heroCards,
@@ -251,7 +251,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             folded: const {3, 2, 1, 5},
             cards: heroCards,
@@ -265,7 +265,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             folded: const {3, 2, 1, 5},
             cards: heroCards,
@@ -280,7 +280,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             folded: const {3, 2, 1, 5},
             cards: heroCards,
@@ -297,7 +297,7 @@ class Level1Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             folded: const {3, 2, 1, 5},
             cards: heroCards,

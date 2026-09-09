@@ -1,5 +1,5 @@
 import '../table_lesson.dart';
-import 'script_builders.dart';
+import 'table_builder.dart';
 
 /// Guiones de teoría interactiva sobre la mesa — Nivel 2 (Ranking de manos).
 ///
@@ -12,7 +12,7 @@ class Level2Lessons {
     '2.1': _hierarchy(),
   };
 
-  static const _labels = TableScript.btnHero; // 0=BTN (usuario), 3=UTG rival
+  static const _labels = TableBuilder.btnHero; // 0=BTN (usuario), 3=UTG rival
 
   /// Mesa heads-up en el showdown: usuario (slot 0) vs rival (slot 3),
   /// el resto foldeado.
@@ -23,7 +23,7 @@ class Level2Lessons {
     double pot = 12,
   }) =>
       TableSnapshot(
-        seats: TableScript.seats(
+        seats: TableBuilder.seats(
           labels: _labels,
           folded: const {5, 4, 2, 1},
           cards: {0: heroCards, 3: rivalCards},

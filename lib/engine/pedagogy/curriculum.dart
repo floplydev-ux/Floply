@@ -40,8 +40,6 @@ class Lesson {
   final List<int> difficultyRange;
 
   String get id => '$mainLevel.$subLevel';
-
-  bool get isReview => kind == LessonKind.assessment && mainLevel % 5 == 0;
 }
 
 /// Un nivel principal de la academia (1..40).
@@ -67,9 +65,6 @@ class Curriculum {
 
   final List<MainLevel> levels;
 
-  /// Cada cuántos niveles principales hay una revisión integrada.
-  static const int reviewEvery = 5;
-
   List<Lesson> get allLessons =>
       levels.expand((l) => l.lessons).toList(growable: false);
 
@@ -89,18 +84,6 @@ class Curriculum {
       if (lesson.id == lessonId) break;
     }
     return taught;
-  }
-
-  /// Todos los conceptos introducidos en todo el plan, en orden de
-  /// aparición.
-  List<String> get conceptTeachingOrder {
-    final order = <String>[];
-    for (final lesson in allLessons) {
-      for (final c in lesson.conceptsIntroduced) {
-        if (!order.contains(c)) order.add(c);
-      }
-    }
-    return order;
   }
 
   factory Curriculum.standard() => Curriculum(_levels);

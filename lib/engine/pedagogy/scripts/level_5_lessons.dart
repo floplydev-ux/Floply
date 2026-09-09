@@ -1,5 +1,5 @@
 import '../table_lesson.dart';
-import 'script_builders.dart';
+import 'table_builder.dart';
 
 /// Guiones de teoría interactiva sobre la mesa — Nivel 5 (Open raise).
 class Level5Lessons {
@@ -11,13 +11,13 @@ class Level5Lessons {
 
   // 5.1 — Abrir o foldear  (héroe: BTN)
   static TableLessonScript _openOrFold() {
-    const labels = TableScript.btnHero;
+    const labels = TableBuilder.btnHero;
     const btn = 0;
 
     return TableLessonScript([
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {5: 0.5, 4: 1.0},
             actions: const {5: 'CIEGA', 4: 'CIEGA'},
@@ -31,7 +31,7 @@ class Level5Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {5: 0.5, 4: 1.0},
             actions: const {5: 'CIEGA', 4: 'CIEGA', 3: 'FOLD'},
@@ -45,7 +45,7 @@ class Level5Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {5: 0.5, 4: 1.0},
             actions: const {
@@ -66,7 +66,7 @@ class Level5Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {5: 0.5, 4: 1.0},
             actions: const {5: 'CIEGA', 4: 'CIEGA'},
@@ -83,7 +83,7 @@ class Level5Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {0: 2.5, 5: 0.5, 4: 1.0},
             actions: const {0: 'SUBE', 5: 'CIEGA', 4: 'CIEGA'},
@@ -99,7 +99,7 @@ class Level5Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {0: 2.5, 5: 0.5, 4: 1.0},
             actions: const {0: 'SUBE'},
@@ -116,7 +116,7 @@ class Level5Lessons {
       ),
       TableStep(
         table: TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {0: 2.5, 5: 0.5, 4: 1.0},
             folded: const {3, 2, 1},

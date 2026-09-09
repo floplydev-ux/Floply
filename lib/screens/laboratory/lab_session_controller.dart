@@ -122,13 +122,4 @@ class LabSessionController extends ChangeNotifier {
     showAdvanced = !showAdvanced;
     notifyListeners();
   }
-
-  void reset() {
-    phase = LabPhase.idle;
-    current = null;
-    lastResult = null;
-    results.clear();
-    answered = 0;
-    notifyListeners();
-  }
 }

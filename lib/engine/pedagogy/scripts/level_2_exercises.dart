@@ -1,7 +1,7 @@
 import '../../concepts/concept_ids.dart';
 import '../table_exercise.dart';
 import '../table_lesson.dart';
-import 'script_builders.dart';
+import 'table_builder.dart';
 
 /// Ejercicios interactivos sobre la mesa — Nivel 2 (Ranking de manos).
 ///
@@ -67,7 +67,7 @@ class Level2Exercises {
     ]),
   };
 
-  static const _labels = TableScript.btnHero; // 0 = usuario, 3 = rival (UTG)
+  static const _labels = TableBuilder.btnHero; // 0 = usuario, 3 = rival (UTG)
   static const _rank = ConceptIds.handRanking;
 
   static TableSnapshot _showdown(
@@ -76,7 +76,7 @@ class Level2Exercises {
     List<String> rival,
   ) =>
       TableSnapshot(
-        seats: TableScript.seats(
+        seats: TableBuilder.seats(
           labels: _labels,
           folded: const {5, 4, 2, 1},
           cards: {0: hero, 3: rival},

@@ -1,5 +1,5 @@
 import '../table_lesson.dart';
-import 'script_builders.dart';
+import 'table_builder.dart';
 
 /// Guiones de teoría interactiva sobre la mesa — Nivel 4 (Rangos).
 class Level4Lessons {
@@ -19,7 +19,7 @@ class Level4Lessons {
       int? toAct,
     }) =>
         TableSnapshot(
-          seats: TableScript.seats(
+          seats: TableBuilder.seats(
             labels: labels,
             bets: const {3: 0.5, 2: 1.0},
             actions: const {3: 'CIEGA', 2: 'CIEGA', 1: 'FOLD'},

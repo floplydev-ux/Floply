@@ -4,13 +4,11 @@ import '../../engine/academy/academy_engine.dart';
 import '../../engine/academy/academy_progress.dart';
 import '../../engine/academy/academy_store.dart';
 import '../../engine/concepts/user_knowledge.dart';
-import '../../persistence/academy_store_provider.dart';
 import '../../engine/evaluation/evaluation_result.dart';
 import '../../engine/evaluation/user_answer.dart';
 import '../../engine/exercises/exercise.dart';
-import '../../models/app_user.dart';
-import '../../engine/pedagogy/academy_players.dart';
 import '../../engine/pedagogy/academy_exercise_scripts.dart';
+import '../../engine/pedagogy/academy_players.dart';
 import '../../engine/pedagogy/academy_table_scripts.dart';
 import '../../engine/pedagogy/curriculum.dart';
 import '../../engine/pedagogy/lesson_content.dart';
@@ -18,6 +16,8 @@ import '../../engine/pedagogy/recovery_session.dart';
 import '../../engine/pedagogy/table_exercise.dart';
 import '../../engine/pedagogy/table_lesson.dart';
 import '../../engine/poker_trainer_engine.dart';
+import '../../models/app_user.dart';
+import '../../persistence/academy_store_provider.dart';
 
 /// Fase dentro del recorrido de un lesson.
 enum AcademyPhase {

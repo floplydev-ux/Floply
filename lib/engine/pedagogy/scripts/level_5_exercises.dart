@@ -1,7 +1,7 @@
 import '../../concepts/concept_ids.dart';
 import '../table_exercise.dart';
 import '../table_lesson.dart';
-import 'script_builders.dart';
+import 'table_builder.dart';
 
 /// Ejercicios interactivos sobre la mesa — Nivel 5 (Open raise).
 class Level5Exercises {
@@ -15,12 +15,12 @@ class Level5Exercises {
     ]),
   };
 
-  static const _labels = TableScript.btnHero;
+  static const _labels = TableBuilder.btnHero;
 
   // Ej 1 — Posición (Hero BTN)
   static InteractiveTableExercise _position() {
     final table = TableSnapshot(
-      seats: TableScript.seats(
+      seats: TableBuilder.seats(
         labels: _labels,
         bets: const {3: 3.0, 5: 0.5, 4: 1.0},
         actions: const {3: 'SUBE', 2: 'FOLD', 1: 'FOLD', 5: 'CIEGA', 4: 'CIEGA'},
@@ -89,7 +89,7 @@ class Level5Exercises {
   // Ej 2 — Open / Fold (Hero BTN, A♠7♠)
   static InteractiveTableExercise _openFold() {
     final situation = TableSnapshot(
-      seats: TableScript.seats(
+      seats: TableBuilder.seats(
         labels: _labels,
         bets: const {5: 0.5, 4: 1.0},
         actions: const {
@@ -108,7 +108,7 @@ class Level5Exercises {
     );
 
     final after = TableSnapshot(
-      seats: TableScript.seats(
+      seats: TableBuilder.seats(
         labels: _labels,
         bets: const {0: 2.5, 5: 0.5, 4: 1.0},
         actions: const {0: 'SUBE', 5: 'CIEGA', 4: 'CIEGA'},
@@ -172,7 +172,7 @@ class Level5Exercises {
   // Ej 3 — 3-bet (Hero BTN, A♠J♠, vs open de UTG)
   static InteractiveTableExercise _threeBet() {
     final situation = TableSnapshot(
-      seats: TableScript.seats(
+      seats: TableBuilder.seats(
         labels: _labels,
         bets: const {3: 3.0, 5: 0.5, 4: 1.0},
         actions: const {
@@ -191,7 +191,7 @@ class Level5Exercises {
     );
 
     final after = TableSnapshot(
-      seats: TableScript.seats(
+      seats: TableBuilder.seats(
         labels: _labels,
         bets: const {0: 9.0, 3: 3.0, 5: 0.5, 4: 1.0},
         actions: const {0: 'SUBE', 3: 'SUBE'},

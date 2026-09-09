@@ -1,7 +1,7 @@
 import '../../concepts/concept_ids.dart';
 import '../table_exercise.dart';
 import '../table_lesson.dart';
-import 'script_builders.dart';
+import 'table_builder.dart';
 
 /// Ejercicios interactivos sobre la mesa — Nivel 1 (Fundamentos · reglas).
 ///
@@ -25,7 +25,7 @@ class Level1Exercises {
     ]),
   };
 
-  static const _labels = TableScript.btnHero;
+  static const _labels = TableBuilder.btnHero;
   static const _rules = ConceptIds.rules;
 
   // Mesa con ciegas puestas, sin acción todavía.
@@ -35,7 +35,7 @@ class Level1Exercises {
     int? toAct,
   }) =>
       TableSnapshot(
-        seats: TableScript.seats(
+        seats: TableBuilder.seats(
           labels: _labels,
           bets: const {5: 0.5, 4: 1.0},
           actions: const {5: 'CIEGA', 4: 'CIEGA'},
@@ -56,7 +56,7 @@ class Level1Exercises {
     int? toAct,
   }) =>
       TableSnapshot(
-        seats: TableScript.seats(
+        seats: TableBuilder.seats(
           labels: _labels,
           folded: const {3, 2, 1, 5},
           bets: bets,
@@ -386,7 +386,7 @@ class Level1Exercises {
         1, (s) => s.copyWith(action: 'FOLD', folded: true));
 
     final after = TableSnapshot(
-      seats: TableScript.seats(
+      seats: TableBuilder.seats(
         labels: _labels,
         bets: const {0: 2.5, 4: 2.5, 5: 0.5},
         actions: const {0: 'SUBE', 4: 'PAGA', 5: 'FOLD'},

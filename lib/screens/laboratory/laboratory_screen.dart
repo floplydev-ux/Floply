@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../engine/evaluation/evaluation_result.dart';
-import '../../engine/exercises/exercise.dart';
 import '../../l10n/app_strings.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/pressable_scale.dart';
@@ -205,8 +204,7 @@ class _QuestionView extends StatelessWidget {
           exercise: exercise,
           selectedOptionIds: controller.selectedOptionIds,
           selectedReasoningIds: controller.selectedReasoningIds,
-          onToggleOption: (id) =>
-              controller.toggleOption(id, single: _isSingleChoice(exercise)),
+          onToggleOption: (id) => controller.toggleOption(id, single: true),
           onToggleReasoning: controller.toggleReasoning,
           conceptName: _conceptName,
         ),
@@ -218,8 +216,6 @@ class _QuestionView extends StatelessWidget {
       ],
     );
   }
-
-  bool _isSingleChoice(Exercise exercise) => true;
 
   String _conceptName(String id) =>
       controller.engine.concepts.tryById(id)?.name ?? id;

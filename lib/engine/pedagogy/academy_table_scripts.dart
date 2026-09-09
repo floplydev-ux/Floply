@@ -8,7 +8,7 @@ import 'table_lesson.dart';
 /// Agregador de las **lecciones de teoría interactiva sobre la mesa**.
 ///
 /// El contenido real vive por nivel en `scripts/level_N_lessons.dart`
-/// (usan `TableScript` de `scripts/script_builders.dart`). Acá solo se
+/// (usan `TableBuilder` de `scripts/table_builder.dart`). Acá solo se
 /// juntan y se expone la API que consume `AcademyController`.
 ///
 /// Convención de asientos: slot 0 = héroe abajo-centro; orden preflop
