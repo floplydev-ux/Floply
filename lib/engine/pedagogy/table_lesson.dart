@@ -289,3 +289,29 @@ class TableLessonScript {
   int get length => steps.length;
   bool get isEmpty => steps.isEmpty;
 }
+
+/// De dónde viene una carta puntual, para [CardRef].
+enum CardSource { hero, board, seat }
+
+/// Referencia a **una carta concreta** de la mesa (más fino que
+/// [TableAnchor], que resalta zonas enteras). Pensado para el piloto visual:
+/// "esta carta en particular es la que importa", por ejemplo un out en el
+/// board o la carta que completa un set.
+class CardRef {
+  const CardRef.hero(this.index)
+      : source = CardSource.hero,
+        slot = -1;
+  const CardRef.board(this.index)
+      : source = CardSource.board,
+        slot = -1;
+  const CardRef.seat(this.slot, this.index) : source = CardSource.seat;
+
+  final CardSource source;
+
+  /// Asiento (0..5), solo para [CardSource.seat].
+  final int slot;
+
+  /// Posición de la carta dentro de su lista (`hero.cards[index]`,
+  /// `board[index]`, `seat.cards[index]`).
+  final int index;
+}

@@ -44,21 +44,28 @@ Future<AcademyController> _openInteractive(
 }
 
 void main() {
-  for (final id in ['1.1', '3.1', '3.3', '4.1', '5.1']) {
+  // Subniveles con teoría interactiva sobre la mesa Y ejercicios después.
+  for (final id in ['1.2', '2.1', '3.1', '3.3']) {
     testWidgets('$id: la mesa interactiva se recorre sin overflow ni '
         'excepciones', (tester) async {
-      final c = await _openInteractive(tester, id, width: id == '1.1' ? 320 : 360);
+      final c = await _openInteractive(tester, id, width: id == '1.2' ? 320 : 360);
 
       expect(c.isInteractiveTheory, isTrue);
       expect(find.text('CONTINUAR'), findsOneWidget);
       expect(tester.takeException(), isNull, reason: '$id inicio');
 
       var guard = 0;
-      while (c.phase == AcademyPhase.theory && guard++ < 20) {
-        expect(find.text(c.currentBubbleText!), findsOneWidget,
-            reason: '$id paso ${c.tableStep + 1}');
-        final label = c.isLastTableStep ? 'PRACTICAR' : 'CONTINUAR';
-        await tester.tap(find.text(label));
+      while (c.phase == AcademyPhase.theory && guard++ < 30) {
+        if (c.isInteractiveTheory) {
+          expect(find.text(c.currentBubbleText!), findsOneWidget,
+              reason: '$id paso ${c.tableStep + 1}');
+          final last = c.isLastTableStep && !c.hasWrittenTheory;
+          await tester.tap(find.text(last ? 'PRACTICAR' : 'CONTINUAR'));
+        } else {
+          // Fichas de teoría redactada (N1).
+          await tester.tap(
+              find.text(c.isLastWrittenTheory ? 'PRACTICAR' : 'CONTINUAR'));
+        }
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: '$id avanzando');
       }

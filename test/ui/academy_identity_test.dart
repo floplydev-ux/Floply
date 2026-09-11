@@ -73,16 +73,16 @@ void main() {
       store: InMemoryAcademyStore(),
     );
     await c.load();
-    c.progress = _upTo('5.1');
+    c.progress = _upTo('3.3');
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(body: AcademyScreen(controller: c)),
     ));
     await tester.pumpAndSettle();
-    c.openLesson('5.1');
+    c.openLesson('3.3');
     await tester.pumpAndSettle();
 
-    // Paso 2 de 5.1: "{UTG} mira su mano y foldea." → nombre real.
-    c.nextTableStep();
+    // Paso 1 de N3.3 (guion "ventaja posicional"): "Estás en el CO. {UTG} y
+    // {HJ} foldearon…" → los marcadores resuelven a nombres reales.
     await tester.pumpAndSettle();
 
     final bubble = c.currentBubbleText!;

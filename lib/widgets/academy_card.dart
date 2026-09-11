@@ -26,10 +26,10 @@ class AcademyCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(color: AppColors.violetPrimary.withOpacity(0.45)),
+        border: Border.all(color: AppColors.violetPrimary.withValues(alpha: 0.45)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.violetPrimary.withOpacity(0.22),
+            color: AppColors.violetPrimary.withValues(alpha: 0.22),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -39,16 +39,16 @@ class AcademyCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(18, 18, 18, 0),
             child: Row(
               children: [
                 _IconBadge(
                   icon: Icons.school_rounded,
                   color: AppColors.violetBright,
                 ),
-                const SizedBox(width: 10),
-                const Text(
+                SizedBox(width: 10),
+                Text(
                   AppStrings.academyTitle,
                   style: TextStyle(
                     fontSize: 18,
@@ -59,11 +59,11 @@ class AcademyCard extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(18, 10, 18, 0),
             child: Text(
               AppStrings.academyDescription,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13.5,
                 height: 1.35,
@@ -84,7 +84,7 @@ class AcademyCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.25),
+                    color: Colors.black.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Column(
@@ -169,7 +169,7 @@ class AcademyCard extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.violetPrimary.withOpacity(0.45),
+                            color: AppColors.violetPrimary.withValues(alpha: 0.45),
                             blurRadius: 16,
                             offset: const Offset(0, 6),
                           ),
@@ -209,7 +209,7 @@ class _IconBadge extends StatelessWidget {
       height: 34,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withOpacity(0.18),
+        color: color.withValues(alpha: 0.18),
       ),
       child: Icon(icon, color: color, size: 18),
     );
@@ -246,7 +246,7 @@ class _MountainPathPainter extends CustomPainter {
     final mountainPaint = Paint()
       ..shader = LinearGradient(
         colors: [
-          AppColors.violetDeep.withOpacity(0.9),
+          AppColors.violetDeep.withValues(alpha: 0.9),
           Colors.transparent,
         ],
         begin: Alignment.topCenter,
@@ -280,7 +280,7 @@ class _MountainPathPainter extends CustomPainter {
     }
 
     final glowPaint = Paint()
-      ..color = AppColors.violetBright.withOpacity(0.35)
+      ..color = AppColors.violetBright.withValues(alpha: 0.35)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 7
       ..strokeCap = StrokeCap.round
@@ -288,7 +288,7 @@ class _MountainPathPainter extends CustomPainter {
     canvas.drawPath(trail, glowPaint);
 
     final trailPaint = Paint()
-      ..color = Colors.white.withOpacity(0.9)
+      ..color = Colors.white.withValues(alpha: 0.9)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.4
       ..strokeCap = StrokeCap.round;
@@ -306,7 +306,7 @@ class _MountainPathPainter extends CustomPainter {
     canvas.drawCircle(
       markerPos,
       7,
-      Paint()..color = AppColors.violetBright.withOpacity(0.35)
+      Paint()..color = AppColors.violetBright.withValues(alpha: 0.35)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
     );
     canvas.drawCircle(markerPos, 4.5, Paint()..color = Colors.white);
@@ -314,7 +314,7 @@ class _MountainPathPainter extends CustomPainter {
     // Bandera en la cima.
     final flagBase = pathPoints.last;
     final flagPolePaint = Paint()
-      ..color = Colors.white.withOpacity(0.85)
+      ..color = Colors.white.withValues(alpha: 0.85)
       ..strokeWidth = 2;
     canvas.drawLine(
       flagBase,

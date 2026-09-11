@@ -10,11 +10,14 @@ import '../../engine/exercises/exercise.dart';
 import '../../engine/pedagogy/academy_exercise_scripts.dart';
 import '../../engine/pedagogy/academy_players.dart';
 import '../../engine/pedagogy/academy_table_scripts.dart';
+import '../../engine/pedagogy/academy_visual_theories.dart';
 import '../../engine/pedagogy/curriculum.dart';
 import '../../engine/pedagogy/lesson_content.dart';
 import '../../engine/pedagogy/recovery_session.dart';
 import '../../engine/pedagogy/table_exercise.dart';
 import '../../engine/pedagogy/table_lesson.dart';
+import '../../engine/pedagogy/theory.dart';
+import '../../engine/pedagogy/visual_theory.dart';
 import '../../engine/poker_trainer_engine.dart';
 import '../../models/app_user.dart';
 import '../../persistence/academy_store_provider.dart';
@@ -152,8 +155,10 @@ class AcademyController extends ChangeNotifier {
       : AcademyTableScripts.forLesson(activeLessonId!);
 
   /// `true` si la teoría de este lesson se enseña con la mesa interactiva.
+  /// Deja de serlo cuando el guion terminó y se pasó a las fichas de teoría
+  /// redactada (ver [isWrittenTheory]).
   bool get isInteractiveTheory =>
-      phase == AcademyPhase.theory && tableScript != null;
+      phase == AcademyPhase.theory && tableScript != null && !_inWrittenTheory;
 
   int get tableStepCount => tableScript?.length ?? 0;
 
@@ -171,12 +176,12 @@ class AcademyController extends ChangeNotifier {
   /// los ejercicios (mismo flujo que la teoría normal).
   void nextTableStep() {
     final s = tableScript;
-    if (s == null) return;
+    if (s == null || _inWrittenTheory) return;
     if (tableStep < s.length - 1) {
       tableStep++;
       notifyListeners();
     } else {
-      startExercises();
+      _enterWrittenTheoryOrExercises();
     }
   }
 
@@ -184,6 +189,154 @@ class AcademyController extends ChangeNotifier {
     if (tableStep > 0) {
       tableStep--;
       notifyListeners();
+    }
+  }
+
+  // --- teoría redactada (PASO 4): fichas de teoría, una por pantalla ---
+
+  /// `true` mientras se recorren las fichas de teoría redactada del subnivel.
+  /// Sub-fase dentro de [AcademyPhase.theory], después del guion de mesa (si
+  /// lo hay) y antes de los ejercicios.
+  bool _inWrittenTheory = false;
+  int writtenTheoryStep = 0;
+
+  /// Teorías del subnivel activo que ya tienen contenido redactado, en orden.
+  List<Theory> get writtenTheories {
+    final id = activeLessonId;
+    if (id == null) return const [];
+    final sub = academy.lessonById(id)?.sublevel;
+    if (sub == null) return const [];
+    return [for (final t in sub.theories) if (t.tieneContenido) t];
+  }
+
+  bool get hasWrittenTheory => writtenTheories.isNotEmpty;
+
+  /// `true` si la UI debe mostrar ahora las fichas de teoría redactada.
+  bool get isWrittenTheory =>
+      phase == AcademyPhase.theory && _inWrittenTheory && hasWrittenTheory;
+
+  int get writtenTheoryCount => writtenTheories.length;
+
+  Theory? get currentWrittenTheory {
+    final list = writtenTheories;
+    if (writtenTheoryStep < 0 || writtenTheoryStep >= list.length) return null;
+    return list[writtenTheoryStep];
+  }
+
+  bool get isFirstWrittenTheory => writtenTheoryStep <= 0;
+  bool get isLastWrittenTheory =>
+      writtenTheoryStep >= writtenTheories.length - 1;
+
+  /// Entra en la sub-fase de teoría redactada (o, si no hay, arranca los
+  /// ejercicios directamente).
+  void _enterWrittenTheoryOrExercises() {
+    if (hasWrittenTheory) {
+      writtenTheoryStep = 0;
+      _beginWrittenTheoryStep();
+    } else {
+      startExercises();
+    }
+  }
+
+  /// Arranca el paso actual de teoría redactada (`writtenTheoryStep`): si
+  /// esa teoría puntual tiene una experiencia visual piloto, primero esa
+  /// ([isVisualTheory]); si no, la ficha escrita de siempre.
+  void _beginWrittenTheoryStep() {
+    _inVisualTheory = hasVisualTheory;
+    _inWrittenTheory = !_inVisualTheory;
+    visualStep = 0;
+    notifyListeners();
+  }
+
+  /// Avanza una ficha de teoría redactada; en la última pasa a los ejercicios.
+  void nextWrittenTheory() {
+    if (writtenTheoryStep < writtenTheories.length - 1) {
+      writtenTheoryStep++;
+      _beginWrittenTheoryStep();
+    } else {
+      _inWrittenTheory = false;
+      startExercises();
+    }
+  }
+
+  void prevWrittenTheory() {
+    if (writtenTheoryStep > 0) {
+      writtenTheoryStep--;
+      notifyListeners();
+    }
+  }
+
+  // --- piloto visual: teoría → experiencia visual → teoría escrita ---
+  //
+  // Sub-fase de [AcademyPhase.theory], antes de la ficha escrita de la
+  // MISMA teoría (ver `_beginWrittenTheoryStep`). Solo se activa para las
+  // teorías registradas en [AcademyVisualTheories]; para el resto de las
+  // 326, `hasVisualTheory` es `false` y nada cambia respecto de hoy.
+
+  bool _inVisualTheory = false;
+  int visualStep = 0;
+
+  /// Lección visual de la teoría que muestra ahora la fase teoría (la misma
+  /// que [currentWrittenTheory]), si está registrada como piloto.
+  VisualTheoryLesson? get currentVisualLesson {
+    final t = currentWrittenTheory;
+    return t == null ? null : AcademyVisualTheories.forTheory(t.id);
+  }
+
+  bool get hasVisualTheory => currentVisualLesson != null;
+
+  /// `true` si la UI debe mostrar ahora la experiencia visual piloto.
+  bool get isVisualTheory =>
+      phase == AcademyPhase.theory && _inVisualTheory && hasVisualTheory;
+
+  int get visualStepCount => currentVisualLesson?.length ?? 0;
+
+  VisualTheoryStep? get currentVisualStep {
+    final lesson = currentVisualLesson;
+    if (lesson == null || visualStep < 0 || visualStep >= lesson.length) {
+      return null;
+    }
+    return lesson.steps[visualStep];
+  }
+
+  bool get isFirstVisualStep => visualStep <= 0;
+  bool get isLastVisualStep =>
+      currentVisualLesson != null && visualStep >= currentVisualLesson!.length - 1;
+
+  /// Avanza un paso de la experiencia visual; en el último pasa a la ficha
+  /// escrita de esa misma teoría.
+  void nextVisualStep() {
+    final lesson = currentVisualLesson;
+    if (lesson == null) return;
+    if (visualStep < lesson.length - 1) {
+      visualStep++;
+      notifyListeners();
+    } else {
+      _inVisualTheory = false;
+      _inWrittenTheory = true;
+      notifyListeners();
+    }
+  }
+
+  void prevVisualStep() {
+    if (visualStep > 0) {
+      visualStep--;
+      notifyListeners();
+    }
+  }
+
+  /// Avanza la fase teoría cualquiera sea su sub-fase (guion de mesa →
+  /// experiencia visual piloto → fichas de teoría redactada → ejercicios).
+  /// Pensado para recorridos automáticos; la UI usa los métodos específicos.
+  void advanceTheory() {
+    if (isInteractiveTheory) {
+      nextTableStep();
+    } else if (isVisualTheory) {
+      nextVisualStep();
+    } else if (isWrittenTheory) {
+      nextWrittenTheory();
+    } else {
+      startExercises();
     }
   }
 
@@ -330,15 +483,25 @@ class AcademyController extends ChangeNotifier {
     activeLessonId = lessonId;
     _recovering = false;
     tableStep = 0;
+    _inWrittenTheory = false;
+    writtenTheoryStep = 0;
+    _inVisualTheory = false;
+    visualStep = 0;
     academy.openLesson(lessonId, knowledge, progress);
     _resetRun();
 
     final content = academy.contentFor(lessonId);
-    // Entra en la fase teoría si tiene teoría en texto O una lección
-    // interactiva sobre la mesa (aunque no tenga bloques de texto).
-    if ((content != null && content.hasTheory) ||
-        AcademyTableScripts.has(lessonId)) {
+    final hasText = content != null && content.hasTheory;
+    final hasGuion = AcademyTableScripts.has(lessonId);
+    // Entra en la fase teoría si tiene teoría en texto, guion de mesa, o
+    // teoría redactada (PASO 4).
+    if (hasText || hasGuion || hasWrittenTheory) {
       phase = AcademyPhase.theory;
+      // Sin guion ni texto heredado: se arranca directo en las fichas (o,
+      // si la primera teoría es un piloto visual, en esa experiencia).
+      if (!hasText && !hasGuion && hasWrittenTheory) {
+        _beginWrittenTheoryStep();
+      }
     } else {
       _buildItems();
       phase = _items.isEmpty ? AcademyPhase.result : AcademyPhase.exercise;
@@ -350,6 +513,8 @@ class AcademyController extends ChangeNotifier {
 
   /// Pasar de la teoría a los ejercicios.
   void startExercises() {
+    _inWrittenTheory = false;
+    _inVisualTheory = false;
     _buildItems();
     if (_items.isEmpty) {
       _finishLesson();
@@ -424,6 +589,10 @@ class AcademyController extends ChangeNotifier {
   void exitLesson() {
     activeLessonId = null;
     _recovering = false;
+    _inWrittenTheory = false;
+    writtenTheoryStep = 0;
+    _inVisualTheory = false;
+    visualStep = 0;
     _items = [];
     lastFeedback = null;
     lastOutcome = null;

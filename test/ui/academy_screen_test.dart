@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:poker_trainer/engine/academy/academy_progress.dart';
 import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 import 'package:poker_trainer/screens/academy/academy_controller.dart';
@@ -16,6 +17,9 @@ void main() {
       engine: PokerTrainerEngine(seed: 1),
       store: InMemoryAcademyStore(),
     );
+    await controller.load();
+    // N1.1 es teoría-sola; N1.2 tiene teoría interactiva + ejercicio.
+    controller.progress = AcademyProgress()..entry('1.1').completed = true;
 
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(body: AcademyScreen(controller: controller)),
@@ -23,10 +27,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('ACADEMIA'), findsOneWidget);
-    expect(find.text('FUNDAMENTOS'), findsOneWidget);
+    expect(find.textContaining('Cómo funciona una mano'), findsWidgets);
 
-    // Abrir el primer lesson: es una lección interactiva sobre la mesa.
-    await tester.tap(find.textContaining('Cómo se juega una mano').first);
+    // Abrir un subnivel con teoría interactiva sobre la mesa + ejercicio.
+    await tester.tap(find.textContaining('Ganar la mano').first);
     await tester.pumpAndSettle();
 
     expect(controller.phase, AcademyPhase.theory);
@@ -45,15 +49,25 @@ void main() {
     await tester.pumpAndSettle();
     expect(controller.tableStep, 0);
 
-    // Recorrer el resto de los pasos.
+    // Recorrer el resto de los pasos del guion.
     while (!controller.isLastTableStep) {
       controller.nextTableStep();
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     }
-    expect(find.text('PRACTICAR'), findsOneWidget);
-    await tester.tap(find.text('PRACTICAR'));
+    // Tras el guion vienen las fichas de teoría redactada de N1.2.
+    expect(find.text('CONTINUAR'), findsOneWidget);
+    await tester.tap(find.text('CONTINUAR'));
     await tester.pumpAndSettle();
+    expect(controller.isWrittenTheory, isTrue);
+    var wtGuard = 0;
+    while (controller.isWrittenTheory && wtGuard++ < 20) {
+      final label =
+          controller.isLastWrittenTheory ? 'PRACTICAR' : 'CONTINUAR';
+      await tester.tap(find.text(label));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    }
     expect(controller.phase, AcademyPhase.exercise);
 
     // El ejercicio también es interactivo sobre la mesa: elegir una opción.

@@ -18,10 +18,12 @@ AcademyProgress _upTo(String target) {
 }
 
 void main() {
-  for (final width in <double>[320, 360, 390, 412]) {
+  double heightFor(double width) => width <= 360 ? 640 : (width <= 390 ? 844 : 915);
+
+  for (final width in <double>[320, 360, 390, 412, 430]) {
     testWidgets('$width dp — el Nivel 2 (showdowns en la mesa) se recorre '
         'entero sin overflow y desbloquea el Nivel 3', (tester) async {
-      tester.view.physicalSize = Size(width * 3, 780 * 3);
+      tester.view.physicalSize = Size(width * 3, heightFor(width) * 3);
       tester.view.devicePixelRatio = 3.0;
       addTearDown(tester.view.reset);
 
@@ -38,14 +40,17 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      for (final id in ['2.1', '2.2', '2.3', '2.4', '2.5']) {
+      for (final id in ['2.1', '2.2']) {
         c.openLesson(id);
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: 'abrir $id @ $width');
 
+        // Teoría: guion de mesa (si hay) → fichas de teoría redactada.
         while (c.phase == AcademyPhase.theory) {
-          final label = c.isLastTableStep ? 'PRACTICAR' : 'CONTINUAR';
-          await tester.tap(find.text(label));
+          final last = c.isInteractiveTheory
+              ? (c.isLastTableStep && !c.hasWrittenTheory)
+              : c.isLastWrittenTheory;
+          await tester.tap(find.text(last ? 'PRACTICAR' : 'CONTINUAR'));
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull, reason: 'teoría $id @ $width');
         }

@@ -1,9 +1,9 @@
 name: poker_trainer
 description: >
-  Aplicación móvil de entrenamiento de póker — etapa 1: pantalla de inicio
-  (Home/Dashboard) visual, sin backend ni lógica funcional todavía.
+  Aplicación móvil de entrenamiento de póker (Floply): motor pedagógico de
+  la Academia (326 teorías) con ejercicios interactivos, sin backend.
 publish_to: 'none'
-version: 0.1.0
+version: 0.2.0
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -21,3 +21,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/curriculum/curriculum_spec.json

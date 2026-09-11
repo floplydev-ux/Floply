@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_strings.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/pressable_scale.dart';
 
@@ -157,6 +158,106 @@ class LessonPrimaryButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Controles de avance ATRÁS / [buttonLabel] de un recorrido paso a paso
+/// (guion de mesa, fichas de teoría redactada, experiencia visual). Antes
+/// vivía casi idéntico —y por duplicado, con parámetros muertos en algún
+/// caso— en cada widget de fase; ahora es un único componente parametrizado
+/// por texto, sin conocer si "el último paso" significa practicar, ver la
+/// teoría u otra cosa.
+class LessonNavControls extends StatelessWidget {
+  const LessonNavControls({
+    super.key,
+    required this.canGoBack,
+    required this.buttonLabel,
+    required this.onBack,
+    required this.onNext,
+    this.counter,
+  });
+
+  final bool canGoBack;
+  final String buttonLabel;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
+
+  /// Texto opcional entre los dos botones (p. ej. "3 / 7"). `null` lo oculta.
+  final String? counter;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 88,
+          child: canGoBack
+              ? PressableScale(
+                  onTap: onBack,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 13),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      color: AppColors.surfaceElevated,
+                      border: Border.all(color: AppColors.surfaceBorder),
+                    ),
+                    child: const Text(
+                      AppStrings.academyBack,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                        letterSpacing: 0.4,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+        const SizedBox(width: 10),
+        if (counter != null) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceElevated,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              counter!,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textMuted,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+        ],
+        Expanded(
+          child: PressableScale(
+            onTap: onNext,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                gradient: const LinearGradient(colors: AppColors.violetGradient),
+              ),
+              child: Text(
+                buttonLabel,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13.5,
+                  letterSpacing: 0.5,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -18,7 +18,7 @@ AcademyProgress _progressUpTo(String target) {
   return p;
 }
 
-Future<AcademyController> _open54(WidgetTester tester,
+Future<AcademyController> _open72(WidgetTester tester,
     {double width = 360}) async {
   tester.view.physicalSize = Size(width * 3, 800 * 3);
   tester.view.devicePixelRatio = 3.0;
@@ -29,21 +29,26 @@ Future<AcademyController> _open54(WidgetTester tester,
     store: InMemoryAcademyStore(),
   );
   await controller.load();
-  controller.progress = _progressUpTo('5.4');
+  controller.progress = _progressUpTo('7.2');
 
   await tester.pumpWidget(MaterialApp(
     home: Scaffold(body: AcademyScreen(controller: controller)),
   ));
   await tester.pumpAndSettle();
-  controller.openLesson('5.4');
+  controller.openLesson('7.2');
+  // 7.2 ahora tiene teoría redactada (N7, PASO 4): pasarla antes de los
+  // ejercicios interactivos, igual que el resto de los tests de la suite.
+  while (controller.phase == AcademyPhase.theory) {
+    controller.advanceTheory();
+  }
   await tester.pumpAndSettle();
   return controller;
 }
 
 void main() {
-  test('el lesson 5.4 tiene un set de ejercicios interactivos bien formado',
+  test('el lesson 7.2 (ex-5.4) tiene un set de ejercicios interactivos bien formado',
       () {
-    final set = AcademyExerciseScripts.forLesson('5.4');
+    final set = AcademyExerciseScripts.forLesson('7.2');
     expect(set, isNotNull);
     expect(set!.exercises.length, 3);
     for (final ex in set.exercises) {
@@ -65,7 +70,7 @@ void main() {
 
   testWidgets('flujo completo: mesa → decisión → resultado → explicación → '
       'siguiente → resultado del lesson', (tester) async {
-    final c = await _open54(tester);
+    final c = await _open72(tester);
 
     expect(c.phase, AcademyPhase.exercise);
     expect(c.isInteractiveExercise, isTrue);
@@ -128,7 +133,7 @@ void main() {
   for (final width in <double>[320, 360, 390, 412]) {
     testWidgets('$width dp: sin overflow en toda la sesión interactiva',
         (tester) async {
-      final c = await _open54(tester, width: width);
+      final c = await _open72(tester, width: width);
       var guard = 0;
       while (c.phase == AcademyPhase.exercise && guard++ < 60) {
         expect(tester.takeException(), isNull, reason: '$width dp');

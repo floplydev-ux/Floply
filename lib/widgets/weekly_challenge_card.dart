@@ -15,7 +15,7 @@ class WeeklyChallengeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      borderColor: AppColors.diamondBlue.withOpacity(0.35),
+      borderColor: AppColors.diamondBlue.withValues(alpha: 0.35),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final stacked = constraints.maxWidth < 360;
@@ -28,8 +28,8 @@ class WeeklyChallengeCard extends StatelessWidget {
                 height: 46,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.diamondBlue.withOpacity(0.16),
-                  border: Border.all(color: AppColors.diamondBlue.withOpacity(0.4)),
+                  color: AppColors.diamondBlue.withValues(alpha: 0.16),
+                  border: Border.all(color: AppColors.diamondBlue.withValues(alpha: 0.4)),
                 ),
                 child: const Icon(
                   Icons.track_changes_rounded,
@@ -168,7 +168,7 @@ class _RewardBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.diamondBlue.withOpacity(0.3)),
+        border: Border.all(color: AppColors.diamondBlue.withValues(alpha: 0.3)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

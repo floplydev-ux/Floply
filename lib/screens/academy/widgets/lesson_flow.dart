@@ -9,6 +9,8 @@ import 'interactive_table_lesson.dart';
 import 'lesson_result_view.dart';
 import 'lesson_widgets.dart';
 import 'theory_view.dart';
+import 'visual_theory_stage.dart';
+import 'written_theory_view.dart';
 
 /// El recorrido de un lesson: teoría → ejercicios → feedback → resultado.
 ///
@@ -37,25 +39,28 @@ class LessonFlow extends StatelessWidget {
 
     return LayoutBuilder(builder: (context, constraints) {
       final pad = constraints.maxWidth >= 480 ? 24.0 : 18.0;
+      // Deja aire real bajo los controles: el inset inferior del dispositivo
+      // (barra de gestos) más un colchón. Cuando la pantalla ya reserva ese
+      // inset (dentro del shell con barra de navegación) esto queda en el
+      // colchón mínimo.
+      final bottomInset =
+          MediaQuery.of(context).padding.bottom.clamp(0.0, 16.0);
 
-      // Teoría / ejercicios interactivos sobre la mesa: ocupan toda la
-      // altura (no van dentro del scroll).
-      if (controller.isInteractiveTheory || controller.isInteractiveExercise) {
+      // Teoría interactiva / experiencia visual piloto / fichas de teoría
+      // redactada / ejercicios interactivos: ocupan toda la altura (no van
+      // dentro del scroll).
+      if (controller.isInteractiveTheory ||
+          controller.isVisualTheory ||
+          controller.isWrittenTheory ||
+          controller.isInteractiveExercise) {
         return Padding(
-          padding: EdgeInsets.fromLTRB(pad, 12, pad, 14),
+          padding: EdgeInsets.fromLTRB(pad, 12, pad, 16 + bottomInset),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               header,
               const SizedBox(height: 10),
-              Expanded(
-                child: controller.isInteractiveTheory
-                    ? InteractiveTableLesson(controller: controller)
-                    : InteractiveTableExercise(
-                        key: ValueKey('itex${controller.itemNumber}'),
-                        controller: controller,
-                      ),
-              ),
+              Expanded(child: _fullHeightBody()),
             ],
           ),
         );
@@ -73,6 +78,22 @@ class LessonFlow extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget _fullHeightBody() {
+    if (controller.isInteractiveTheory) {
+      return InteractiveTableLesson(controller: controller);
+    }
+    if (controller.isVisualTheory) {
+      return VisualTheoryStageView(controller: controller);
+    }
+    if (controller.isWrittenTheory) {
+      return WrittenTheoryView(controller: controller);
+    }
+    return InteractiveTableExercise(
+      key: ValueKey('itex${controller.itemNumber}'),
+      controller: controller,
+    );
   }
 
   Widget _body() {

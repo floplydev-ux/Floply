@@ -6,14 +6,13 @@ import '../../../l10n/app_strings.dart';
 import '../../../theme/app_colors.dart';
 import '../../../widgets/pressable_scale.dart';
 import '../academy_controller.dart';
-import 'educational_bubble.dart';
-import 'poker_table_view.dart';
+import 'table_explanation_view.dart';
 
 /// Un ejercicio interactivo sobre la mesa: situación → decisión del
-/// usuario → resultado → explicación (burbujas, una por una) → siguiente.
+/// usuario → resultado → explicación → siguiente.
 ///
-/// Reutiliza [PokerTableView] y [EducationalBubble]; la lógica de
-/// evaluación y avance vive en [AcademyController].
+/// Reutiliza [TableExplanationView] (mesa + burbuja/panel) para toda la
+/// parte visual; la lógica de evaluación y avance vive en [AcademyController].
 class InteractiveTableExercise extends StatefulWidget {
   const InteractiveTableExercise({super.key, required this.controller});
 
@@ -56,7 +55,7 @@ class _InteractiveTableExerciseState extends State<InteractiveTableExercise> {
     final choiceIdx = c.interactiveChoice;
     final chosen = choiceIdx == null ? null : ex.choices[choiceIdx];
 
-    // Estado de la mesa + burbuja según en qué punto del ejercicio estamos.
+    // Estado de la mesa + texto según en qué punto del ejercicio estamos.
     final TableSnapshot rawTable;
     final String rawText;
     final TableAnchor anchor;
@@ -87,9 +86,10 @@ class _InteractiveTableExerciseState extends State<InteractiveTableExercise> {
     final table = c.castTable(rawTable);
     final bubbleText = c.resolveText(rawText, table);
 
-    final subKey = '${_answered ? 1 : 0}_$_explainIndex';
     final isLastItem = c.itemNumber >= c.itemTotal;
     final onLastExplain = _explainIndex >= ex.explanation.length;
+
+    final (accent, panelIcon) = _explanationStyle(chosen);
 
     return Column(
       children: [
@@ -101,57 +101,20 @@ class _InteractiveTableExerciseState extends State<InteractiveTableExercise> {
         ),
         const SizedBox(height: 6),
         Expanded(
-          child: LayoutBuilder(builder: (context, constraints) {
-            final size = Size(constraints.maxWidth, constraints.maxHeight);
-            final layout = TableLayout(size);
-            final anchorPoint = layout.anchorPoint(anchor);
-            final hi = (highlight.isEmpty ? [anchor] : highlight).toSet();
-
-            return TweenAnimationBuilder<double>(
-              key: ValueKey('anim$subKey'),
-              tween: Tween(begin: 0, end: 1),
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeOutCubic,
-              builder: (context, t, _) {
-                return Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned.fill(
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child: PokerTableView(
-                          key: ValueKey('table$subKey'),
-                          snapshot: table,
-                          highlight: hi,
-                          dimOthers: dimOthers,
-                          glow: t,
-                        ),
-                      ),
-                    ),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 240),
-                      transitionBuilder: (child, a) => FadeTransition(
-                        opacity: a,
-                        child: ScaleTransition(
-                          scale: Tween<double>(begin: 0.93, end: 1).animate(a),
-                          child: child,
-                        ),
-                      ),
-                      child: EducationalBubble(
-                        key: ValueKey('bubble$subKey'),
-                        text: bubbleText,
-                        anchor: anchorPoint,
-                        containerSize: size,
-                        stepNumber: c.itemNumber,
-                      ),
-                    ),
-                  ],
-                );
-              },
-            );
-          }),
+          child: TableExplanationView(
+            table: table,
+            text: bubbleText,
+            anchor: anchor,
+            highlight: highlight,
+            dimOthers: dimOthers,
+            stepNumber: c.itemNumber,
+            accent: accent,
+            panelIcon: panelIcon,
+            transitionTag:
+                'ex${c.itemNumber}_${_answered ? 1 : 0}_$_explainIndex',
+          ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         if (!_answered)
           _ChoiceButtons(
             labels: [
@@ -171,6 +134,20 @@ class _InteractiveTableExerciseState extends State<InteractiveTableExercise> {
           ),
       ],
     );
+  }
+
+  /// Color e icono del panel según el estado: violeta para la pregunta y
+  /// las explicaciones; verde / dorado / rojo para el feedback inmediato de
+  /// la opción elegida.
+  (Color, IconData) _explanationStyle(ExerciseChoice? chosen) {
+    if (!_answered || _explainIndex != 0 || chosen == null) {
+      return (AppColors.violetPrimary, Icons.school_rounded);
+    }
+    return switch (chosen.rating) {
+      ExerciseRating.best => (AppColors.neonGreen, Icons.check_rounded),
+      ExerciseRating.acceptable => (AppColors.gold, Icons.check_rounded),
+      ExerciseRating.poor => (AppColors.danger, Icons.close_rounded),
+    };
   }
 }
 
@@ -276,6 +253,8 @@ class _ResultChip extends StatelessWidget {
   }
 }
 
+/// Las opciones del ejercicio, una por fila y a lo alto necesario: una
+/// opción larga se ve entera, sin `...` ni fuente diminuta.
 class _ChoiceButtons extends StatelessWidget {
   const _ChoiceButtons({required this.labels, required this.onChoose});
 
@@ -284,32 +263,32 @@ class _ChoiceButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < labels.length; i++) ...[
-          if (i > 0) const SizedBox(width: 8),
-          Expanded(
-            child: PressableScale(
-              onTap: () => onChoose(i),
-              child: Container(
-                height: 52,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  gradient:
-                      const LinearGradient(colors: AppColors.violetGradient),
-                ),
-                child: Text(
-                  labels[i],
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.4,
-                    color: Colors.white,
-                  ),
+          if (i > 0) const SizedBox(height: 8),
+          PressableScale(
+            onTap: () => onChoose(i),
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 46),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                gradient:
+                    const LinearGradient(colors: AppColors.violetGradient),
+              ),
+              child: Text(
+                labels[i],
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.3,
+                  height: 1.25,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -338,7 +317,7 @@ class _AnsweredBar extends StatelessWidget {
         Flexible(
           flex: 4,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
               color: AppColors.surfaceElevated,
@@ -350,14 +329,18 @@ class _AnsweredBar extends StatelessWidget {
                 const Icon(Icons.check_rounded,
                     size: 14, color: AppColors.violetBright),
                 const SizedBox(width: 5),
+                // Eco de la opción elegida: confirmación, no contenido
+                // pedagógico (la opción completa está en el botón que
+                // tocó y el porqué en el panel). Se acota a 2 líneas.
                 Flexible(
                   child: Text(
                     choiceLabel,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w900,
+                      height: 1.2,
                       color: AppColors.textPrimary,
                     ),
                   ),
@@ -372,14 +355,16 @@ class _AnsweredBar extends StatelessWidget {
           child: PressableScale(
             onTap: onNext,
             child: Container(
-              height: 50,
+              constraints: const BoxConstraints(minHeight: 50),
               alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 gradient: const LinearGradient(colors: AppColors.violetGradient),
               ),
               child: Text(
                 nextLabel,
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w800,

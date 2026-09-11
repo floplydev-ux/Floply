@@ -1,7 +1,8 @@
-import '../concepts/concept_ids.dart';
+import 'theory.dart';
 
-/// El tipo de sub-nivel dentro de un nivel principal (patrón Duolingo:
-/// teoría → básico → intermedio → challenge → evaluación).
+/// El tipo de sub-nivel (patrón Duolingo: teoría → básico → intermedio →
+/// challenge → evaluación). Se deriva del **estadio cognitivo** del subnivel
+/// en el nuevo currículo (ver [CognitiveStage] / [SublevelKind]).
 enum LessonKind {
   theory('Teoría', 1),
   basic('Ejercicios básicos', 1),
@@ -12,24 +13,38 @@ enum LessonKind {
   const LessonKind(this.label, this.baseDifficulty);
   final String label;
   final int baseDifficulty;
+
+  static LessonKind fromSublevelKind(SublevelKind k) => switch (k) {
+        SublevelKind.theory => LessonKind.theory,
+        SublevelKind.basic => LessonKind.basic,
+        SublevelKind.intermediate => LessonKind.intermediate,
+        SublevelKind.challenge => LessonKind.challenge,
+        SublevelKind.assessment => LessonKind.assessment,
+      };
 }
 
-/// Un sub-nivel concreto: `2.3 — Tamaño de apertura (intermedio)`.
+/// Un sub-nivel concreto (`"5.3"`). Es la unidad que el alumno completa.
+///
+/// **Vista de compatibilidad** sobre un [Sublevel] del [CurriculumSpec]: el
+/// contenido curricular vive en `assets/curriculum/curriculum_spec.json`, no
+/// acá. Esta clase existe para no reescribir de golpe todo lo que consumía la
+/// vieja estructura de 25 lecciones.
 class Lesson {
-  const Lesson({
-    required this.mainLevel,
-    required this.subLevel,
-    required this.kind,
-    required this.title,
-    this.conceptsIntroduced = const [],
-    this.conceptsPracticed = const [],
-    this.difficultyRange = const [1, 3],
+  Lesson.fromSublevel(this._s, {
+    required this.conceptsIntroduced,
+    required this.conceptsPracticed,
   });
 
-  final int mainLevel;
-  final int subLevel;
-  final LessonKind kind;
-  final String title;
+  final Sublevel _s;
+
+  int get mainLevel => _s.nivel;
+  int get subLevel => _s.index;
+  LessonKind get kind => LessonKind.fromSublevelKind(_s.kind);
+  String get title => _s.nombre;
+  String get id => _s.code;
+
+  /// El subnivel del currículo nuevo detrás de esta lección.
+  Sublevel get sublevel => _s;
 
   /// Conceptos que este sub-nivel enseña por primera vez.
   final List<String> conceptsIntroduced;
@@ -37,327 +52,109 @@ class Lesson {
   /// Conceptos que este sub-nivel repasa (ya introducidos antes).
   final List<String> conceptsPracticed;
 
-  final List<int> difficultyRange;
-
-  String get id => '$mainLevel.$subLevel';
+  List<int> get difficultyRange => switch (_s.dificultad) {
+        Difficulty.fundamental => const [1, 1],
+        Difficulty.basico => const [1, 2],
+        Difficulty.intermedio => const [2, 3],
+        Difficulty.avanzado => const [3, 4],
+      };
 }
 
-/// Un nivel principal de la academia (1..40).
+/// Un nivel principal de la Academia (1..13). Representa una **capacidad**.
 class MainLevel {
-  const MainLevel({
-    required this.number,
-    required this.title,
-    required this.theme,
-    required this.lessons,
-  });
+  MainLevel.fromLevel(this._l, this.lessons);
 
-  final int number;
-  final String title;
-  final String theme;
+  final CurriculumLevel _l;
+
+  int get number => _l.n;
+  String get title => _l.nombre;
+
+  /// La capacidad que adquiere el alumno ("Después de este nivel, puede…").
+  String get theme => _l.capacidad;
+
   final List<Lesson> lessons;
 }
 
-/// El plan de estudios completo. Hoy trae detallados los **niveles 1 a 5**
-/// de la Academia (fundamentos → ranking → posición → rangos → open raise);
-/// la estructura está lista para crecer hacia los 40 sin tocar el motor.
+/// El plan de estudios completo — 13 niveles, 64 subniveles, 326 teorías.
+///
+/// Deriva TODO de [CurriculumSpec] (que a su vez viene del JSON maestro). No
+/// hay estructura hardcodeada acá.
 class Curriculum {
-  Curriculum(this.levels);
+  Curriculum._(this.spec, this.levels, this._byId, this._introducedUpTo);
+
+  /// El currículo nuevo, con la información completa (teorías, prerrequisitos,
+  /// estadios, visualización, legacy…).
+  final CurriculumSpec spec;
 
   final List<MainLevel> levels;
+  final Map<String, Lesson> _byId;
+
+  /// code de subnivel → set acumulado de conceptos introducidos hasta ahí.
+  final Map<String, Set<String>> _introducedUpTo;
 
   List<Lesson> get allLessons =>
-      levels.expand((l) => l.lessons).toList(growable: false);
+      [for (final l in levels) ...l.lessons];
 
-  Lesson? lessonById(String id) {
-    for (final lesson in allLessons) {
-      if (lesson.id == id) return lesson;
-    }
-    return null;
-  }
+  Lesson? lessonById(String id) => _byId[id];
 
-  /// Conceptos que ya se introdujeron hasta [lessonId] inclusive,
-  /// recorriendo el plan en orden.
-  Set<String> conceptsTaughtUpTo(String lessonId) {
-    final taught = <String>{};
-    for (final lesson in allLessons) {
-      taught.addAll(lesson.conceptsIntroduced);
-      if (lesson.id == lessonId) break;
-    }
-    return taught;
-  }
+  /// Conceptos ya introducidos hasta [lessonId] inclusive.
+  Set<String> conceptsTaughtUpTo(String lessonId) =>
+      _introducedUpTo[lessonId] ?? const {};
 
-  factory Curriculum.standard() => Curriculum(_levels);
-
-  /// Ids de todos los sub-niveles de la Academia, en orden pedagógico.
+  /// Ids de todos los subniveles, en orden de recorrido.
   static List<String> get lessonOrder =>
-      _levels.expand((l) => l.lessons).map((l) => l.id).toList();
+      CurriculumSpec.standard().allSublevels.map((s) => s.code).toList();
 
-  static const List<MainLevel> _levels = [
-    // ---------------------------------------------------------------
-    MainLevel(
-      number: 1,
-      title: 'Fundamentos',
-      theme: 'Cómo funciona una mano de Texas Hold\'em',
-      lessons: [
-        Lesson(
-          mainLevel: 1,
-          subLevel: 1,
-          kind: LessonKind.theory,
-          title: 'Cómo se juega una mano',
-          conceptsIntroduced: [ConceptIds.rules],
-        ),
-        Lesson(
-          mainLevel: 1,
-          subLevel: 2,
-          kind: LessonKind.basic,
-          title: 'Stack, ciegas y bote',
-          conceptsPracticed: [ConceptIds.rules],
-          difficultyRange: [1, 1],
-        ),
-        Lesson(
-          mainLevel: 1,
-          subLevel: 3,
-          kind: LessonKind.intermediate,
-          title: 'Las calles y las acciones',
-          conceptsPracticed: [ConceptIds.rules],
-          difficultyRange: [1, 2],
-        ),
-        Lesson(
-          mainLevel: 1,
-          subLevel: 4,
-          kind: LessonKind.challenge,
-          title: 'Una mano completa hasta el showdown',
-          conceptsPracticed: [ConceptIds.rules],
-          difficultyRange: [2, 2],
-        ),
-        Lesson(
-          mainLevel: 1,
-          subLevel: 5,
-          kind: LessonKind.assessment,
-          title: 'Evaluación: Fundamentos',
-          conceptsPracticed: [ConceptIds.rules],
-          difficultyRange: [1, 2],
-        ),
-      ],
-    ),
-    // ---------------------------------------------------------------
-    MainLevel(
-      number: 2,
-      title: 'Ranking de manos',
-      theme: 'Reconocer y comparar correctamente las manos',
-      lessons: [
-        Lesson(
-          mainLevel: 2,
-          subLevel: 1,
-          kind: LessonKind.theory,
-          title: 'La jerarquía de manos',
-          conceptsIntroduced: [ConceptIds.handRanking],
-        ),
-        Lesson(
-          mainLevel: 2,
-          subLevel: 2,
-          kind: LessonKind.basic,
-          title: 'Comparar dos manos',
-          conceptsPracticed: [ConceptIds.handRanking],
-          difficultyRange: [1, 1],
-        ),
-        Lesson(
-          mainLevel: 2,
-          subLevel: 3,
-          kind: LessonKind.intermediate,
-          title: 'Manos parecidas',
-          conceptsPracticed: [ConceptIds.handRanking],
-          difficultyRange: [2, 2],
-        ),
-        Lesson(
-          mainLevel: 2,
-          subLevel: 4,
-          kind: LessonKind.challenge,
-          title: 'El showdown difícil',
-          conceptsPracticed: [ConceptIds.handRanking],
-          difficultyRange: [3, 3],
-        ),
-        Lesson(
-          mainLevel: 2,
-          subLevel: 5,
-          kind: LessonKind.assessment,
-          title: 'Evaluación: Ranking de manos',
-          conceptsPracticed: [ConceptIds.handRanking],
-          difficultyRange: [2, 3],
-        ),
-      ],
-    ),
-    // ---------------------------------------------------------------
-    MainLevel(
-      number: 3,
-      title: 'Posición',
-      theme: 'Por qué la posición cambia las decisiones',
-      lessons: [
-        Lesson(
-          mainLevel: 3,
-          subLevel: 1,
-          kind: LessonKind.theory,
-          title: 'Las posiciones en 6-max',
-          conceptsIntroduced: [
-            ConceptIds.positionNames,
-            ConceptIds.blinds,
-            ConceptIds.utg,
-            ConceptIds.hj,
-            ConceptIds.co,
-            ConceptIds.btn,
-          ],
-        ),
-        Lesson(
-          mainLevel: 3,
-          subLevel: 2,
-          kind: LessonKind.basic,
-          title: 'El orden de acción',
-          conceptsPracticed: [ConceptIds.positionNames],
-          difficultyRange: [1, 1],
-        ),
-        Lesson(
-          mainLevel: 3,
-          subLevel: 3,
-          kind: LessonKind.intermediate,
-          title: 'Temprana, media y tardía',
-          conceptsIntroduced: [ConceptIds.positionAdvantage],
-          conceptsPracticed: [ConceptIds.positionNames],
-          difficultyRange: [2, 2],
-        ),
-        Lesson(
-          mainLevel: 3,
-          subLevel: 4,
-          kind: LessonKind.challenge,
-          title: 'Actuar primero vs actuar último',
-          conceptsPracticed: [
-            ConceptIds.positionAdvantage,
-            ConceptIds.positionNames,
-          ],
-          difficultyRange: [2, 3],
-        ),
-        Lesson(
-          mainLevel: 3,
-          subLevel: 5,
-          kind: LessonKind.assessment,
-          title: 'Evaluación: Posición',
-          conceptsPracticed: [
-            ConceptIds.positionNames,
-            ConceptIds.positionAdvantage,
-          ],
-          difficultyRange: [2, 3],
-        ),
-      ],
-    ),
-    // ---------------------------------------------------------------
-    MainLevel(
-      number: 4,
-      title: 'Rangos',
-      theme: 'No decidimos solo mirando nuestra mano',
-      lessons: [
-        Lesson(
-          mainLevel: 4,
-          subLevel: 1,
-          kind: LessonKind.theory,
-          title: 'Qué es un rango',
-          conceptsIntroduced: [ConceptIds.openingRange],
-          conceptsPracticed: [ConceptIds.positionAdvantage],
-        ),
-        Lesson(
-          mainLevel: 4,
-          subLevel: 2,
-          kind: LessonKind.basic,
-          title: '¿Está la mano en el rango?',
-          conceptsPracticed: [ConceptIds.openingRange, ConceptIds.handRanking],
-          difficultyRange: [1, 2],
-        ),
-        Lesson(
-          mainLevel: 4,
-          subLevel: 3,
-          kind: LessonKind.intermediate,
-          title: 'Rangos más anchos y más cerrados',
-          conceptsIntroduced: [ConceptIds.rangeWidth],
-          conceptsPracticed: [ConceptIds.positionAdvantage],
-          difficultyRange: [2, 3],
-        ),
-        Lesson(
-          mainLevel: 4,
-          subLevel: 4,
-          kind: LessonKind.challenge,
-          title: 'Rango según la posición',
-          conceptsPracticed: [
-            ConceptIds.openingRange,
-            ConceptIds.rangeWidth,
-            ConceptIds.handRanking,
-          ],
-          difficultyRange: [3, 3],
-        ),
-        Lesson(
-          mainLevel: 4,
-          subLevel: 5,
-          kind: LessonKind.assessment,
-          title: 'Evaluación: Rangos',
-          conceptsPracticed: [ConceptIds.openingRange, ConceptIds.rangeWidth],
-          difficultyRange: [2, 3],
-        ),
-      ],
-    ),
-    // ---------------------------------------------------------------
-    MainLevel(
-      number: 5,
-      title: 'Open raise',
-      theme: 'Integrar posición + rango + acción + sizing',
-      lessons: [
-        Lesson(
-          mainLevel: 5,
-          subLevel: 1,
-          kind: LessonKind.theory,
-          title: 'Abrir o foldear',
-          conceptsIntroduced: [ConceptIds.openRaise],
-          conceptsPracticed: [ConceptIds.openingRange],
-        ),
-        Lesson(
-          mainLevel: 5,
-          subLevel: 2,
-          kind: LessonKind.basic,
-          title: '¿Abro esta mano?',
-          conceptsPracticed: [ConceptIds.openRaise, ConceptIds.openingRange],
-          difficultyRange: [1, 2],
-        ),
-        Lesson(
-          mainLevel: 5,
-          subLevel: 3,
-          kind: LessonKind.intermediate,
-          title: 'El tamaño de la subida',
-          conceptsIntroduced: [ConceptIds.openSizing],
-          conceptsPracticed: [ConceptIds.openRaise],
-          difficultyRange: [2, 3],
-        ),
-        Lesson(
-          mainLevel: 5,
-          subLevel: 4,
-          kind: LessonKind.challenge,
-          title: 'Decisión completa',
-          conceptsPracticed: [
-            ConceptIds.openRaise,
-            ConceptIds.openingRange,
-            ConceptIds.positionAdvantage,
-            ConceptIds.rangeWidth,
-          ],
-          difficultyRange: [3, 4],
-        ),
-        Lesson(
-          mainLevel: 5,
-          subLevel: 5,
-          kind: LessonKind.assessment,
-          title: 'Evaluación: Open raise',
-          conceptsPracticed: [
-            ConceptIds.openRaise,
-            ConceptIds.openingRange,
-            ConceptIds.openSizing,
-          ],
-          difficultyRange: [2, 4],
-        ),
-      ],
-    ),
-  ];
+  factory Curriculum.standard() => _cache ??= _build();
+
+  static Curriculum? _cache;
+
+  static Curriculum _build() {
+    final spec = CurriculumSpec.standard();
+
+    // conceptsIntroduced/Practiced por subnivel: un concepto se "introduce"
+    // en el primer subnivel (por orden) que lo lista en conceptosClave; en
+    // los siguientes se cuenta como "practicado".
+    final seen = <String>{};
+    final introducedBySub = <String, List<String>>{};
+    final practicedBySub = <String, List<String>>{};
+    final introUpTo = <String, Set<String>>{};
+    for (final s in spec.allSublevels) {
+      final intro = <String>[];
+      final prac = <String>[];
+      for (final c in s.conceptosClave) {
+        if (seen.add(c)) {
+          intro.add(c);
+        } else {
+          prac.add(c);
+        }
+      }
+      introducedBySub[s.code] = intro;
+      practicedBySub[s.code] = prac;
+      introUpTo[s.code] = {...seen};
+    }
+
+    final byId = <String, Lesson>{};
+    final levels = <MainLevel>[];
+    for (final l in spec.levels) {
+      final lessons = <Lesson>[];
+      for (final s in l.sublevels) {
+        final lesson = Lesson.fromSublevel(
+          s,
+          conceptsIntroduced: introducedBySub[s.code] ?? const [],
+          conceptsPracticed: practicedBySub[s.code] ?? const [],
+        );
+        lessons.add(lesson);
+        byId[s.code] = lesson;
+      }
+      levels.add(MainLevel.fromLevel(l, lessons));
+    }
+    return Curriculum._(spec, levels, byId, introUpTo);
+  }
+
+  /// Solo para tests.
+  static void resetCache() {
+    _cache = null;
+    CurriculumSpec.resetCache();
+  }
 }

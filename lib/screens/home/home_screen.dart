@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../../models/user_progress.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/academy_card.dart';
+import '../../widgets/bankroll_card.dart';
 import '../../widgets/laboratory_card.dart';
 import '../../widgets/progress_card.dart';
 import '../../widgets/stats_section.dart';
 import '../../widgets/user_header.dart';
 import '../../widgets/weekly_challenge_card.dart';
+import '../bankroll/bankroll_screen.dart';
 
 /// Pantalla principal (Home/Dashboard).
 ///
@@ -143,6 +145,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             ],
                           );
                         },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _reveal(
+                      start: 0.15,
+                      end: 0.75,
+                      child: BankrollCard(
+                        onOpen: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const BankrollScreen()),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 22),

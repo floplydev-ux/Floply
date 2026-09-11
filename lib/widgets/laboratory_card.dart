@@ -25,10 +25,10 @@ class LaboratoryCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(color: AppColors.neonGreen.withOpacity(0.4)),
+        border: Border.all(color: AppColors.neonGreen.withValues(alpha: 0.4)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neonGreen.withOpacity(0.18),
+            color: AppColors.neonGreen.withValues(alpha: 0.18),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -47,7 +47,7 @@ class LaboratoryCard extends StatelessWidget {
                   height: 34,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.neonGreen.withOpacity(0.18),
+                    color: AppColors.neonGreen.withValues(alpha: 0.18),
                   ),
                   child: const Icon(Icons.science_rounded, color: AppColors.neonGreenBright, size: 18),
                 ),
@@ -63,11 +63,11 @@ class LaboratoryCard extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(18, 10, 18, 0),
             child: Text(
               AppStrings.laboratoryDescription,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13.5,
                 height: 1.35,
@@ -75,7 +75,7 @@ class LaboratoryCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          SizedBox(
+          const SizedBox(
             height: 150,
             width: double.infinity,
             child: _PokerTableIllustration(),
@@ -88,7 +88,7 @@ class LaboratoryCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.25),
+                    color: Colors.black.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Column(
@@ -147,7 +147,7 @@ class LaboratoryCard extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.neonGreen.withOpacity(0.4),
+                            color: AppColors.neonGreen.withValues(alpha: 0.4),
                             blurRadius: 16,
                             offset: const Offset(0, 6),
                           ),
@@ -191,21 +191,21 @@ class _PokerTableIllustration extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                AppColors.neonGreen.withOpacity(0.28),
+                AppColors.neonGreen.withValues(alpha: 0.28),
                 Colors.transparent,
               ],
             ),
           ),
         ),
-        Positioned(
+        const Positioned(
           left: 24,
           bottom: 18,
-          child: _ChipStack(colors: const [AppColors.neonGreenDeep, AppColors.neonGreen]),
+          child: _ChipStack(colors: [AppColors.neonGreenDeep, AppColors.neonGreen]),
         ),
-        Positioned(
+        const Positioned(
           right: 24,
           bottom: 18,
-          child: _ChipStack(colors: const [AppColors.violetDeep, AppColors.violetBright]),
+          child: _ChipStack(colors: [AppColors.violetDeep, AppColors.violetBright]),
         ),
         Transform.rotate(
           angle: -0.18,
@@ -243,7 +243,7 @@ class _ChipStack extends StatelessWidget {
               decoration: BoxDecoration(
                 color: colors[i.isEven ? 0 : 1],
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: Colors.white.withOpacity(0.3)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
               ),
             ),
           );
@@ -270,7 +270,7 @@ class _PlayingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.35),
+            color: Colors.black.withValues(alpha: 0.35),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

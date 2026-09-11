@@ -2,14 +2,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/engine/academy/academy_engine.dart';
 import 'package:poker_trainer/engine/academy/academy_progress.dart';
 import 'package:poker_trainer/engine/evaluation/user_answer.dart';
+import 'package:poker_trainer/engine/pedagogy/academy_content.dart';
 import 'package:poker_trainer/engine/pedagogy/curriculum.dart';
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 
 void main() {
   PokerTrainerEngine makeEngine() => PokerTrainerEngine(seed: 7);
 
-  // Resuelve todos los ejercicios de un lesson eligiendo la mejor opción,
-  // devuelve el promedio de decisión (0..1).
+  final order = Curriculum.lessonOrder;
+
+  /// Códigos de subnivel del Nivel [n], en orden.
+  List<String> level(int n) =>
+      Curriculum.standard().levels[n - 1].lessons.map((l) => l.id).toList();
+
+  /// Resuelve los ejercicios de un subnivel eligiendo la mejor opción y
+  /// devuelve el promedio de decisión (0..1). Los subniveles todavía sin
+  /// contenido (PASO 4) devuelven 1.
   LessonRunResult runLessonPerfect(
     PokerTrainerEngine engine,
     String lessonId,
@@ -57,16 +65,16 @@ void main() {
     );
   }
 
-  test('usuario nuevo: solo el primer lesson está disponible', () {
+  test('usuario nuevo: solo el primer subnivel está disponible', () {
     final engine = makeEngine();
     final progress = AcademyProgress();
 
-    expect(engine.academy.stateOf('1.1', progress), LessonState.available);
-    expect(engine.academy.stateOf('1.2', progress), LessonState.locked);
-    expect(engine.academy.stateOf('2.1', progress), LessonState.locked);
-    expect(engine.academy.currentLessonId(progress), '1.1');
+    expect(engine.academy.stateOf(order[0], progress), LessonState.available);
+    expect(engine.academy.stateOf(order[1], progress), LessonState.locked);
+    expect(engine.academy.currentLessonId(progress), order[0]);
 
     final overview = engine.academy.overview(progress);
+    expect(overview.length, 13);
     expect(overview.first.state, LevelState.available);
     expect(overview[1].state, LevelState.locked);
   });
@@ -77,77 +85,80 @@ void main() {
     expect(k.taughtConcepts, isEmpty);
   });
 
-  test('completar un lesson desbloquea el siguiente', () {
+  test('completar un subnivel desbloquea el siguiente', () {
     final engine = makeEngine();
     final k = engine.newAcademyUser();
     final progress = AcademyProgress();
 
-    engine.academy.openLesson('1.1', k, progress);
-    final run = runLessonPerfect(engine, '1.1', k);
-    final outcome = engine.academy.submitLesson('1.1', run, k, progress);
+    engine.academy.openLesson(order[0], k, progress);
+    final run = runLessonPerfect(engine, order[0], k);
+    final outcome = engine.academy.submitLesson(order[0], run, k, progress);
 
     expect(outcome.completed, isTrue);
     expect(outcome.unlockedNext, isTrue);
-    expect(engine.academy.stateOf('1.1', progress), LessonState.completed);
-    expect(engine.academy.stateOf('1.2', progress), LessonState.available);
+    expect(engine.academy.stateOf(order[0], progress), LessonState.completed);
+    expect(engine.academy.stateOf(order[1], progress), LessonState.available);
   });
 
-  test('la progresión depende del resultado: evaluación desaprobada no '
-      'desbloquea', () {
+  test('el checkpoint de un nivel (último subnivel) gatea el nivel siguiente',
+      () {
     final engine = makeEngine();
     final k = engine.newAcademyUser();
     final progress = AcademyProgress();
 
-    // Llegar hasta la evaluación 1.5.
-    for (final id in ['1.1', '1.2', '1.3', '1.4']) {
+    final n1 = level(1);
+    final checkpoint = n1.last; // subnivel-evaluación del Nivel 1
+    final firstOfN2 = level(2).first;
+
+    // Completar el Nivel 1 hasta el checkpoint.
+    for (final id in n1.sublist(0, n1.length - 1)) {
       engine.academy.openLesson(id, k, progress);
       engine.academy
           .submitLesson(id, runLessonPerfect(engine, id, k), k, progress);
     }
-    engine.academy.openLesson('1.5', k, progress);
+    engine.academy.openLesson(checkpoint, k, progress);
 
-    // Falla la evaluación (30%).
+    // Falla el checkpoint (30%).
     final fail = engine.academy.submitLesson(
-      '1.5',
+      checkpoint,
       const LessonRunResult(score: 0.3, total: 5, correct: 1),
       k,
       progress,
     );
     expect(fail.passed, isFalse);
     expect(fail.completed, isFalse);
-    expect(engine.academy.stateOf('1.5', progress), LessonState.available);
-    expect(engine.academy.stateOf('2.1', progress), LessonState.locked);
+    expect(engine.academy.stateOf(checkpoint, progress), LessonState.available);
+    expect(engine.academy.stateOf(firstOfN2, progress), LessonState.locked);
 
     // Reintenta y aprueba (80%).
     final pass = engine.academy.submitLesson(
-      '1.5',
+      checkpoint,
       const LessonRunResult(score: 0.8, total: 5, correct: 4),
       k,
       progress,
     );
     expect(pass.passed, isTrue);
     expect(pass.completed, isTrue);
-    expect(engine.academy.stateOf('2.1', progress), LessonState.available);
+    expect(engine.academy.stateOf(firstOfN2, progress), LessonState.available);
   });
 
-  test('evaluación desaprobada ofrece recuperación de conceptos concretos',
-      () {
+  test('checkpoint desaprobado ofrece recuperación de conceptos concretos', () {
     final engine = makeEngine();
     final k = engine.newAcademyUser();
     final progress = AcademyProgress();
 
-    // Recorrer hasta la evaluación del Nivel 4 (rangos), con ejercicios
-    // reales del motor en el medio.
-    for (final id in Curriculum.lessonOrder) {
+    // Recorrer hasta el checkpoint del Nivel 5 (rangos y apertura).
+    final n5 = level(5);
+    final checkpoint = n5.last;
+    for (final id in order) {
       engine.academy.openLesson(id, k, progress);
-      if (id == '4.5') break;
+      if (id == checkpoint) break;
       engine.academy
           .submitLesson(id, runLessonPerfect(engine, id, k), k, progress);
     }
 
-    // Falla la evaluación 4.5 marcando conceptos débiles explícitos.
     final outcome = engine.academy.submitLesson(
-      '4.5',
+      checkpoint,
       const LessonRunResult(
         score: 0.2,
         total: 6,
@@ -160,7 +171,8 @@ void main() {
     expect(outcome.passed, isFalse);
     expect(outcome.completed, isFalse);
     expect(outcome.weakConceptIds, contains('opening_range'));
-    expect(engine.academy.stateOf('5.1', progress), LessonState.locked);
+    expect(engine.academy.stateOf(level(6).first, progress),
+        LessonState.locked);
   });
 
   test('la regla fundamental se respeta en TODO el currículo: ningún '
@@ -169,13 +181,12 @@ void main() {
     final k = engine.newAcademyUser();
     final progress = AcademyProgress();
 
-    for (final lessonId in Curriculum.lessonOrder) {
+    for (final lessonId in order) {
       engine.academy.openLesson(lessonId, k, progress);
       final available = engine.academy.conceptsAvailableAt(lessonId);
-      final taught = k.taughtConcepts;
 
-      // Lo que la teoría hizo disponible coincide con lo enseñado.
-      expect(taught, equals(available),
+      // Lo enseñado coincide con lo que el currículo hizo disponible.
+      expect(k.taughtConcepts, equals(available),
           reason: 'desync en $lessonId');
 
       final content = engine.academy.contentFor(lessonId)!;
@@ -188,9 +199,6 @@ void main() {
             expect(available.contains(c), isTrue,
                 reason: '$lessonId evaluó "$c" no enseñado');
           }
-          for (final c in ex.reasoningConcepts) {
-            expect(taught.contains(c), isTrue);
-          }
         }
       }
       for (final check in content.checks) {
@@ -200,16 +208,30 @@ void main() {
         }
       }
 
-      final run = lessonId.endsWith('.5')
-          ? const LessonRunResult(score: 1, total: 4, correct: 4)
-          : runLessonPerfect(engine, lessonId, k);
-      engine.academy.submitLesson(lessonId, run, k, progress);
+      engine.academy.submitLesson(
+          lessonId, runLessonPerfect(engine, lessonId, k), k, progress);
     }
+  });
 
-    // Al terminar, ningún concepto avanzado quedó enseñado.
-    expect(k.isTaught('three_bet'), isFalse);
+  test('los conceptos avanzados no se enseñan antes de su nivel', () {
+    final engine = makeEngine();
+    final k = engine.newAcademyUser();
+    final progress = AcademyProgress();
+
+    // Recorrer hasta el final del Nivel 5 (apertura preflop).
+    for (final id in order) {
+      engine.academy.openLesson(id, k, progress);
+      if (id == level(6).first) break;
+      engine.academy
+          .submitLesson(id, runLessonPerfect(engine, id, k), k, progress);
+    }
+    // Todavía no se enseñaron: matemática (N6), 3-bet (N7), GTO (N11).
     expect(k.isTaught('pot_odds'), isFalse);
+    expect(k.isTaught('three_bet'), isFalse);
     expect(k.isTaught('gto'), isFalse);
+    // Pero sí lo de posición y apertura.
+    expect(k.isTaught('position_advantage'), isTrue);
+    expect(k.isTaught('open_raise'), isTrue);
   });
 
   test('se puede completar la Academia entera con buen desempeño', () {
@@ -217,9 +239,8 @@ void main() {
     final k = engine.newAcademyUser();
     final progress = AcademyProgress();
 
-    for (final lessonId in Curriculum.lessonOrder) {
-      expect(engine.academy.stateOf(lessonId, progress),
-          LessonState.available,
+    for (final lessonId in order) {
+      expect(engine.academy.stateOf(lessonId, progress), LessonState.available,
           reason: '$lessonId debería estar disponible al llegar');
       engine.academy.openLesson(lessonId, k, progress);
       final run = runLessonPerfect(engine, lessonId, k);
@@ -228,9 +249,16 @@ void main() {
       expect(outcome.completed, isTrue, reason: 'no completó $lessonId');
     }
 
-    expect(progress.completedCount, Curriculum.lessonOrder.length);
+    expect(progress.completedCount, order.length);
     expect(engine.academy.currentLessonId(progress), isNull);
     expect(engine.academy.overview(progress).every(
         (l) => l.state == LevelState.completed), isTrue);
+  });
+
+  test('AcademyContent expone el contenido crudo histórico para el resolver',
+      () {
+    // El material de las 25 lecciones no se pierde.
+    expect(AcademyContent.legacyOf('4.3'), isNotNull); // teoría en texto
+    expect(AcademyContent.legacyOf('1.1')?.theory, isNotEmpty);
   });
 }

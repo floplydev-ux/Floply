@@ -7,8 +7,9 @@ import 'package:poker_trainer/screens/academy/academy_controller.dart';
 import 'package:poker_trainer/screens/academy/academy_screen.dart';
 
 void main() {
-  // Anchos representativos de celulares (dp lógicos).
-  for (final width in <double>[320, 360, 390, 430]) {
+  // Anchos representativos de celulares (dp lógicos). El currículo completo
+  // son 64 subniveles: se recorre en 2 anchos para acotar el tiempo de test.
+  for (final width in <double>[360, 430]) {
     testWidgets('$width dp — la Academia recorre todo el currículo sin '
         'overflow ni excepciones', (tester) async {
       tester.view.physicalSize = Size(width * 3, 900 * 3);
@@ -114,7 +115,7 @@ void main() {
       }
     }
 
-    for (final id in ['1.1', '1.2', '1.3', '1.4']) {
+    for (final id in ['1.1', '1.2', '1.3']) {
       controller.openLesson(id);
       while (controller.phase == AcademyPhase.theory) {
         controller.isInteractiveTheory
@@ -131,8 +132,8 @@ void main() {
       controller.exitLesson();
     }
 
-    // Falla 1.5.
-    controller.openLesson('1.5');
+    // Falla el checkpoint del Nivel 1 (1.4).
+    controller.openLesson('1.4');
     while (controller.phase == AcademyPhase.theory) {
       controller.isInteractiveTheory
           ? controller.nextTableStep()

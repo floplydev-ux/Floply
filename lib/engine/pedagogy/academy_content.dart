@@ -1,20 +1,58 @@
 import '../concepts/concept_ids.dart';
 import 'lesson_content.dart';
+import 'theory.dart';
 
-/// El contenido pedagógico de los niveles 1 a 5 de la Academia.
+/// Contenido pedagógico **en texto** de la Academia.
 ///
-/// Todo el texto que enseña vive acá (no en widgets). Cada entrada está
-/// atada al id de un [Lesson] del [Curriculum]. La teoría es corta y
-/// progresiva y no adelanta conceptos avanzados (GTO, equity, blockers…):
-/// solo lo que el nivel necesita.
+/// Durante la migración al currículo de 326 teorías (fuente de verdad:
+/// `assets/curriculum/curriculum_spec.json`), esto sigue siendo el contenido
+/// interino de los ~17 subniveles que heredan material de las 25 lecciones
+/// originales. [forLesson] recibe un **código de subnivel nuevo** (`"5.3"`) y
+/// arma un [LessonContent] a partir de lo que ese subnivel declara en su
+/// `legacy` (teoría en texto + preguntas autorales + `PracticeSpec`). El resto
+/// del contenido se redacta en PASO 4, teoría por teoría.
 class AcademyContent {
   AcademyContent._();
 
-  static LessonContent? forLesson(String lessonId) => _byId[lessonId];
+  static final CurriculumSpec _spec = CurriculumSpec.standard();
 
-  static bool has(String lessonId) => _byId.containsKey(lessonId);
+  /// Contenido interino de un subnivel nuevo. Devuelve `null` si el subnivel
+  /// no existe; devuelve un [LessonContent] con solo el objetivo si el
+  /// subnivel existe pero todavía no tiene contenido heredado ni redactado.
+  static LessonContent? forLesson(String sublevelCode) {
+    final s = _spec.sublevelByCode(sublevelCode);
+    if (s == null) return null;
+    final lg = s.legacy;
+    final theory = <TheoryBlock>[];
+    final checks = <ComprehensionCheck>[];
+    PracticeSpec? practice;
+    if (lg != null) {
+      for (final id in lg.textTheory) {
+        theory.addAll(_legacy[id]?.theory ?? const []);
+      }
+      for (final id in lg.checks) {
+        checks.addAll(_legacy[id]?.checks ?? const []);
+      }
+      for (final id in lg.practice) {
+        practice ??= _legacy[id]?.practice;
+      }
+    }
+    return LessonContent(
+      objective: s.objetivo,
+      theory: theory,
+      checks: checks,
+      practice: practice,
+    );
+  }
 
-  static final Map<String, LessonContent> _byId = {
+  static bool has(String sublevelCode) =>
+      _spec.sublevelByCode(sublevelCode) != null;
+
+  /// Contenido crudo de una lección histórica (`"1.1"`…`"5.5"`). Para el
+  /// resolver de legacy y los tests de migración.
+  static LessonContent? legacyOf(String oldLessonId) => _legacy[oldLessonId];
+
+  static final Map<String, LessonContent> _legacy = {
     // ===========================================================
     // NIVEL 1 — FUNDAMENTOS (concepto: reglas)
     // ===========================================================

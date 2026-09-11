@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/engine/academy/academy_progress.dart';
 import 'package:poker_trainer/engine/academy/academy_store.dart';
+import 'package:poker_trainer/engine/pedagogy/curriculum.dart';
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 import 'package:poker_trainer/screens/academy/academy_controller.dart';
 
@@ -42,7 +43,7 @@ void main() {
   Future<void> completeLesson(AcademyController c, String lessonId) async {
     c.openLesson(lessonId);
     while (c.phase == AcademyPhase.theory) {
-      c.isInteractiveTheory ? c.nextTableStep() : c.startExercises();
+      c.advanceTheory();
     }
     while (c.phase == AcademyPhase.exercise ||
         c.phase == AcademyPhase.feedback) {
@@ -64,22 +65,28 @@ void main() {
     expect(c.academy.stateOf('1.2', c.progress), LessonState.locked);
   });
 
-  test('teoría → ejercicios → resultado → siguiente lesson desbloqueado',
+  test('teoría → ejercicios → resultado → siguiente subnivel desbloqueado',
       () async {
     final c = make(InMemoryAcademyStore());
     await c.load();
 
-    c.openLesson('1.1');
+    // N1.1 es teoría-solo; N1.2 tiene teoría interactiva + un ejercicio.
+    await completeLesson(c, '1.1');
+    c.exitLesson();
+
+    c.openLesson('1.2');
     expect(c.phase, AcademyPhase.theory);
     expect(c.isInteractiveTheory, isTrue);
-
-    // Recorrer la teoría interactiva sobre la mesa.
-    while (c.phase == AcademyPhase.theory) {
+    // N1.2: guion de mesa → fichas de teoría redactada → ejercicios.
+    while (c.isInteractiveTheory) {
       c.nextTableStep();
+    }
+    expect(c.isWrittenTheory, isTrue);
+    while (c.phase == AcademyPhase.theory) {
+      c.advanceTheory();
     }
     expect(c.phase, AcademyPhase.exercise);
 
-    // Resolver el ejercicio interactivo.
     while (c.phase == AcademyPhase.exercise) {
       answer(c, bestChoice(c.currentItem!));
     }
@@ -88,48 +95,50 @@ void main() {
     expect(c.lastOutcome!.completed, isTrue);
 
     c.exitLesson();
-    expect(c.academy.stateOf('1.2', c.progress), LessonState.available);
+    expect(c.academy.stateOf('1.3', c.progress), LessonState.available);
   });
 
-  test('un lesson sin migrar sigue consumiendo ejercicios del motor', () async {
+  test(
+      'un subnivel con guion interactivo autorado (PASO 4) lo usa por '
+      'encima de la PracticeSpec heredada del motor', () async {
     final c = make(InMemoryAcademyStore());
     await c.load();
 
-    // 3.2 todavía no está migrado a la mesa interactiva.
-    for (final id in [
-      '1.1', '1.2', '1.3', '1.4', '1.5', //
-      '2.1', '2.2', '2.3', '2.4', '2.5', //
-      '3.1'
-    ]) {
+    // N5.3 (decisión de abrir / RFI) hereda una PracticeSpec del motor
+    // (legacy), pero PASO 4 le agregó un ejercicio interactivo propio
+    // sobre la mesa — ese es el que debe usarse: más rico que una
+    // pregunta genérica del motor, para la misma decisión (RFI).
+    for (final id in Curriculum.lessonOrder) {
+      if (id == '5.3') break;
       await completeLesson(c, id);
       c.exitLesson();
     }
 
-    c.openLesson('3.2');
+    c.openLesson('5.3');
     while (c.phase == AcademyPhase.theory) {
-      c.isInteractiveTheory ? c.nextTableStep() : c.startExercises();
+      c.advanceTheory();
     }
     expect(c.currentItem, isNotNull);
-    expect(c.currentItem!.isEngine, isTrue);
+    expect(c.currentItem!.isInteractive, isTrue);
 
-    await completeLesson(c, '3.2');
+    await completeLesson(c, '5.3');
     c.exitLesson();
-    expect(c.academy.stateOf('3.3', c.progress), LessonState.available);
+    expect(c.academy.stateOf('5.4', c.progress), LessonState.available);
   });
 
-  test('evaluación desaprobada: no completa y ofrece recuperación', () async {
+  test('checkpoint desaprobado: no completa y ofrece recuperación', () async {
     final c = make(InMemoryAcademyStore());
     await c.load();
 
-    for (final id in ['1.1', '1.2', '1.3', '1.4']) {
+    for (final id in ['1.1', '1.2', '1.3']) {
       await completeLesson(c, id);
       c.exitLesson();
     }
 
-    // Hacer la evaluación 1.5 respondiendo SIEMPRE mal.
-    c.openLesson('1.5');
+    // Hacer el checkpoint del Nivel 1 (1.4) respondiendo SIEMPRE mal.
+    c.openLesson('1.4');
     while (c.phase == AcademyPhase.theory) {
-      c.isInteractiveTheory ? c.nextTableStep() : c.startExercises();
+      c.advanceTheory();
     }
     while (c.phase == AcademyPhase.exercise ||
         c.phase == AcademyPhase.feedback) {
@@ -144,10 +153,11 @@ void main() {
     expect(c.phase, AcademyPhase.result);
     expect(c.lastOutcome!.passed, isFalse);
     expect(c.lastOutcome!.completed, isFalse);
-    expect(c.academy.stateOf('1.5', c.progress), LessonState.available);
+    expect(c.academy.stateOf('1.4', c.progress), LessonState.available);
+    expect(c.academy.stateOf('2.1', c.progress), LessonState.locked);
 
     // Reintentar y aprobar.
-    await completeLesson(c, '1.5');
+    await completeLesson(c, '1.4');
     expect(c.lastOutcome!.passed, isTrue);
     c.exitLesson();
     expect(c.academy.stateOf('2.1', c.progress), LessonState.available);

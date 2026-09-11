@@ -139,9 +139,9 @@ class _StreakBlock extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              TextSpan(
+              const TextSpan(
                 text: AppStrings.daysSuffix,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textSecondary,
@@ -187,7 +187,7 @@ class _LevelShield extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.violetPrimary.withOpacity(glowIntensity * 0.55),
+                    color: AppColors.violetPrimary.withValues(alpha: glowIntensity * 0.55),
                     blurRadius: 30,
                     spreadRadius: 4,
                   ),
@@ -197,7 +197,7 @@ class _LevelShield extends StatelessWidget {
             Icon(
               Icons.shield_rounded,
               size: 74,
-              color: Colors.white.withOpacity(0.16),
+              color: Colors.white.withValues(alpha: 0.16),
             ),
             Text(
               '$level',
@@ -211,9 +211,9 @@ class _LevelShield extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        Text(
+        const Text(
           AppStrings.levelLabel,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,
             color: AppColors.textMuted,

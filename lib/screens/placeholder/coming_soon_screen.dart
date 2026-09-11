@@ -40,11 +40,11 @@ class ComingSoonScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.violetPrimary.withOpacity(0.35),
+                        AppColors.violetPrimary.withValues(alpha: 0.35),
                         Colors.transparent,
                       ],
                     ),
-                    border: Border.all(color: AppColors.violetPrimary.withOpacity(0.4)),
+                    border: Border.all(color: AppColors.violetPrimary.withValues(alpha: 0.4)),
                   ),
                   child: Icon(destination.icon, color: AppColors.violetSoft, size: 40),
                 ),

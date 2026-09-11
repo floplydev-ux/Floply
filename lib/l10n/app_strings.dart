@@ -92,4 +92,14 @@ class AppStrings {
   static String academyLessonsDone(int done, int total) =>
       '$done de $total lecciones completadas';
   static String academyScore(int pct) => 'Puntaje: $pct%';
+
+  static const String bankrollTitle = 'BANKROLL';
+  static const String bankrollDescription =
+      'Antes de jugar NL2 con dinero real: cómo cuidar tu capital.';
+  static const String bankrollCardCta = 'VER MÓDULO';
+  static const String bankrollScreenSubtitle = 'Módulo complementario';
+  static const String bankrollDone = '¡Módulo completo!';
+  static const String bankrollDoneBody =
+      'Ya viste los conceptos clave para cuidar tu bankroll antes de '
+      'jugar NL2 con dinero real.';
 }

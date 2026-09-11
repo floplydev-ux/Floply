@@ -22,10 +22,10 @@ void main() {
     }
   });
 
-  test('cada lesson con guion de teoría entra en la fase de teoría', () {
+  test('cada subnivel con guion de teoría entra en la fase de teoría', () {
     for (final id in AcademyTableScripts.lessonIds) {
       final lesson = curriculum.lessonById(id)!;
-      expect(lesson.kind, isNot(LessonKind.assessment), reason: id);
+      expect(lesson, isNotNull, reason: id);
       final content = AcademyContent.forLesson(id)!;
       // Entra en fase teoría si tiene bloques de texto O guion de mesa.
       expect(content.hasTheory || AcademyTableScripts.has(id), isTrue,

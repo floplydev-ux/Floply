@@ -4,6 +4,7 @@ import '../../../l10n/app_strings.dart';
 import '../../../theme/app_colors.dart';
 import '../../laboratory/widgets/feedback_panel.dart';
 import '../academy_controller.dart';
+import 'educational_panel.dart';
 import 'lesson_widgets.dart';
 
 /// Fase feedback de un ítem: `FeedbackPanel` del motor o una tarjeta
@@ -36,25 +37,11 @@ class FeedbackView extends StatelessWidget {
             conceptName: controller.conceptName,
           )
         else
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: AppColors.surface,
-              border: Border.all(
-                color: fb.correct
-                    ? AppColors.neonGreen.withValues(alpha: 0.5)
-                    : AppColors.danger.withValues(alpha: 0.5),
-              ),
-            ),
-            child: Text(
-              fb.text,
-              style: const TextStyle(
-                fontSize: 13.5,
-                height: 1.5,
-                color: AppColors.textPrimary,
-              ),
-            ),
+          EducationalPanel(
+            text: fb.text,
+            accent: fb.correct ? AppColors.neonGreen : AppColors.danger,
+            icon: fb.correct ? Icons.check_rounded : Icons.close_rounded,
+            contextLabel: fb.correct ? 'BIEN' : 'REVISÁ ESTO',
           ),
         const SizedBox(height: 16),
         LessonPrimaryButton(
