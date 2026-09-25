@@ -49,6 +49,12 @@ app.*.map.json
 
 # Backups / scratch (no forman parte del proyecto)
 *.bak
+.claude-scratch/
+
+# Python (tool/curriculum) — cache y outputs de debug de gen_curriculum.py
+__pycache__/
+tree_fragment.html
+niveles_resumen.tsv
 
 # Firebase — configuración real de un proyecto (ver AUTH_SETUP.md).
 # lib/firebase_options.dart NO está acá: hoy tiene solo valores
