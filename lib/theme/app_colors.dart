@@ -58,4 +58,25 @@ class AppColors {
     Color(0xFF5B21B6),
     Color(0xFF1A1035),
   ];
+
+  // Fondos de tarjeta oscuros (Home / Laboratorio / mapa de Academia)
+  static const List<Color> greenCardDeepGradient = [
+    Color(0xFF0E2A20),
+    Color(0xFF081712),
+  ];
+
+  static const List<Color> violetCardDeepGradient = [
+    Color(0xFF241249),
+    Color(0xFF120A2A),
+  ];
+
+  static const List<Color> violetStripGradient = [
+    Color(0xFF1B1140),
+    Color(0xFF120C29),
+  ];
+
+  /// Rojo de palo (corazones/diamantes) para las cartas chicas del
+  /// Laboratorio — no el mismo tono que `TableMaterial.cardRed` de la mesa
+  /// (paleta deliberadamente distinta, ver `table/table_layout.dart`).
+  static const Color cardSuitRed = Color(0xFFD1345B);
 }

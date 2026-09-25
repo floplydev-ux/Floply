@@ -86,10 +86,10 @@ N9 = {
  cuando_lo_uso="Al revisar el turn, como segunda pregunta: ¿esta carta "
         "ayudó más al rival que a mí?",
  cuando_no=None,
- ejemplo="El rival pagó tu c-bet en un board con proyecto de color "
-        "posible, y el turn trae la cuarta carta de ese palo: esa carta "
-        "favorece más a un rango que incluya ese proyecto que a vos, "
-        "que no lo tenías.",
+ ejemplo="El rival pagó tu c-bet en un flop con dos cartas del mismo "
+        "palo, y el turn trae la tercera carta de ese palo: todavía no "
+        "hay color hecho en el board, pero esa carta favorece más a un "
+        "rango que incluya ese proyecto que a vos, que no lo tenías.",
  error_comun="Seguir apostando con el mismo entusiasmo del flop sin "
         "notar que la carta del turn benefició más al rango del rival "
         "que al tuyo.",
@@ -198,9 +198,9 @@ N9 = {
  que_es="El double barrel es el nombre específico para la SEGUNDA "
         "apuesta consecutiva: c-bet en el flop + apuesta en el turn.",
  por_que_importa="Te da un vocabulario preciso para hablar de esta "
-        "secuencia concreta, distinta de seguir apostando en el river "
-        "también (eso sería un triple barrel, aunque no se use tanto "
-        "ese término).",
+        "secuencia concreta, distinta de seguir apostando en el río "
+        "también (esa tercera apuesta seguida se suele llamar triple "
+        "barrel, aunque acá no la desarrollamos como concepto aparte).",
  como_funciona="Es simplemente el barrel (T191) nombrado por su "
         "posición en la secuencia: la segunda apuesta seguida del "
         "mismo jugador.",

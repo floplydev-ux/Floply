@@ -61,7 +61,10 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? AppColors.violetBright : AppColors.textMuted;
+    // textMuted no llega al contraste WCAG AA sobre backgroundSecondary
+    // (hallazgo real de accessibility, Fase 1 Bloque 1) — textSecondary sí,
+    // sin perder la distinción visual con el tab activo (violetBright).
+    final color = isActive ? AppColors.violetBright : AppColors.textSecondary;
 
     return Material(
       color: Colors.transparent,

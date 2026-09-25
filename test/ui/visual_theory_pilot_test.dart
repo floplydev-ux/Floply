@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/engine/academy/academy_progress.dart';
 import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/engine/pedagogy/curriculum.dart';
+import 'package:poker_trainer/engine/pedagogy/table_lesson.dart';
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 import 'package:poker_trainer/screens/academy/academy_controller.dart';
 import 'package:poker_trainer/screens/academy/academy_screen.dart';
@@ -56,7 +57,8 @@ void main() {
       c.advanceTheory();
       await tester.pump();
     }
-    expect(c.currentWrittenTheory?.id, theoryId, reason: 'no llegó a $theoryId');
+    expect(c.currentWrittenTheory?.id, theoryId,
+        reason: 'no llegó a $theoryId');
   }
 
   /// Recorre por UI (tocando el botón real) todos los pasos de la
@@ -87,10 +89,12 @@ void main() {
   ]) {
     testWidgets('$name — T093 (set): visual → ficha escrita, sin overflow',
         (tester) async {
-      final c = await open(tester, '4.5', width: size.width, height: size.height);
+      final c =
+          await open(tester, '4.5', width: size.width, height: size.height);
       await fastForwardTo(tester, c, 'T093');
 
-      expect(c.isVisualTheory, isTrue, reason: 'T093 debería abrir en modo visual');
+      expect(c.isVisualTheory, isTrue,
+          reason: 'T093 debería abrir en modo visual');
       await walkVisualByUi(tester, c);
 
       // Terminada la experiencia visual, sigue la ficha escrita de T093.
@@ -130,7 +134,8 @@ void main() {
         c.currentVisualStep!.bubble,
         c.castTable(c.currentVisualStep!.table),
       ));
-      await tester.tap(find.text(c.currentVisualStep!.buttonLabel ?? 'CONTINUAR'));
+      await tester
+          .tap(find.text(c.currentVisualStep!.buttonLabel ?? 'CONTINUAR'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     }
@@ -157,6 +162,36 @@ void main() {
     await walkVisualByUi(tester, c);
     expect(c.currentWrittenTheory?.id, 'T099');
     expect(find.textContaining('Cerca de los nuts'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+      'la burbuja se ancla al elemento que señala cada paso (ya no vive en '
+      'una banda fija): su posición cambia entre un paso anclado a las '
+      'cartas del héroe y uno anclado al board', (tester) async {
+    final c = await open(tester, '4.5');
+    await fastForwardTo(tester, c, 'T093');
+    expect(c.isVisualTheory, isTrue);
+
+    // Paso 0 de T093: ancla en heroCards (abajo-centro).
+    expect(c.currentVisualStep!.anchor, TableAnchor.heroCards);
+    final bubbleAtHero =
+        tester.getCenter(find.byIcon(Icons.chat_bubble_rounded));
+
+    await tester.tap(find.text('CONTINUAR'));
+    await tester.pumpAndSettle();
+
+    // Paso 1: ancla en el board (centro de la mesa).
+    expect(c.currentVisualStep!.anchor, TableAnchor.board);
+    final bubbleAtBoard =
+        tester.getCenter(find.byIcon(Icons.chat_bubble_rounded));
+
+    expect(
+      (bubbleAtHero.dy - bubbleAtBoard.dy).abs(),
+      greaterThan(8),
+      reason: 'la burbuja debería moverse verticalmente al cambiar de '
+          'ancla, no quedarse fija en una banda superior',
+    );
     expect(tester.takeException(), isNull);
   });
 

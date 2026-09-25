@@ -7,18 +7,25 @@ import '../../engine/concepts/user_knowledge.dart';
 import '../../engine/evaluation/evaluation_result.dart';
 import '../../engine/evaluation/user_answer.dart';
 import '../../engine/exercises/exercise.dart';
+import '../../engine/pedagogy/academy_closing_examples.dart';
 import '../../engine/pedagogy/academy_exercise_scripts.dart';
 import '../../engine/pedagogy/academy_players.dart';
+import '../../engine/pedagogy/academy_playable_scripts.dart';
+import '../../engine/pedagogy/academy_mentor_lessons.dart';
 import '../../engine/pedagogy/academy_table_scripts.dart';
 import '../../engine/pedagogy/academy_visual_theories.dart';
 import '../../engine/pedagogy/curriculum.dart';
 import '../../engine/pedagogy/lesson_content.dart';
+import '../../engine/pedagogy/mentor_lesson.dart';
+import '../../engine/pedagogy/playable_exercise.dart';
+import '../../engine/pedagogy/playable_exercise_controller.dart';
 import '../../engine/pedagogy/recovery_session.dart';
 import '../../engine/pedagogy/table_exercise.dart';
 import '../../engine/pedagogy/table_lesson.dart';
 import '../../engine/pedagogy/theory.dart';
 import '../../engine/pedagogy/visual_theory.dart';
 import '../../engine/poker_trainer_engine.dart';
+import '../../l10n/app_strings.dart';
 import '../../models/app_user.dart';
 import '../../persistence/academy_store_provider.dart';
 
@@ -46,23 +53,33 @@ class AcademyItem {
   AcademyItem.engine(this.exercise)
       : check = null,
         interactive = null,
+        playable = null,
         options = exercise!.options.map((o) => o.label).toList();
   AcademyItem.check(this.check)
       : exercise = null,
         interactive = null,
+        playable = null,
         options = check!.options;
   AcademyItem.interactive(this.interactive)
       : exercise = null,
         check = null,
+        playable = null,
         options = interactive!.choices.map((c) => c.label).toList();
+  AcademyItem.playable(this.playable)
+      : exercise = null,
+        check = null,
+        interactive = null,
+        options = playable!.actions.map((a) => a.label).toList();
 
   final Exercise? exercise;
   final ComprehensionCheck? check;
   final InteractiveTableExercise? interactive;
+  final PlayableTableExercise? playable;
   final List<String> options;
 
   bool get isEngine => exercise != null;
   bool get isInteractive => interactive != null;
+  bool get isPlayable => playable != null;
 }
 
 /// El feedback de un ítem ya respondido.
@@ -84,7 +101,14 @@ class AcademyItemFeedback {
 
 /// Coordina el recorrido de la Academia: carga/guarda el progreso, abre
 /// lessons, pide ejercicios al [PokerTrainerEngine] y decide aprobados.
-class AcademyController extends ChangeNotifier {
+///
+/// El estado/lógica de "elegir acción → tamaño → razonamiento →
+/// devolución" de los ejercicios jugables vive en
+/// [PlayableExerciseController] (compartido con Laboratorio) — acá solo
+/// se implementan los 4 miembros que dependen de una lección
+/// (`currentPlayable`/`itemNumber`/`itemTotal`/`conceptName`) y qué hacer
+/// una vez resuelto un ejercicio (`onPlayableResolved`).
+class AcademyController extends ChangeNotifier with PlayableExerciseController {
   AcademyController({
     PokerTrainerEngine? engine,
     AcademyStore? store,
@@ -158,7 +182,10 @@ class AcademyController extends ChangeNotifier {
   /// Deja de serlo cuando el guion terminó y se pasó a las fichas de teoría
   /// redactada (ver [isWrittenTheory]).
   bool get isInteractiveTheory =>
-      phase == AcademyPhase.theory && tableScript != null && !_inWrittenTheory;
+      phase == AcademyPhase.theory &&
+      tableScript != null &&
+      !_inWrittenTheory &&
+      !_inMentorLesson;
 
   int get tableStepCount => tableScript?.length ?? 0;
 
@@ -176,7 +203,7 @@ class AcademyController extends ChangeNotifier {
   /// los ejercicios (mismo flujo que la teoría normal).
   void nextTableStep() {
     final s = tableScript;
-    if (s == null || _inWrittenTheory) return;
+    if (s == null || _inWrittenTheory || _inMentorLesson) return;
     if (tableStep < s.length - 1) {
       tableStep++;
       notifyListeners();
@@ -206,7 +233,10 @@ class AcademyController extends ChangeNotifier {
     if (id == null) return const [];
     final sub = academy.lessonById(id)?.sublevel;
     if (sub == null) return const [];
-    return [for (final t in sub.theories) if (t.tieneContenido) t];
+    return [
+      for (final t in sub.theories)
+        if (t.tieneContenido) t
+    ];
   }
 
   bool get hasWrittenTheory => writtenTheories.isNotEmpty;
@@ -239,23 +269,42 @@ class AcademyController extends ChangeNotifier {
   }
 
   /// Arranca el paso actual de teoría redactada (`writtenTheoryStep`): si
-  /// esa teoría puntual tiene una experiencia visual piloto, primero esa
+  /// esa teoría puntual tiene una clase de mentor (Fase 3), esa REEMPLAZA
+  /// por completo la ficha escrita ([isMentorLesson], nunca las dos); si
+  /// no, pero tiene una experiencia visual piloto, primero esa
   /// ([isVisualTheory]); si no, la ficha escrita de siempre.
   void _beginWrittenTheoryStep() {
+    final mentor = currentMentorLesson;
+    _inMentorLesson = mentor != null;
+    if (_inMentorLesson) {
+      mentorBeatIndex = 0;
+      _mentorCheckAnswers.clear();
+      _inVisualTheory = false;
+      _inWrittenTheory = false;
+      notifyListeners();
+      return;
+    }
     _inVisualTheory = hasVisualTheory;
     _inWrittenTheory = !_inVisualTheory;
     visualStep = 0;
     notifyListeners();
   }
 
-  /// Avanza una ficha de teoría redactada; en la última pasa a los ejercicios.
+  /// Avanza una ficha de teoría redactada; en la última pasa al ejemplo de
+  /// cierre del subnivel (si tiene) o directo a los ejercicios.
   void nextWrittenTheory() {
     if (writtenTheoryStep < writtenTheories.length - 1) {
       writtenTheoryStep++;
       _beginWrittenTheoryStep();
     } else {
       _inWrittenTheory = false;
-      startExercises();
+      if (hasClosingExample) {
+        _inClosingExample = true;
+        closingExampleStep = 0;
+        notifyListeners();
+      } else {
+        startExercises();
+      }
     }
   }
 
@@ -301,7 +350,8 @@ class AcademyController extends ChangeNotifier {
 
   bool get isFirstVisualStep => visualStep <= 0;
   bool get isLastVisualStep =>
-      currentVisualLesson != null && visualStep >= currentVisualLesson!.length - 1;
+      currentVisualLesson != null &&
+      visualStep >= currentVisualLesson!.length - 1;
 
   /// Avanza un paso de la experiencia visual; en el último pasa a la ficha
   /// escrita de esa misma teoría.
@@ -325,12 +375,207 @@ class AcademyController extends ChangeNotifier {
     }
   }
 
+  // --- clase de mentor (Fase 3): reemplaza la ficha escrita ---
+  //
+  // Sub-fase de [AcademyPhase.theory], decidida en `_beginWrittenTheoryStep`
+  // junto con el piloto visual. Solo se activa para teorías registradas en
+  // [AcademyMentorLessons]; para el resto de las 326, `hasMentorLesson` es
+  // `false` y el camino de hoy (piloto visual / ficha escrita) no cambia en
+  // nada. A diferencia del piloto visual (que se muestra ANTES de la ficha
+  // escrita de la misma teoría), la clase de mentor la REEMPLAZA: al
+  // terminar sus turnos se pasa directo a la siguiente teoría del subnivel
+  // (o a los ejercicios), sin mostrar la ficha estática de esta teoría.
+
+  bool _inMentorLesson = false;
+  int mentorBeatIndex = 0;
+  final Map<int, int> _mentorCheckAnswers = {};
+
+  /// Clase de mentor de la teoría que muestra ahora la fase teoría (la
+  /// misma que [currentWrittenTheory]), si está registrada.
+  MentorLesson? get currentMentorLesson {
+    final t = currentWrittenTheory;
+    return t == null ? null : AcademyMentorLessons.forTheory(t.id);
+  }
+
+  bool get hasMentorLesson => currentMentorLesson != null;
+
+  /// `true` si la UI debe mostrar ahora la clase de mentor.
+  bool get isMentorLesson =>
+      phase == AcademyPhase.theory && _inMentorLesson && hasMentorLesson;
+
+  int get mentorBeatCount => currentMentorLesson?.length ?? 0;
+
+  MentorBeat? get currentMentorBeat {
+    final lesson = currentMentorLesson;
+    if (lesson == null ||
+        mentorBeatIndex < 0 ||
+        mentorBeatIndex >= lesson.length) {
+      return null;
+    }
+    return lesson.beats[mentorBeatIndex];
+  }
+
+  bool get isFirstMentorBeat => mentorBeatIndex <= 0;
+  bool get isLastMentorBeat =>
+      currentMentorLesson != null &&
+      mentorBeatIndex >= currentMentorLesson!.length - 1;
+
+  /// Opción elegida en el turno de comprobación actual, o `null` si
+  /// todavía no se respondió. Se guarda por índice de turno: volver ATRÁS
+  /// a una pregunta ya respondida la muestra tal como quedó, en vez de
+  /// resetearla.
+  int? get mentorCheckAnswer => _mentorCheckAnswers[mentorBeatIndex];
+
+  /// `true` si se puede avanzar el turno actual: siempre para un turno de
+  /// habla ([MentorSayBeat]); solo tras responder para uno de comprobación
+  /// ([MentorCheckBeat]) — nunca se puede "saltear" una pregunta sin
+  /// contestarla, aunque no cuente para el progreso.
+  bool get canAdvanceMentorBeat => switch (currentMentorBeat) {
+        null => false,
+        MentorSayBeat _ => true,
+        MentorCheckBeat _ => mentorCheckAnswer != null,
+      };
+
+  /// Registra la respuesta del turno de comprobación actual.
+  ///
+  /// Exclusivamente pedagógico: a diferencia de [answerInteractive] (el
+  /// ejercicio real), esto NUNCA llama `knowledge.recordAttempt`, nunca
+  /// puntúa, nunca cuenta para mastery/XP/progreso. La distinción pedida es
+  /// MentorCheck = "¿entendiste lo que acabo de enseñarte?", Exercise =
+  /// "ahora aplicalo en una situación de póker".
+  void answerMentorCheck(int optionIndex) {
+    final beat = currentMentorBeat;
+    if (beat is! MentorCheckBeat) return;
+    if (optionIndex < 0 || optionIndex >= beat.check.options.length) return;
+    if (_mentorCheckAnswers.containsKey(mentorBeatIndex)) return;
+    _mentorCheckAnswers[mentorBeatIndex] = optionIndex;
+    notifyListeners();
+  }
+
+  /// Texto del botón de avance del turno actual: "CONTINUAR" salvo en el
+  /// último turno, donde refleja si además cierra el subnivel (mismo
+  /// criterio que ya usaba la ficha escrita).
+  String get mentorContinueLabel {
+    if (!isLastMentorBeat) return AppStrings.academyContinue;
+    return isLastWrittenTheory
+        ? AppStrings.academyStartPractice
+        : AppStrings.academyContinue;
+  }
+
+  /// Avanza un turno de la clase de mentor; en el último, pasa a la
+  /// siguiente teoría del subnivel (o a los ejercicios) exactamente como si
+  /// la ficha escrita de esta teoría ya se hubiera mostrado.
+  void nextMentorBeat() {
+    if (!canAdvanceMentorBeat) return;
+    final lesson = currentMentorLesson;
+    if (lesson == null) return;
+    if (mentorBeatIndex < lesson.length - 1) {
+      mentorBeatIndex++;
+      notifyListeners();
+    } else {
+      _inMentorLesson = false;
+      _mentorCheckAnswers.clear();
+      nextWrittenTheory();
+    }
+  }
+
+  void prevMentorBeat() {
+    if (mentorBeatIndex > 0) {
+      mentorBeatIndex--;
+      notifyListeners();
+    }
+  }
+
+  // --- ejemplo de cierre (piloto de 3 bloques, Fase 3.1) ---
+  //
+  // Sub-fase de [AcademyPhase.theory], DESPUÉS de que terminan las fichas de
+  // teoría redactada del subnivel (ver `nextWrittenTheory`) y ANTES de los
+  // ejercicios. A diferencia del guion de mesa legado ([tableScript], que
+  // se muestra ANTES de las teorías), este se registra por subnivel en
+  // [AcademyClosingExamples] y demuestra las teorías que el alumno ya leyó,
+  // no las que está por leer. Reutiliza el mismo `TableLessonScript` que el
+  // guion legado — misma mesa, mismo criterio de un paso a la vez — así que
+  // la UI reutiliza el mismo widget ([InteractiveTableLesson]).
+
+  bool _inClosingExample = false;
+  int closingExampleStep = 0;
+
+  TableLessonScript? get closingExampleScript => activeLessonId == null
+      ? null
+      : AcademyClosingExamples.forLesson(activeLessonId!);
+
+  bool get hasClosingExample => closingExampleScript != null;
+
+  /// `true` si la UI debe mostrar ahora el ejemplo de cierre.
+  bool get isClosingExample =>
+      phase == AcademyPhase.theory && _inClosingExample && hasClosingExample;
+
+  int get closingExampleStepCount => closingExampleScript?.length ?? 0;
+
+  TableStep? get currentClosingExampleStep {
+    final s = closingExampleScript;
+    if (s == null || closingExampleStep < 0 || closingExampleStep >= s.length) {
+      return null;
+    }
+    return s.steps[closingExampleStep];
+  }
+
+  bool get isFirstClosingExampleStep => closingExampleStep <= 0;
+  bool get isLastClosingExampleStep =>
+      closingExampleScript != null &&
+      closingExampleStep >= closingExampleScript!.length - 1;
+
+  /// Texto del botón de avance del paso actual: "CONTINUAR" salvo en el
+  /// último paso, donde refleja si además arranca la práctica (mismo
+  /// criterio que [mentorContinueLabel]).
+  String get closingExampleButtonLabel {
+    if (!isLastClosingExampleStep) return AppStrings.academyContinue;
+    return AppStrings.academyStartPractice;
+  }
+
+  /// Avanza un paso del ejemplo de cierre; en el último, pasa a los
+  /// ejercicios.
+  void nextClosingExampleStep() {
+    final s = closingExampleScript;
+    if (s == null) return;
+    if (closingExampleStep < s.length - 1) {
+      closingExampleStep++;
+      notifyListeners();
+    } else {
+      _inClosingExample = false;
+      startExercises();
+    }
+  }
+
+  void prevClosingExampleStep() {
+    if (closingExampleStep > 0) {
+      closingExampleStep--;
+      notifyListeners();
+    }
+  }
+
   /// Avanza la fase teoría cualquiera sea su sub-fase (guion de mesa →
-  /// experiencia visual piloto → fichas de teoría redactada → ejercicios).
-  /// Pensado para recorridos automáticos; la UI usa los métodos específicos.
+  /// clase de mentor / experiencia visual piloto → fichas de teoría
+  /// redactada → ejemplo de cierre → ejercicios). Pensado para recorridos
+  /// automáticos; la UI usa los métodos específicos.
   void advanceTheory() {
     if (isInteractiveTheory) {
       nextTableStep();
+    } else if (isClosingExample) {
+      nextClosingExampleStep();
+    } else if (isMentorLesson) {
+      // Un recorrido automático no puede "pensar" una respuesta: si el
+      // turno actual es una comprobación sin responder, toma la mejor
+      // opción (mismo criterio que un alumno que entendió la clase).
+      if (!canAdvanceMentorBeat) {
+        final beat = currentMentorBeat;
+        if (beat is MentorCheckBeat) {
+          final bestIdx = beat.check.options
+              .indexWhere((o) => o.rating == ExerciseRating.best);
+          answerMentorCheck(bestIdx >= 0 ? bestIdx : 0);
+        }
+      }
+      nextMentorBeat();
     } else if (isVisualTheory) {
       nextVisualStep();
     } else if (isWrittenTheory) {
@@ -349,7 +594,9 @@ class AcademyController extends ChangeNotifier {
 
   AcademyItem? get currentItem =>
       _itemIndex < _items.length ? _items[_itemIndex] : null;
+  @override
   int get itemNumber => _itemIndex + 1;
+  @override
   int get itemTotal => _items.length;
 
   // --- ejercicio interactivo sobre la mesa ---
@@ -359,8 +606,7 @@ class AcademyController extends ChangeNotifier {
       ? null
       : AcademyExerciseScripts.forLesson(activeLessonId!);
 
-  InteractiveTableExercise? get currentInteractive =>
-      currentItem?.interactive;
+  InteractiveTableExercise? get currentInteractive => currentItem?.interactive;
 
   bool get isInteractiveExercise =>
       phase == AcademyPhase.exercise && (currentItem?.isInteractive ?? false);
@@ -412,6 +658,67 @@ class AcademyController extends ChangeNotifier {
         ExerciseRating.acceptable => 0.72,
         ExerciseRating.poor => 0.15,
       };
+
+  // --- ejercicio jugable (mesa + acción real) ---
+  // El estado/lógica de elegir acción/tamaño/razonamiento vive en
+  // PlayableExerciseController (mixin) — acá solo lo que es propio de
+  // una lección: cuál es el ejercicio actual y qué hacer al resolverlo.
+
+  @override
+  PlayableTableExercise? get currentPlayable => currentItem?.playable;
+
+  bool get isPlayableExercise =>
+      phase == AcademyPhase.exercise && (currentItem?.isPlayable ?? false);
+
+  /// Registra el resultado de un ejercicio jugable ya resuelto:
+  ///
+  ///  - Para el puntaje del lesson (aprobar/no aprobar) usa el PEOR de los
+  ///    ratings ([PlayableFeedback.combined]): una buena acción con una
+  ///    mala razón no cuenta como ítem resuelto del todo.
+  ///  - Para el registro de concepto, aprovecha algo que
+  ///    [UserConceptMastery] ya tenía pero que [answerInteractive] nunca
+  ///    usaba: `recordAttempt` acepta `decisionCorrect` Y `reasoningCorrect`
+  ///    por separado, y los acumula en contadores propios
+  ///    (`decisionAccuracy`/`reasoningAccuracy`).
+  @override
+  void onPlayableResolved(
+      PlayableTableExercise exercise, PlayableFeedback feedback) {
+    final decisionRating = _worstRating([
+      feedback.action.rating,
+      if (feedback.size != null) feedback.size!.rating,
+    ]);
+
+    final score = _ratingScore(feedback.combined);
+    _scoreSum += score;
+    final ok = feedback.combined != ExerciseRating.poor;
+    if (ok) _correctCount++;
+    if (!ok && exercise.concept != null) _missedConcepts.add(exercise.concept!);
+    if (exercise.concept != null) {
+      knowledge.recordAttempt(
+        exercise.concept!,
+        decisionCorrect: decisionRating == ExerciseRating.best,
+        reasoningCorrect: feedback.reasoning == null
+            ? null
+            : feedback.reasoning!.rating == ExerciseRating.best,
+      );
+    }
+  }
+
+  /// Terminada la explicación del ejercicio jugable, pasa al siguiente.
+  @override
+  void advancePlayable() {
+    if (currentPlayable == null) return;
+    nextItem();
+  }
+
+  static ExerciseRating _worstRating(List<ExerciseRating> ratings) {
+    const severity = {
+      ExerciseRating.poor: 0,
+      ExerciseRating.acceptable: 1,
+      ExerciseRating.best: 2,
+    };
+    return ratings.reduce((a, b) => severity[a]! <= severity[b]! ? a : b);
+  }
 
   AcademyItemFeedback? lastFeedback;
   LessonOutcome? lastOutcome;
@@ -465,11 +772,19 @@ class AcademyController extends ChangeNotifier {
 
   String? get currentLessonId => academy.currentLessonId(progress);
 
-  AcademyProgressSnapshot get snapshot =>
-      academy.snapshot(knowledge, progress);
+  AcademyProgressSnapshot get snapshot => academy.snapshot(knowledge, progress);
+
+  /// La lección a la que apunta [currentLessonId] (o `null` si la Academia
+  /// ya está completa). Para la Home: evita que cada consumidor externo
+  /// repita el recorrido de [levels] que hace [lessonView] por dentro.
+  AcademyLessonView? get currentLessonView {
+    final id = currentLessonId;
+    return id == null ? null : lessonView(id);
+  }
 
   LessonContent? contentFor(String lessonId) => academy.contentFor(lessonId);
 
+  @override
   String conceptName(String id) => academy.conceptName(id);
 
   // ----------------------------------------------------------------
@@ -477,7 +792,7 @@ class AcademyController extends ChangeNotifier {
   // ----------------------------------------------------------------
 
   void openLesson(String lessonId) {
-    final view = _lessonView(lessonId);
+    final view = lessonView(lessonId);
     if (view == null || view.state == LessonState.locked) return;
 
     activeLessonId = lessonId;
@@ -487,6 +802,11 @@ class AcademyController extends ChangeNotifier {
     writtenTheoryStep = 0;
     _inVisualTheory = false;
     visualStep = 0;
+    _inMentorLesson = false;
+    mentorBeatIndex = 0;
+    _mentorCheckAnswers.clear();
+    _inClosingExample = false;
+    closingExampleStep = 0;
     academy.openLesson(lessonId, knowledge, progress);
     _resetRun();
 
@@ -550,6 +870,9 @@ class AcademyController extends ChangeNotifier {
     _itemIndex++;
     _selectedOptionIdx.clear();
     interactiveChoice = null;
+    playableActionIndex = null;
+    playableSizeIndex = null;
+    lastPlayableFeedback = null;
     lastFeedback = null;
     if (_itemIndex >= _items.length) {
       _finishLesson();
@@ -593,7 +916,15 @@ class AcademyController extends ChangeNotifier {
     writtenTheoryStep = 0;
     _inVisualTheory = false;
     visualStep = 0;
+    _inMentorLesson = false;
+    mentorBeatIndex = 0;
+    _mentorCheckAnswers.clear();
+    _inClosingExample = false;
+    closingExampleStep = 0;
     _items = [];
+    playableActionIndex = null;
+    playableSizeIndex = null;
+    lastPlayableFeedback = null;
     lastFeedback = null;
     lastOutcome = null;
     phase = AcademyPhase.map;
@@ -612,6 +943,9 @@ class AcademyController extends ChangeNotifier {
     _missedConcepts.clear();
     _selectedOptionIdx.clear();
     interactiveChoice = null;
+    playableActionIndex = null;
+    playableSizeIndex = null;
+    lastPlayableFeedback = null;
     lastFeedback = null;
     lastOutcome = null;
   }
@@ -622,6 +956,17 @@ class AcademyController extends ChangeNotifier {
     final content = academy.contentFor(id);
     final lesson = academy.lessonById(id);
     final isTheoryLesson = lesson?.kind == LessonKind.theory;
+
+    // 0) Ejercicios jugables (mesa + acción real) — pilotos migrados.
+    // Si el lesson tiene set acá, tapa su set equivalente (si lo tenía)
+    // en AcademyExerciseScripts; ese contenido viejo no se borra, solo
+    // deja de usarse en runtime (ver AcademyPlayableScripts).
+    final playable = AcademyPlayableScripts.forLesson(id);
+    if (playable != null && playable.exercises.isNotEmpty) {
+      _items = playable.exercises.map(AcademyItem.playable).toList();
+      _formative = false;
+      return;
+    }
 
     // 1) Ejercicios interactivos sobre la mesa (si el lesson tiene set).
     final set = AcademyExerciseScripts.forLesson(id);
@@ -748,7 +1093,10 @@ class AcademyController extends ChangeNotifier {
     return null;
   }
 
-  AcademyLessonView? _lessonView(String lessonId) {
+  /// La vista de una lección puntual (nivel, estado, progreso), buscando
+  /// entre [levels]. Público porque la Home lo necesita a través de
+  /// [currentLessonView] sin duplicar este recorrido.
+  AcademyLessonView? lessonView(String lessonId) {
     final level = _levelViewFor(lessonId);
     if (level == null) return null;
     for (final l in level.lessons) {

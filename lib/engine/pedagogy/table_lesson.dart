@@ -30,6 +30,7 @@ class SeatState {
     this.empty = false,
     this.name,
     this.avatarId,
+    this.winner = false,
   });
 
   /// Asiento vacío (no hay jugador sentado).
@@ -44,7 +45,8 @@ class SeatState {
         toAct = false,
         empty = true,
         name = null,
-        avatarId = null;
+        avatarId = null,
+        winner = false;
 
   /// 0..5. El 0 es el asiento del usuario (abajo, al centro).
   final int slot;
@@ -84,6 +86,11 @@ class SeatState {
 
   final bool empty;
 
+  /// `true` si este asiento ganó la mano. Aditivo: por defecto `false`, no
+  /// cambia nada para ningún guion existente. Se agrega arriba del asiento
+  /// (badge dorado), nunca reemplaza `action` ni ningún otro estado.
+  final bool winner;
+
   SeatState copyWith({
     String? label,
     bool? isHero,
@@ -96,6 +103,7 @@ class SeatState {
     bool? empty,
     String? name,
     int? avatarId,
+    bool? winner,
   }) {
     return SeatState(
       slot: slot,
@@ -110,6 +118,7 @@ class SeatState {
       empty: empty ?? this.empty,
       name: name ?? this.name,
       avatarId: avatarId ?? this.avatarId,
+      winner: winner ?? this.winner,
     );
   }
 }
@@ -136,11 +145,12 @@ class TableSnapshot {
   /// Slot que tiene el botón del dealer.
   final int buttonSlot;
 
-  SeatState seatAt(int slot) =>
-      seats.firstWhere((s) => s.slot == slot, orElse: () => SeatState.empty(slot));
+  SeatState seatAt(int slot) => seats.firstWhere((s) => s.slot == slot,
+      orElse: () => SeatState.empty(slot));
 
   SeatState get hero => seats.firstWhere((s) => s.isHero,
-      orElse: () => seats.isNotEmpty ? seats.first : const SeatState(slot: 0, label: ''));
+      orElse: () =>
+          seats.isNotEmpty ? seats.first : const SeatState(slot: 0, label: ''));
 
   TableSnapshot copyWith({
     List<SeatState>? seats,
@@ -259,6 +269,7 @@ class TableStep {
     required this.anchor,
     this.highlight = const [],
     this.dimOthers = true,
+    this.cardGlow = const {},
   });
 
   final TableSnapshot table;
@@ -275,6 +286,11 @@ class TableStep {
 
   /// Si `true`, todo lo que no está resaltado se ve secundario.
   final bool dimOthers;
+
+  /// Cartas puntuales a resaltar de forma individual (además del resaltado
+  /// de zona de [highlight]). Vacío por defecto: no cambia nada para los
+  /// guiones existentes.
+  final Set<CardRef> cardGlow;
 
   List<TableAnchor> get effectiveHighlight =>
       highlight.isNotEmpty ? highlight : [anchor];

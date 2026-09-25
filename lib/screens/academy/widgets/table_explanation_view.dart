@@ -31,6 +31,7 @@ class TableExplanationView extends StatefulWidget {
     required this.transitionTag,
     this.accent = AppColors.violetPrimary,
     this.panelIcon,
+    this.cardGlow = const {},
   });
 
   /// Mesa ya "casteada" (con nombres y avatares).
@@ -57,6 +58,11 @@ class TableExplanationView extends StatefulWidget {
 
   final Color accent;
   final IconData? panelIcon;
+
+  /// Cartas puntuales a resaltar de forma individual, además del resaltado
+  /// de zona de [highlight]. Vacío por defecto: no cambia nada para los
+  /// consumidores existentes.
+  final Set<CardRef> cardGlow;
 
   // --- Reparto vertical: constantes con motivo, no proporciones al azar ---
 
@@ -151,6 +157,7 @@ class _TableExplanationViewState extends State<TableExplanationView>
                 highlight: hi,
                 dimOthers: widget.dimOthers,
                 glow: Curves.easeOutCubic.transform(_focus.value),
+                cardGlow: widget.cardGlow,
               ),
             ),
           ),

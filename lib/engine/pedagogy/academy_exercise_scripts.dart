@@ -1,7 +1,9 @@
 import 'scripts/level_1_exercises.dart';
 import 'scripts/level_2_exercises.dart';
 import 'scripts/level_3_exercises.dart';
+import 'scripts/level_4_exercises.dart';
 import 'scripts/level_5_exercises.dart';
+import 'scripts/n1_pilot_exercises.dart';
 import 'scripts/n5_exercises.dart';
 import 'scripts/n6_exercises.dart';
 import 'scripts/n7_exercises.dart';
@@ -73,9 +75,11 @@ class AcademyExerciseScripts {
     ...Level5Exercises.byId,
   };
 
-  /// PASO 4 (N5-N13): sets autorados directo por subnivel nuevo, sin
-  /// legacy de por medio.
+  /// PASO 4 (N5-N13) + el piloto de 3 bloques de 1.1 (Fase 3.1): sets
+  /// autorados directo por subnivel nuevo, sin legacy de por medio.
   static final Map<String, InteractiveExerciseSet> _bySublevel = {
+    ...N1PilotExercises.byId,
+    ...Level4Exercises.byId,
     ...N5Exercises.byId,
     ...N6Exercises.byId,
     ...N7Exercises.byId,

@@ -19,6 +19,11 @@ import 'templates/open_sizing_template.dart';
 import 'templates/position_order_template.dart';
 import 'templates/widest_range_template.dart';
 
+/// Ver la nota completa (corregida en Fase 9) en `exercise.dart`: este
+/// archivo SÍ lo usa Academia hoy (`startRecovery()` y la práctica de
+/// lessons sin script interactivo) — no es legacy exclusivo del
+/// Modo Clásico de Laboratorio, que sí se eliminó en Fase 9.
+///
 /// Resultado de un intento de generación.
 class GenerationOutcome {
   GenerationOutcome({

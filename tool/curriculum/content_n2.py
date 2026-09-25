@@ -23,8 +23,7 @@ N2 = {
 
 "T006": dict(  # El ranking de manos
  que_es="Todas las manos de póker se ordenan en una escala fija, de la más débil a "
-        "la más fuerte. Cuando dos jugadores muestran las cartas, gana la que está "
-        "más arriba en la escala.",
+        "la más fuerte. En el showdown, gana la que está más arriba en la escala.",
  por_que_importa="Sin esta escala no podés saber si ganaste. Es la tabla que vas a "
         "tener en la cabeza el resto de tu vida como jugador: cuanto antes la "
         "automatices, mejor.",
@@ -94,9 +93,9 @@ N2 = {
  cuando_no=None,
  ejemplo="Tenés A♦ 9♠. Board: A♣ 9♥ 4♠ 2♦ 7♣. Dos ases y dos nueves: doble pareja "
         "(ases y nueves), con el 7 de acompañamiento.",
- error_comun="Enamorarte de la doble pareja cuando la mesa tiene una pareja propia "
-        "(por ejemplo 9♥ 9♦ en el board): ahí alguien puede tener full y tu mano ya "
-        "no es la mejor.",
+ error_comun="Enamorarte de la doble pareja cuando el board tiene una pareja propia "
+        "(por ejemplo 9♥ 9♦): ahí alguien puede tener full y tu mano ya no es la "
+        "mejor.",
  idea_clave="Doble pareja = dos parejas. Le gana a una pareja; le pierde a un trío "
         "o más.",
 ),
@@ -113,7 +112,7 @@ N2 = {
  cuando_no=None,
  ejemplo="Tenés 8♥ 8♦. Flop: 8♠ K♣ 4♦. Tres ochos: trío, con K y 4 de "
         "acompañamiento.",
- error_comun="Con la mesa K♠ K♦ 4♣ y K♥ Q♠ en la mano, cantar 'doble pareja'. No: "
+ error_comun="Con el board K♠ K♦ 4♣ y K♥ Q♠ en la mano, cantar 'doble pareja'. No: "
         "tres reyes es trío de reyes (K K K Q 4).",
  idea_clave="Trío = tres cartas iguales. Le gana a la doble pareja.",
 ),
@@ -127,7 +126,7 @@ N2 = {
         "alta (10-J-Q-K-A) o de más baja (A-2-3-4-5). No se puede 'dar la vuelta': "
         "Q-K-A-2-3 no es escalera.",
  cuando_lo_uso="'Tengo escalera'; o al leer el board: 'hay cuatro cartas seguidas "
-        "en la mesa, cuidado'.",
+        "en el board, cuidado'.",
  cuando_no=None,
  ejemplo="Tenés 9♣ 8♦. Board: 7♠ 6♥ 5♣ K♦ 2♠. Con 9-8-7-6-5 tenés una escalera "
         "al 9.",
@@ -158,11 +157,11 @@ N2 = {
 "T056": dict(  # Full
  que_es="Un trío y una pareja juntos en la misma mano de 5 (tres reyes y dos "
         "sietes). En inglés, 'full house'. Se dice 'full de reyes'.",
- por_que_importa="Mano muy fuerte: le gana al color y a la escalera. Cuando la mesa "
+ por_que_importa="Mano muy fuerte: le gana al color y a la escalera. Cuando el board "
         "tiene una pareja, siempre hay que tenerlo en cuenta.",
  como_funciona="Entre dos fulls decide primero el trío: full de reyes le gana a "
         "full de damas. Solo si los tríos empatan, decide la pareja.",
- cuando_lo_uso="'Tengo full'; o al leer el board: 'la mesa se emparejó, alguien "
+ cuando_lo_uso="'Tengo full'; o al leer el board: 'el board se emparejó, alguien "
         "puede tener full'.",
  cuando_no=None,
  ejemplo="Tenés K♥ K♦. Board: K♠ 9♣ 9♦ 4♠ 2♥. Tres reyes y dos nueves: full de "
@@ -216,7 +215,7 @@ N2 = {
  por_que_importa="Es la mejor mano del póker. No existe nada que le gane.",
  como_funciona="Es un caso puntual de escalera de color. No hay 'escaleras reales "
         "más chicas': o tenés 10-J-Q-K-A del mismo palo, o no. Solo se reparte el "
-        "bote si la escalera real está entera en la mesa y todos la juegan.",
+        "bote si la escalera real está entera en el board y todos la juegan.",
  cuando_lo_uso="Probablemente la veas unas pocas veces en toda tu vida de jugador.",
  cuando_no=None,
  ejemplo="Tenés A♦ K♦. Board: Q♦ J♦ 10♦ 5♣ 2♠. Tenés 10-J-Q-K-A de diamantes: "
@@ -251,8 +250,9 @@ N2 = {
 ),
 
 "T061": dict(  # Comparar por kicker
- que_es="El kicker es una carta que no forma parte de tu combinación pero que sirve "
-        "para desempatar contra una mano de la misma categoría.",
+ que_es="El kicker es el nombre técnico de lo que veníamos llamando 'carta de "
+        "acompañamiento': una carta que no forma parte de tu combinación pero que "
+        "sirve para desempatar contra una mano de la misma categoría.",
  por_que_importa="Muchísimos botes se deciden por el kicker, sobre todo cuando los "
         "dos jugadores emparejaron la misma carta del board. Ignorarlo es un error "
         "caro y muy común.",
@@ -287,7 +287,7 @@ N2 = {
  cuando_lo_uso="Cada vez que dos manos caen en la misma categoría.",
  cuando_no=None,
  ejemplo="Board: A♠ 9♠ 4♠ 7♥ 2♣. Vos tenés K♠ J♠; el rival, Q♠ 8♠. Los dos tienen "
-        "color de picas. Se compara de mayor a menor: los dos usan el A♠ de la mesa, "
+        "color de picas. Se compara de mayor a menor: los dos usan el A♠ del board, "
         "pero después tu K le gana a su Q. Ganás.",
  error_comun="Repartir el bote 'porque los dos tienen color'. Solo se reparte si "
         "las 5 cartas que cuentan son idénticas; casi siempre alguna desempata.",
@@ -318,7 +318,7 @@ N2 = {
 ),
 
 "T063": dict(  # Elegir la mejor combinación de 5
- que_es="El paso práctico de mirar tus 7 cartas (2 privadas + 5 de la mesa) y armar "
+ que_es="El paso práctico de mirar tus 7 cartas (2 privadas + 5 del board) y armar "
         "la mejor mano de 5 posible. Es lo que hacés, en la cabeza, en cada "
         "showdown.",
  por_que_importa="Es la habilidad que cierra el Nivel 2. Si la tenés, podés mirar "

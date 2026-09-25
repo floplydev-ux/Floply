@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../../engine/poker/card.dart' as poker;
 import '../../../engine/poker/hole_cards.dart';
-import '../../../theme/app_colors.dart';
+import '../../../theme/sala_verde/sala_verde_tokens.dart';
 
 /// Una carta de póker chica para mostrar la mano del héroe.
+///
+/// **Fase 7**: cara de carta real (blanco/tinta), deliberadamente sin
+/// re-tematizar a un color Sala Verde — es una carta física, como las de
+/// `PokerTableView`, no una superficie de UI.
 class MiniCard extends StatelessWidget {
   const MiniCard({super.key, required this.card});
 
@@ -20,21 +24,14 @@ class MiniCard extends StatelessWidget {
       height: 56,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F6FA),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.35),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        boxShadow: SalaVerdeElevation.level1,
       ),
       child: Text(
         card.pretty,
-        style: TextStyle(
-          fontWeight: FontWeight.w800,
-          fontSize: 16,
+        style: SalaVerdeType.numeric(
+          size: 16,
           color: _isRed ? const Color(0xFFD1345B) : Colors.black87,
         ),
       ),
@@ -54,60 +51,14 @@ class HeroHandView extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         MiniCard(card: hand.high),
-        const SizedBox(width: 6),
+        const SizedBox(width: SalaVerdeSpace.xs + 2),
         MiniCard(card: hand.low),
-        const SizedBox(width: 10),
+        const SizedBox(width: SalaVerdeSpace.sm + 2),
         Text(
           hand.notation,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textMuted,
-          ),
+          style: SalaVerdeType.bodyStrong(color: SalaVerdeColors.textMuted),
         ),
       ],
-    );
-  }
-}
-
-/// Chip que muestra una etiqueta clave/valor (posición, stack, etc.).
-class InfoChip extends StatelessWidget {
-  const InfoChip({super.key, required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.25),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.surfaceBorder),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '$label ',
-            style: const TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textMuted,
-              letterSpacing: 0.5,
-            ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

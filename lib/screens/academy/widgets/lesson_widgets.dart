@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../engine/pedagogy/table_exercise.dart' show ExerciseRating;
 import '../../../l10n/app_strings.dart';
 import '../../../theme/app_colors.dart';
+import '../../../theme/sala_verde/sala_verde_tokens.dart';
 import '../../../widgets/pressable_scale.dart';
 
 /// Widgets compartidos por las vistas del recorrido de un lesson
@@ -10,18 +12,59 @@ import '../../../widgets/pressable_scale.dart';
 /// No son de uso general: viven acá para no duplicarlos entre las vistas
 /// de fase y para que `lesson_flow.dart` quede como un router fino.
 
+/// Texto + color de veredicto para un [ExerciseRating], compartido por
+/// [InteractiveTableExerciseView]/`PlayableTableExerciseView` — antes vivía
+/// duplicado (un switch idéntico en cada widget).
+(String, Color) ratingBadge(ExerciseRating rating,
+    {bool strategyDependent = false}) {
+  return switch (rating) {
+    ExerciseRating.best => (
+        strategyDependent ? '✓ BUENA ELECCIÓN' : '✓ CORRECTO',
+        AppColors.neonGreenBright,
+      ),
+    ExerciseRating.acceptable => (
+        strategyDependent ? '≈ TAMBIÉN VÁLIDO' : '≈ ACEPTABLE',
+        AppColors.gold,
+      ),
+    ExerciseRating.poor => (
+        strategyDependent ? '✕ HAY ALGO MEJOR' : '✕ NO ES LA MEJOR',
+        AppColors.danger,
+      ),
+  };
+}
+
+/// Temperatura del encabezado de recorrido — ver doc-comment de
+/// [LessonFlowHeader]. `bankroll` usa `brassBright` (no `brassDeep`: acá el
+/// texto va sobre `background` oscuro, `brassDeep` es para texto sobre
+/// superficie clara — ver `SvReadingCard`/`SvCalloutAccent`).
+enum LessonFlowHeaderVariant {
+  academy(SalaVerdeColors.feltGreenBright),
+  bankroll(SalaVerdeColors.brassBright);
+
+  const LessonFlowHeaderVariant(this.accent);
+  final Color accent;
+}
+
 /// Encabezado del recorrido: botón volver + título + subtítulo de fase.
+///
+/// **Fase 4** (`docs/design/FLOPLY_PHASE_4_LESSON_FLOW_HEADER.md`): migrado
+/// a "Sala Verde". Compartido por Academia (`lesson_flow.dart`, variant
+/// `academy` por defecto — call site sin cambios) y Bankroll
+/// (`bankroll_screen.dart`, variant `bankroll` explícito). Un solo
+/// componente reusable vía `variant`, no una copia por consumidor.
 class LessonFlowHeader extends StatelessWidget {
   const LessonFlowHeader({
     super.key,
     required this.title,
     required this.subtitle,
     required this.onBack,
+    this.variant = LessonFlowHeaderVariant.academy,
   });
 
   final String title;
   final String subtitle;
   final VoidCallback onBack;
+  final LessonFlowHeaderVariant variant;
 
   @override
   Widget build(BuildContext context) {
@@ -33,34 +76,28 @@ class LessonFlowHeader extends StatelessWidget {
             width: 36,
             height: 36,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.surfaceElevated,
+              color: SalaVerdeColors.surfaceElevated,
+              border: Border.all(color: SalaVerdeColors.borderSubtle),
             ),
-            child: const Icon(Icons.arrow_back_rounded, size: 18),
+            child: const Icon(
+              Icons.arrow_back_rounded,
+              size: 18,
+              color: SalaVerdeColors.textSecondary,
+            ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: SalaVerdeSpace.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+              Text(title, style: SalaVerdeType.bodyStrong(), overflow: TextOverflow.ellipsis),
               Text(
                 subtitle.toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.6,
-                  color: AppColors.violetSoft,
-                ),
+                style: SalaVerdeType.label(color: variant.accent),
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -243,7 +280,8 @@ class LessonNavControls extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                gradient: const LinearGradient(colors: AppColors.violetGradient),
+                gradient:
+                    const LinearGradient(colors: AppColors.violetGradient),
               ),
               child: Text(
                 buttonLabel,

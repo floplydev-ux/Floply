@@ -19,3 +19,12 @@ const List<NavDestination> kNavDestinations = [
   NavDestination(icon: Icons.bar_chart_rounded, label: AppStrings.navStats),
   NavDestination(icon: Icons.person_rounded, label: AppStrings.navProfile),
 ];
+
+/// Destinos que todavía no tienen pantalla propia pero sí una tarjeta en la
+/// Home (Tools, Coach). No forman parte de [kNavDestinations] porque no son
+/// pestañas de la navegación inferior — se llega a ellos desde una tarjeta
+/// de Home, igual que Bankroll, con [ComingSoonScreen] como destino real.
+const NavDestination kToolsDestination =
+    NavDestination(icon: Icons.insights_rounded, label: AppStrings.navTools);
+const NavDestination kCoachDestination =
+    NavDestination(icon: Icons.sports_rounded, label: AppStrings.navCoach);

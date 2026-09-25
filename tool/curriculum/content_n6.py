@@ -104,11 +104,12 @@ N6 = {
         "de color, escalera más alta, o cartas pareadas), donde alguno de "
         "tus outs también puede favorecer al rival.",
  cuando_no=None,
- ejemplo="Tenés una escalera baja hecha, pero el board tiene tres cartas "
-        "del mismo palo. Si sale una carta que 'mejora' el board para un "
-        "color, esa misma carta no es un out para vos — o si te "
-        "mejora a algo, igual podés perder contra un color. Ese tipo de "
-        "situación es la lógica de un out sucio.",
+ ejemplo="Tenés un proyecto de color con A♠K♠ en un board 9♠8♦4♠ (9 "
+        "outs a color). Uno de esos outs es justo el 8♠: si sale, "
+        "completás tu color — pero esa misma carta también le da trío de "
+        "ochos al rival, y si el rival ya tenía pareja de cuatros, ese "
+        "trío se convierte en full. Ganás tu color y perdés la mano "
+        "igual: ese out era sucio.",
  error_comun="Tratar cada out como si fuera garantía de ganar. Contra "
         "boards peligrosos, parte de tus outs pueden ser sucios sin que "
         "te des cuenta.",
@@ -548,10 +549,10 @@ N6 = {
 ),
 
 "TN11": dict(  # Reverse implied odds
- que_es="Las reverse implied odds son el caso contrario a T por venir: "
-        "situaciones donde, incluso completando tu proyecto, podés "
-        "terminar perdiendo un bote MÁS GRANDE, porque tu mano completada "
-        "sigue siendo vulnerable a algo mejor.",
+ que_es="Las reverse implied odds son el caso contrario a las implied "
+        "odds (TN10): situaciones donde, incluso completando tu proyecto, "
+        "podés terminar perdiendo un bote MÁS GRANDE, porque tu mano "
+        "completada sigue siendo vulnerable a algo mejor.",
  por_que_importa="Te avisan que, en ciertos proyectos, la equity "
         "necesaria real debería ser MÁS ALTA que la que dan las pot odds "
         "puras — lo opuesto a las implied odds de TN10.",

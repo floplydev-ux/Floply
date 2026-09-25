@@ -1,11 +1,14 @@
 plugins {
     id("com.android.application")
+    // Lee google-services.json para que los SDK de Firebase (firebase_core,
+    // firebase_auth, cloud_firestore) tomen la config del proyecto real.
+    id("com.google.gms.google-services")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
-    namespace = "com.example.poker_trainer"
+    namespace = "com.floply.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,8 +18,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.poker_trainer"
+        applicationId = "com.floply.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

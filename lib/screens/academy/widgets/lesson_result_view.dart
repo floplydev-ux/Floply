@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../../../engine/pedagogy/curriculum.dart';
 import '../../../l10n/app_strings.dart';
-import '../../../theme/app_colors.dart';
+import '../../../theme/sala_verde/sala_verde_tokens.dart';
+import '../../../widgets/sala_verde/sala_verde_widgets.dart';
 import '../academy_controller.dart';
-import 'lesson_widgets.dart';
 
 /// Fase resultado del lesson: aprobó / no aprobó, puntaje de evaluación,
 /// conceptos flojos y los botones de recuperación / reintento / volver.
+///
+/// **Fase 5**: migrado a "Sala Verde". Mismo scoring/outcome/callbacks —
+/// solo cambia la presentación.
 class LessonResultView extends StatelessWidget {
   const LessonResultView({super.key, required this.controller});
 
@@ -21,18 +24,14 @@ class LessonResultView extends StatelessWidget {
     final passed = outcome.passed;
     final lesson = controller.academy.lessonById(outcome.lessonId);
     final isAssessment = lesson?.kind == LessonKind.assessment;
-    final accent = passed ? AppColors.neonGreen : AppColors.warning;
+    final accent = passed ? SalaVerdeColors.feltGreenBright : SalaVerdeColors.warning;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: AppColors.surface,
-            border: Border.all(color: accent.withValues(alpha: 0.5)),
-          ),
+        SvSurfacePanel(
+          borderColor: accent.withValues(alpha: 0.5),
+          padding: const EdgeInsets.all(SalaVerdeSpace.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -43,7 +42,7 @@ class LessonResultView extends StatelessWidget {
                 color: accent,
                 size: 34,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: SalaVerdeSpace.sm),
               Text(
                 passed
                     ? (isAssessment
@@ -51,53 +50,37 @@ class LessonResultView extends StatelessWidget {
                         : AppStrings.academyLessonDone)
                     : AppStrings.academyNotPassed,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
-                ),
+                style: SalaVerdeType.headline(),
               ),
               if (isAssessment) ...[
-                const SizedBox(height: 6),
+                const SizedBox(height: SalaVerdeSpace.xs),
                 Text(
                   AppStrings.academyScore((outcome.score * 100).round()),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: SalaVerdeType.bodyStrong(color: SalaVerdeColors.textSecondary),
                 ),
               ],
               if (!passed && outcome.weakConceptIds.isNotEmpty) ...[
-                const SizedBox(height: 14),
+                const SizedBox(height: SalaVerdeSpace.md),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(SalaVerdeSpace.md),
                   decoration: BoxDecoration(
-                    color: AppColors.warning.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
+                    color: SalaVerdeColors.warning.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         AppStrings.academyPracticeMore,
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.warning,
-                        ),
+                        style: SalaVerdeType.label(color: SalaVerdeColors.warning),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: SalaVerdeSpace.xs),
                       Text(
                         outcome.weakConceptIds
                             .map(controller.conceptName)
                             .join(', '),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                          height: 1.35,
-                        ),
+                        style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
                       ),
                     ],
                   ),
@@ -106,26 +89,27 @@ class LessonResultView extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SalaVerdeSpace.lg),
         if (!passed && outcome.recovery != null)
-          LessonPrimaryButton(
+          SvButtonPrimary(
             label: AppStrings.academyStartRecovery,
             onTap: controller.startRecovery,
           ),
-        if (!passed && outcome.recovery != null) const SizedBox(height: 10),
+        if (!passed && outcome.recovery != null)
+          const SizedBox(height: SalaVerdeSpace.sm),
         if (!passed)
-          LessonSecondaryButton(
+          SvButtonSecondary(
             label: AppStrings.academyRetry,
             onTap: controller.retryLesson,
           ),
         if (passed)
-          LessonPrimaryButton(
+          SvButtonPrimary(
             label: AppStrings.academyBackToMap,
             onTap: controller.exitLesson,
           ),
-        if (!passed) const SizedBox(height: 10),
+        if (!passed) const SizedBox(height: SalaVerdeSpace.sm),
         if (!passed)
-          LessonSecondaryButton(
+          SvButtonSecondary(
             label: AppStrings.academyBackToMap,
             onTap: controller.exitLesson,
           ),

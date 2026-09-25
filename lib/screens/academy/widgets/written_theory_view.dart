@@ -2,14 +2,33 @@ import 'package:flutter/material.dart';
 
 import '../../../engine/pedagogy/theory.dart';
 import '../../../l10n/app_strings.dart';
-import '../../../theme/app_colors.dart';
+import '../../../theme/sala_verde/sala_verde_tokens.dart';
+import '../../../widgets/sala_verde/sala_verde_widgets.dart';
 import '../academy_controller.dart';
-import 'lesson_widgets.dart';
 
 /// Fichas de teoría redactada (PASO 4): una teoría por pantalla, con sus
 /// secciones (QUÉ ES · POR QUÉ IMPORTA · CÓMO FUNCIONA · …) y navegación
 /// CONTINUAR / ATRÁS. Es una sub-fase de [AcademyPhase.theory]: viene después
 /// del guion de mesa (si lo hay) y antes de los ejercicios.
+///
+/// **Fase 3 — migración visual a "Sala Verde"** (ver
+/// `docs/design/FLOPLY_PHASE_3_ACADEMIA.md`): primer uso en producción de
+/// `surfaceReading` — validado con T093 "Set" (corta) y TN10 "Implied
+/// odds" (larga, 7 secciones) antes de aplicarse a las 326 teorías que
+/// pasan por este mismo widget genérico. Cambio deliberado respecto de la
+/// versión anterior: las 7 secciones ya NO tienen un color/ícono propio
+/// cada una (`_SectionView` real usaba 7 combinaciones distintas) — la
+/// jerarquía ahora es puramente tipográfica (eyebrow + cuerpo), la regla
+/// "anti-fragmentación" ya validada en el playground con TN10
+/// (`FLOPLY_DESIGN_LANGUAGE.md`, sección `surfaceReading`).
+///
+/// Los controles ATRÁS/CONTINUAR usan `SvLessonNavControls` (no
+/// `LessonNavControls` de `lesson_widgets.dart`, compartido con
+/// exercise/feedback/result y fuera de alcance). Hasta la Fase 4 esto era
+/// un `_TheoryNavControls` privado de este archivo (`FLOPLY_PHASE_3_
+/// ACADEMIA.md` §P); se promovió a `sala_verde_widgets.dart` cuando
+/// Bankroll pasó a ser un segundo consumidor real del mismo patrón — ver
+/// `FLOPLY_PHASE_4_LESSON_FLOW_HEADER.md`.
 class WrittenTheoryView extends StatelessWidget {
   const WrittenTheoryView({super.key, required this.controller});
 
@@ -28,17 +47,21 @@ class WrittenTheoryView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _Progress(current: current, total: total),
-        const SizedBox(height: 14),
+        const SizedBox(height: SalaVerdeSpace.md),
         Expanded(
           child: SingleChildScrollView(
             key: ValueKey('wt${theory.id}'),
             child: _TheoryCard(theory: theory),
           ),
         ),
-        const SizedBox(height: 10),
-        LessonNavControls(
+        const SizedBox(height: SalaVerdeSpace.sm),
+        SvLessonNavControls(
           canGoBack: !c.isFirstWrittenTheory,
-          buttonLabel: c.isLastWrittenTheory
+          // En la última ficha, "PRACTICAR" solo si lo que sigue son los
+          // ejercicios directamente — si el subnivel tiene ejemplo de
+          // cierre (piloto de 3 bloques), ese viene antes: todavía es
+          // "CONTINUAR".
+          buttonLabel: (c.isLastWrittenTheory && !c.hasClosingExample)
               ? AppStrings.academyStartPractice
               : AppStrings.academyContinue,
           onBack: c.prevWrittenTheory,
@@ -60,212 +83,80 @@ class _TheoryCard extends StatelessWidget {
     final content = theory.contenido!;
     final sections = <Widget>[];
 
-    void add(_Sec kind, String? body) {
+    void add(String eyebrow, String? body) {
       if (body == null || body.trim().isEmpty) return;
-      sections.add(_SectionView(kind: kind, body: body));
-      sections.add(const SizedBox(height: 10));
+      sections.add(_SectionView(eyebrow: eyebrow, body: body));
     }
 
-    add(_Sec.queEs, content.queEs);
-    add(_Sec.porQue, content.porQueImporta);
-    add(_Sec.como, content.comoFunciona);
-    add(_Sec.cuando, content.cuandoLoUso);
-    add(_Sec.cuandoNo, content.cuandoNo);
-    add(_Sec.ejemplo, content.ejemplo);
-    add(_Sec.error, content.errorComun);
-    if (sections.isNotEmpty) sections.removeLast(); // drop trailing gap
+    add('QUÉ ES', content.queEs);
+    add('POR QUÉ IMPORTA', content.porQueImporta);
+    add('CÓMO FUNCIONA', content.comoFunciona);
+    add('CUÁNDO LO USÁS', content.cuandoLoUso);
+    add('CUÁNDO NO', content.cuandoNo);
+    add('EJEMPLO', content.ejemplo);
+    add('ERROR COMÚN', content.errorComun);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          theory.titulo,
-          style: const TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.w800,
-            height: 1.25,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 10),
-        _ObjectivePill(text: theory.objetivo),
-        const SizedBox(height: 16),
-        ...sections,
-        if (content.ideaClave != null && content.ideaClave!.trim().isNotEmpty) ...[
-          const SizedBox(height: 14),
-          _KeyIdea(text: content.ideaClave!),
-        ],
-        const SizedBox(height: 8),
-      ],
-    );
-  }
-}
-
-class _ObjectivePill extends StatelessWidget {
-  const _ObjectivePill({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: AppColors.violetPrimary.withValues(alpha: 0.1),
-        border:
-            Border.all(color: AppColors.violetPrimary.withValues(alpha: 0.3)),
-      ),
-      child: Row(
+    return SvReadingCard(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.flag_rounded, size: 15, color: AppColors.violetBright),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w700,
-                height: 1.35,
-                color: AppColors.textPrimary,
-              ),
-            ),
+          Text(theory.titulo, style: SalaVerdeType.onReading(SalaVerdeType.headline())),
+          const SizedBox(height: SalaVerdeSpace.md),
+          SvCalloutAccent(
+            eyebrow: 'OBJETIVO',
+            body: theory.objetivo,
+            color: SalaVerdeColors.feltGreen,
+            icon: Icons.flag_outlined,
+            onReading: true,
           ),
+          const SizedBox(height: SalaVerdeSpace.xl),
+          ...sections,
+          if (content.ideaClave != null && content.ideaClave!.trim().isNotEmpty) ...[
+            const SizedBox(height: SalaVerdeSpace.sm),
+            SvCalloutAccent(
+              eyebrow: 'IDEA CLAVE',
+              body: content.ideaClave!,
+              // brass puro sobre surfaceReading mide 2.17:1 (falla WCAG
+              // AA) — brassDeep mide 5.39:1. Ver
+              // FLOPLY_DESIGN_DECISIONS.md #7.
+              color: SalaVerdeColors.brassDeep,
+              icon: Icons.push_pin_outlined,
+              onReading: true,
+            ),
+          ],
         ],
       ),
     );
   }
 }
 
-enum _Sec { queEs, porQue, como, cuando, cuandoNo, ejemplo, error }
-
+/// Una sección de teoría (QUÉ ES / POR QUÉ IMPORTA / …). Deliberadamente
+/// SIN ícono ni color por tipo de sección (a diferencia de la versión
+/// anterior, que usaba 7 combinaciones ícono+color distintas) — la
+/// jerarquía acá es puramente tipográfica: eyebrow uppercase + cuerpo. Ver
+/// "presupuesto de materialidad" (`FLOPLY_DESIGN_LANGUAGE.md` §5.1) y la
+/// regla anti-fragmentación de `surfaceReading`. Validado con TN10 (7
+/// secciones, párrafos largos) en el playground antes de llegar acá.
 class _SectionView extends StatelessWidget {
-  const _SectionView({required this.kind, required this.body});
+  const _SectionView({required this.eyebrow, required this.body});
 
-  final _Sec kind;
+  final String eyebrow;
   final String body;
 
   @override
   Widget build(BuildContext context) {
-    final (icon, color, label) = switch (kind) {
-      _Sec.queEs => (Icons.lightbulb_rounded, AppColors.gold, 'QUÉ ES'),
-      _Sec.porQue => (
-          Icons.trending_up_rounded,
-          AppColors.violetBright,
-          'POR QUÉ IMPORTA'
-        ),
-      _Sec.como => (
-          Icons.settings_rounded,
-          AppColors.textSecondary,
-          'CÓMO FUNCIONA'
-        ),
-      _Sec.cuando => (
-          Icons.check_circle_rounded,
-          AppColors.neonGreen,
-          'CUÁNDO LO USÁS'
-        ),
-      _Sec.cuandoNo => (Icons.block_rounded, AppColors.warning, 'CUÁNDO NO'),
-      _Sec.ejemplo => (
-          Icons.casino_rounded,
-          AppColors.neonGreenBright,
-          'EJEMPLO'
-        ),
-      _Sec.error => (
-          Icons.warning_amber_rounded,
-          AppColors.danger,
-          'ERROR COMÚN'
-        ),
-    };
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.surfaceBorder),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: SalaVerdeSpace.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, size: 14, color: color),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.8,
-                  color: color,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
           Text(
-            body,
-            style: const TextStyle(
-              fontSize: 13,
-              height: 1.5,
-              color: AppColors.textPrimary,
-            ),
+            eyebrow,
+            style: SalaVerdeType.onReading(SalaVerdeType.label(), secondary: true)
+                .copyWith(fontSize: 10.5),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _KeyIdea extends StatelessWidget {
-  const _KeyIdea({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: LinearGradient(
-          colors: [
-            AppColors.violetPrimary.withValues(alpha: 0.22),
-            AppColors.violetDeep.withValues(alpha: 0.22),
-          ],
-        ),
-        border:
-            Border.all(color: AppColors.violetBright.withValues(alpha: 0.45)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.push_pin_rounded, size: 14, color: AppColors.violetBright),
-              SizedBox(width: 6),
-              Text(
-                'IDEA CLAVE',
-                style: TextStyle(
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.8,
-                  color: AppColors.violetBright,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 13.5,
-              height: 1.45,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          const SizedBox(height: 6),
+          Text(body, style: SalaVerdeType.onReading(SalaVerdeType.body())),
         ],
       ),
     );
@@ -284,43 +175,19 @@ class _Progress extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: SizedBox(
-              height: 6,
-              child: Stack(
-                children: [
-                  Container(color: AppColors.surfaceElevated),
-                  FractionallySizedBox(
-                    widthFactor: ratio.toDouble(),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.violetBright,
-                            AppColors.violetPrimary,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          child: SvProgressLinear(
+            value: ratio.toDouble(),
+            color: SalaVerdeColors.feltGreenBright,
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: SalaVerdeSpace.md),
+        Text('TEORÍA', style: SalaVerdeType.label(color: SalaVerdeColors.textMuted)),
+        const SizedBox(width: SalaVerdeSpace.xs),
         Text(
-          'TEORÍA $current / $total',
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.5,
-            color: AppColors.textMuted,
-          ),
+          '$current / $total',
+          style: SalaVerdeType.numeric(size: 12, color: SalaVerdeColors.textMuted),
         ),
       ],
     );
   }
 }
-

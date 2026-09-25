@@ -1,180 +1,205 @@
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:poker_trainer/engine/concepts/concept_ids.dart';
-import 'package:poker_trainer/engine/concepts/concept_registry.dart';
-import 'package:poker_trainer/engine/concepts/user_knowledge.dart';
-import 'package:poker_trainer/engine/evaluation/answer_evaluator.dart';
-import 'package:poker_trainer/engine/evaluation/feedback_engine.dart';
-import 'package:poker_trainer/engine/evaluation/user_answer.dart';
-import 'package:poker_trainer/engine/exercises/exercise.dart';
-import 'package:poker_trainer/engine/exercises/exercise_generator.dart';
-import 'package:poker_trainer/engine/exercises/poker_situation.dart';
-import 'package:poker_trainer/engine/pedagogy/curriculum.dart';
-import 'package:poker_trainer/engine/pedagogy/pedagogical_engine.dart';
+import 'package:poker_trainer/engine/exercises/answer_evaluator.dart';
+import 'package:poker_trainer/engine/exercises/exercise_scenario_builder.dart';
+import 'package:poker_trainer/engine/pedagogy/table_position.dart';
+import 'package:poker_trainer/engine/poker/deck.dart';
+import 'package:poker_trainer/engine/poker/hole_cards.dart';
 import 'package:poker_trainer/engine/poker/poker_action.dart';
-import 'package:poker_trainer/engine/strategy/strategy.dart';
+import 'package:poker_trainer/engine/strategy/opening_ranges.dart';
 
 void main() {
-  final registry = ConceptRegistry.standard();
-  final curriculum = Curriculum.standard();
-  const evaluator = AnswerEvaluator();
-  final feedback = FeedbackEngine(registry);
-
-  UserKnowledge sliceUser() {
-    final k = UserKnowledge(registry);
-    final pedagogy = PedagogicalEngine(registry, curriculum);
-    for (final lesson in curriculum.allLessons) {
-      pedagogy.applyLesson(lesson.id, k);
-    }
-    return k;
-  }
-
-  ExerciseGenerator gen({int seed = 1}) => ExerciseGenerator(
-        pedagogy: PedagogicalEngine(registry, curriculum),
-        concepts: registry,
-        seed: seed,
+  group('AnswerEvaluator.evaluate — los 4 veredictos', () {
+    test('best: la acción óptima real de un escenario de apertura', () {
+      final scenario = ExerciseScenarioBuilder.openRaise(
+        deck: Deck(Random(1)),
+        heroPosition: Position.utg,
+        heroHand: HoleCards.parse('AsAd'), // premium: abrir es lo óptimo
       );
+      // El tamaño tiene que ser el que PreflopStrategy realmente espera
+      // (2.5bb, vía OpeningRanges.sizingFor) — no cualquier raise legal:
+      // Strategy.optionFor matchea por tamaño con tolerancia, y un
+      // mínimo técnico (2bb) no necesariamente cae dentro de esa
+      // tolerancia.
+      final result = AnswerEvaluator.evaluate(
+          scenario, PokerAction.raiseTo(OpeningRanges.sizingFor(Position.utg)));
+      expect(result.verdict, AnswerVerdict.best);
+    });
 
-  /// Busca (con distintas semillas) un ejercicio de decisión de apertura
-  /// cuya estrategia sea mixta.
-  Exercise findMixedOpenDecision() {
-    for (var seed = 0; seed < 200; seed++) {
-      final ex = gen(seed: seed).next(
-        sliceUser(),
-        preferredConcept: ConceptIds.openRaise,
-        difficulty: 3,
-      ).exercise;
-      if (ex.templateId == 'open_raise_decision' && ex.strategy.isMixed) {
-        return ex;
-      }
-    }
-    fail('No se encontró un ejercicio de apertura mixto');
-  }
-
-  test('acción óptima => decisionScore alto y feedback explicativo', () {
-    Exercise? ex;
-    for (var seed = 0; seed < 100; seed++) {
-      final candidate =
-          gen(seed: seed).next(sliceUser(), preferredConcept: ConceptIds.openRaise).exercise;
-      if (candidate.templateId == 'open_raise_decision' &&
-          !candidate.strategy.isMixed) {
-        ex = candidate;
-        break;
-      }
-    }
-    ex ??= gen().next(sliceUser()).exercise;
-
-    final best = ex.strategy.primary;
-    final chosenOption = ex.options.firstWhere(
-      (o) => o.action != null && o.action!.matches(best.action),
-    );
-    final answer = UserAnswer(
-      exerciseId: ex.id,
-      selectedOptionId: chosenOption.id,
-    );
-    final raw = evaluator.evaluate(ex, answer, knowledge: sliceUser());
-    final decorated = feedback.decorate(raw, ex, knowledge: sliceUser());
-
-    expect(raw.decisionScore, greaterThan(0.8));
-    expect(decorated.feedback.length, greaterThan(20));
-    expect(decorated.feedback, isNot(equals('Correcto.')));
-  });
-
-  test('en estrategia mixta, la acción menos frecuente no es "incorrecta"',
-      () {
-    final ex = findMixedOpenDecision();
-    // Opción con menor frecuencia entre las contempladas por la estrategia.
-    final lower = ex.strategy.options
-        .reduce((a, b) => a.frequency <= b.frequency ? a : b);
-    final option = ex.options.firstWhere(
-      (o) => o.action != null && o.action!.matches(lower.action),
-    );
-    final result = evaluator.evaluate(
-      ex,
-      UserAnswer(exerciseId: ex.id, selectedOptionId: option.id),
-      knowledge: sliceUser(),
-    );
-    expect(result.acceptable, isTrue);
-    expect(result.strategicRating.index,
-        lessThanOrEqualTo(StrategicRating.viable.index));
-  });
-
-  test('separa calidad de decisión y de razonamiento (acertar de casualidad)',
-      () {
-    final ex = findMixedOpenDecision();
-    final best = ex.strategy.primary;
-    final goodOption = ex.options.firstWhere(
-      (o) => o.action != null && o.action!.matches(best.action),
-    );
-    // Elige bien pero marca conceptos de razonamiento equivocados.
-    final wrongReasoning = ex.reasoningConcepts.isEmpty
-        ? <String>[]
-        : [ex.reasoningConcepts.last];
-    final answer = UserAnswer(
-      exerciseId: ex.id,
-      selectedOptionId: goodOption.id,
-      reasoningConceptIds: const ['position_blinds'], // no relacionado
-    );
-    final result = evaluator.evaluate(ex, answer, knowledge: sliceUser());
-    expect(result.decisionIsStrong, isTrue);
-    if (result.reasoningScore != null) {
-      expect(result.reasoningScore, lessThan(0.6));
-    }
-    expect(wrongReasoning, isNotNull);
-  });
-
-  test('el feedback nunca menciona conceptos no enseñados como sabidos', () {
-    final user = sliceUser();
-    for (var seed = 0; seed < 40; seed++) {
-      final ex = gen(seed: seed).next(user).exercise;
-      final answer = UserAnswer(
-        exerciseId: ex.id,
-        selectedOptionId: ex.options.first.id,
+    test('poor: foldear una mano premium en un spot de apertura clara', () {
+      final scenario = ExerciseScenarioBuilder.openRaise(
+        deck: Deck(Random(1)),
+        heroPosition: Position.utg,
+        heroHand: HoleCards.parse('AsAd'),
       );
-      final raw = evaluator.evaluate(ex, answer, knowledge: user);
-      final decorated = feedback.decorate(raw, ex, knowledge: user);
-      // Los conceptos "avanzados" bloqueados no deben aparecer en el
-      // feedback avanzado (que debería ser null si no están enseñados).
-      if (decorated.advancedFeedback != null) {
-        for (final c in ex.explanation.advancedConcepts) {
-          expect(user.isTaught(c), isTrue,
-              reason: 'feedback avanzado mostrado con "$c" bloqueado');
+      final result = AnswerEvaluator.evaluate(scenario, const PokerAction(ActionType.fold));
+      expect(result.verdict, AnswerVerdict.poor);
+    });
+
+    test('best: pagar con una mano media, enfrentando un open', () {
+      // T9s: ni tan fuerte como para 3-betear "claramente", ni tan débil
+      // como para foldear — cae en la banda media de HandStrength.
+      final scenario = ExerciseScenarioBuilder.defenseVsOpen(
+        deck: Deck(Random(3)),
+        heroHand: HoleCards.parse('Ts9s'),
+      );
+      final result = AnswerEvaluator.evaluate(scenario, const PokerAction(ActionType.call));
+      expect(result.verdict, anyOf(AnswerVerdict.best, AnswerVerdict.dependent));
+    });
+
+    test('poor: foldear una mano claramente premium enfrentando un open',
+        () {
+      final scenario = ExerciseScenarioBuilder.defenseVsOpen(
+        deck: Deck(Random(3)),
+        heroHand: HoleCards.parse('AsAd'),
+      );
+      final result = AnswerEvaluator.evaluate(scenario, const PokerAction(ActionType.fold));
+      expect(result.verdict, AnswerVerdict.poor);
+    });
+
+    test('acceptable: una acción defendible pero no la preferida (pagar '
+        'con una mano premium en vez de subirla, enfrentando un open)', () {
+      // Con una mano premium enfrentando un open, PreflopStrategy ofrece
+      // raise=optimal, call=viable (frequency 0 → no entra en el gate de
+      // "dependent", que exige frequency >= 0.15) y fold=bad. Pagar acá
+      // es defendible pero no lo preferido: exactamente "acceptable".
+      final scenario = ExerciseScenarioBuilder.defenseVsOpen(
+        deck: Deck(Random(3)),
+        heroHand: HoleCards.parse('AsAd'),
+      );
+      final result = AnswerEvaluator.evaluate(scenario, const PokerAction(ActionType.call));
+      expect(result.verdict, AnswerVerdict.acceptable);
+    });
+
+    test('dependent: una mano en la frontera del rango — la respuesta '
+        'admite más de una opción con frecuencia real', () {
+      String? mixedNotation;
+      for (final hc in HandClass.all()) {
+        final hand = Deck(Random(0)).dealHandOfClass(hc.notation);
+        if (hand == null) continue;
+        final scenario = ExerciseScenarioBuilder.openRaise(
+          deck: Deck(Random(2)),
+          heroPosition: Position.utg,
+          heroHand: hand,
+        );
+        if (!scenario.decisionContext.legalActions.contains(ActionType.raise)) continue;
+        final result = AnswerEvaluator.evaluate(
+            scenario, PokerAction.raiseTo(OpeningRanges.sizingFor(Position.utg)));
+        if (result.verdict == AnswerVerdict.dependent) {
+          mixedNotation = hc.notation;
+          break;
         }
       }
-    }
+      expect(mixedNotation, isNotNull,
+          reason: 'debería existir al menos una mano de frontera cuya '
+              'apertura sea "dependent" (estrategia mixta)');
+    });
   });
 
-  test('acción fuera de rango => rating malo y no aceptable', () {
-    // Genera hasta encontrar una decisión donde foldear es lo correcto.
-    Exercise? ex;
-    for (var seed = 0; seed < 200; seed++) {
-      final candidate = gen(seed: seed)
-          .next(sliceUser(), preferredConcept: ConceptIds.openRaise)
-          .exercise;
-      if (candidate.templateId == 'open_raise_decision' &&
-          candidate.strategy.primary.action.type == ActionType.fold &&
-          !candidate.strategy.isMixed) {
-        ex = candidate;
-        break;
+  group('AnswerEvaluator.evaluate — respeta evaluableConcepts', () {
+    test('nunca devuelve un concepto que el escenario no declaró', () {
+      final scenario = ExerciseScenarioBuilder.openRaise(
+        deck: Deck(Random(1)),
+        heroPosition: Position.utg,
+        heroHand: HoleCards.parse('AsAd'),
+      );
+      final result = AnswerEvaluator.evaluate(
+          scenario, PokerAction.raiseTo(OpeningRanges.sizingFor(Position.utg)));
+      expect(
+        result.justifyingConcepts.every(scenario.evaluableConcepts.contains),
+        isTrue,
+      );
+    });
+  });
+
+  group('AnswerEvaluator.evaluate — nunca explota', () {
+    test('una acción que la estrategia de referencia no contempló '
+        'igual devuelve un veredicto (no lanza)', () {
+      final scenario = ExerciseScenarioBuilder.openRaise(
+        deck: Deck(Random(1)),
+        heroPosition: Position.utg,
+        heroHand: HoleCards.parse('AsAd'),
+      );
+      // Un tamaño de subida rarísimo que ninguna Strategy de referencia
+      // contemplaría puntualmente.
+      final oddAction = PokerAction.raiseTo(scenario.decisionContext.maxRaiseToBb!);
+      expect(() => AnswerEvaluator.evaluate(scenario, oddAction), returnsNormally);
+    });
+  });
+
+  group('AnswerEvaluator.evaluate — chosenAction/recommendedAction (Fase 8.3)', () {
+    test('chosenAction es exactamente la acción pasada a evaluate', () {
+      final scenario = ExerciseScenarioBuilder.openRaise(
+        deck: Deck(Random(1)),
+        heroPosition: Position.utg,
+        heroHand: HoleCards.parse('AsAd'),
+      );
+      const action = PokerAction(ActionType.fold);
+      final result = AnswerEvaluator.evaluate(scenario, action);
+      expect(result.chosenAction, action);
+    });
+
+    test('recommendedAction es la acción óptima real (coincide con lo que '
+        'hace que el veredicto sea "best")', () {
+      final scenario = ExerciseScenarioBuilder.openRaise(
+        deck: Deck(Random(1)),
+        heroPosition: Position.utg,
+        heroHand: HoleCards.parse('AsAd'),
+      );
+      final recommended = AnswerEvaluator.evaluate(
+              scenario, const PokerAction(ActionType.fold))
+          .recommendedAction;
+      final result = AnswerEvaluator.evaluate(scenario, recommended);
+      expect(result.verdict, AnswerVerdict.best,
+          reason: 'jugar recommendedAction siempre debería calificar best');
+    });
+
+    test('para los 4 veredictos, chosenAction/recommendedAction nunca son '
+        'nulos ni cambian entre sí de forma inconsistente', () {
+      final scenario = ExerciseScenarioBuilder.defenseVsOpen(
+        deck: Deck(Random(3)),
+        heroHand: HoleCards.parse('AsAd'),
+      );
+      for (final action in const [
+        PokerAction(ActionType.fold),
+        PokerAction(ActionType.call),
+      ]) {
+        final result = AnswerEvaluator.evaluate(scenario, action);
+        expect(result.chosenAction, action);
+        expect(result.recommendedAction, isNotNull);
       }
-    }
-    expect(ex, isNotNull);
-    final raiseOption = ex!.options.firstWhere((o) =>
-        o.action != null && o.action!.type == ActionType.raise);
-    final result = evaluator.evaluate(
-      ex,
-      UserAnswer(exerciseId: ex.id, selectedOptionId: raiseOption.id),
-      knowledge: sliceUser(),
-    );
-    expect(result.acceptable, isFalse);
-    expect(result.strategicRating.isAcceptable, isFalse);
+    });
   });
 
-  test('situación de ejemplo se puede construir sin UI', () {
-    // Comprueba que PokerSituation y su descripción funcionan aislados.
-    final ex = gen().next(sliceUser()).exercise;
-    final PokerSituation? s = ex.situation;
-    if (s != null) {
-      expect(s.actionHistoryDescription, isNotEmpty);
-    }
+  group('AnswerEvaluator.evaluate — postflop (cbetDecision, vía '
+      'ScenarioStrategy)', () {
+    test('best: c-apostar (cualquier tamaño) en el flop favorable', () {
+      final scenario = ExerciseScenarioBuilder.cbetDecision(deck: Deck(Random(1)));
+      final result = AnswerEvaluator.evaluate(scenario, PokerAction.bet(3));
+      expect(result.verdict, AnswerVerdict.best);
+      expect(result.justifyingConcepts, containsAll(['cbet', 'board_texture']));
+    });
+
+    test('best: c-apostar matchea sin importar el tamaño exacto elegido '
+        '(la lección es si apostar, no con qué tamaño)', () {
+      final scenario = ExerciseScenarioBuilder.cbetDecision(deck: Deck(Random(1)));
+      for (final sizeBb in [1.0, 2.5, 10.0]) {
+        final result = AnswerEvaluator.evaluate(scenario, PokerAction.bet(sizeBb));
+        expect(result.verdict, AnswerVerdict.best, reason: 'sizeBb=$sizeBb');
+      }
+    });
+
+    test('poor: checkear en vez de c-apostar el flop favorable', () {
+      final scenario = ExerciseScenarioBuilder.cbetDecision(deck: Deck(Random(1)));
+      final result = AnswerEvaluator.evaluate(scenario, const PokerAction(ActionType.check));
+      expect(result.verdict, AnswerVerdict.poor);
+    });
+
+    test('recommendedAction siempre es un bet', () {
+      final scenario = ExerciseScenarioBuilder.cbetDecision(deck: Deck(Random(1)));
+      final result = AnswerEvaluator.evaluate(scenario, const PokerAction(ActionType.check));
+      expect(result.recommendedAction.type, ActionType.bet);
+    });
   });
 }

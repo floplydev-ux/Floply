@@ -4,10 +4,12 @@ import '../../../l10n/app_strings.dart';
 import '../academy_controller.dart';
 import 'exercise_view.dart';
 import 'feedback_view.dart';
-import 'interactive_table_exercise.dart';
+import 'interactive_table_exercise_view.dart';
 import 'interactive_table_lesson.dart';
 import 'lesson_result_view.dart';
 import 'lesson_widgets.dart';
+import 'mentor_lesson_stage_view.dart';
+import 'playable_table_exercise_view.dart';
 import 'theory_view.dart';
 import 'visual_theory_stage.dart';
 import 'written_theory_view.dart';
@@ -50,9 +52,12 @@ class LessonFlow extends StatelessWidget {
       // redactada / ejercicios interactivos: ocupan toda la altura (no van
       // dentro del scroll).
       if (controller.isInteractiveTheory ||
+          controller.isClosingExample ||
+          controller.isMentorLesson ||
           controller.isVisualTheory ||
           controller.isWrittenTheory ||
-          controller.isInteractiveExercise) {
+          controller.isInteractiveExercise ||
+          controller.isPlayableExercise) {
         return Padding(
           padding: EdgeInsets.fromLTRB(pad, 12, pad, 16 + bottomInset),
           child: Column(
@@ -84,13 +89,25 @@ class LessonFlow extends StatelessWidget {
     if (controller.isInteractiveTheory) {
       return InteractiveTableLesson(controller: controller);
     }
+    if (controller.isClosingExample) {
+      return InteractiveTableLesson.closingExample(controller: controller);
+    }
+    if (controller.isMentorLesson) {
+      return MentorLessonStageView(controller: controller);
+    }
     if (controller.isVisualTheory) {
       return VisualTheoryStageView(controller: controller);
     }
     if (controller.isWrittenTheory) {
       return WrittenTheoryView(controller: controller);
     }
-    return InteractiveTableExercise(
+    if (controller.isPlayableExercise) {
+      return PlayableTableExerciseView(
+        key: ValueKey('plex${controller.itemNumber}'),
+        controller: controller,
+      );
+    }
+    return InteractiveTableExerciseView(
       key: ValueKey('itex${controller.itemNumber}'),
       controller: controller,
     );

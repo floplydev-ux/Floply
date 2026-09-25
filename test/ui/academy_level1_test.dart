@@ -4,6 +4,7 @@ import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/engine/concepts/concept_ids.dart';
 import 'package:poker_trainer/engine/academy/academy_progress.dart';
 import 'package:poker_trainer/engine/pedagogy/curriculum.dart';
+import 'package:poker_trainer/engine/pedagogy/mentor_lesson.dart';
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 import 'package:poker_trainer/screens/academy/academy_controller.dart';
 import 'package:poker_trainer/screens/academy/academy_screen.dart';
@@ -68,11 +69,31 @@ void main() {
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: 'abrir $id @ $width');
 
-        // Teoría: guion de mesa (si tiene) → fichas de teoría redactada.
+        // Teoría: guion de mesa (si tiene) → clase de mentor (si tiene,
+        // reemplaza la ficha) / fichas de teoría redactada → ejemplo de
+        // cierre del piloto de 3 bloques (si tiene, solo 1.1 por ahora).
         while (c.phase == AcademyPhase.theory) {
+          if (c.isMentorLesson) {
+            final beat = c.currentMentorBeat;
+            final label = (beat is MentorCheckBeat && c.mentorCheckAnswer == null)
+                ? beat.check.options.first.label
+                : c.mentorContinueLabel;
+            await tester.tap(find.text(label));
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull,
+                reason: 'teoría (mentor) $id @ $width');
+            continue;
+          }
+          if (c.isClosingExample) {
+            await tester.tap(find.text(c.closingExampleButtonLabel));
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull,
+                reason: 'teoría (ejemplo de cierre) $id @ $width');
+            continue;
+          }
           final bool last = c.isInteractiveTheory
               ? (c.isLastTableStep && !c.hasWrittenTheory)
-              : c.isLastWrittenTheory;
+              : (c.isLastWrittenTheory && !c.hasClosingExample);
           await tester.tap(find.text(last ? 'PRACTICAR' : 'CONTINUAR'));
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull, reason: 'teoría $id @ $width');

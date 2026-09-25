@@ -23,110 +23,124 @@ N1 = {
 # ============================================================
 
 "T001": dict(  # Objetivo del juego
- que_es="El póker es un juego de apuestas con cartas. En cada mano, los jugadores "
-        "van poniendo fichas en el centro de la mesa: ese montón se llama BOTE. "
-        "El objetivo de la mano es llevarte el bote.",
- por_que_importa="Todo lo que vas a aprender —cuándo apostar, cuándo retirarte, qué "
-        "manos jugar— existe para una sola cosa: ganar fichas a la larga. Si perdés "
-        "de vista el objetivo, cada decisión se vuelve un capricho.",
- como_funciona="La mano se juega por rondas. En cada ronda, los jugadores que siguen "
-        "apuestan, igualan o se retiran. La mano termina de dos formas: queda un solo "
-        "jugador (los demás se retiraron) o los que quedan muestran las cartas. En los "
-        "dos casos, el bote entero va para uno.",
- cuando_lo_uso="Siempre. Antes de cada decisión, preguntate: ¿esto me acerca a ganar "
-        "el bote, o me está costando fichas sin necesidad?",
+ que_es="Vamos paso a paso. En cada mano de póker, los jugadores van poniendo fichas "
+        "en el centro de la mesa a medida que apuestan: a ese montón se lo llama el "
+        "BOTE. El objetivo de la mano es uno solo: llevarte ese bote.",
+ por_que_importa="Todo lo que vas a aprender de acá en adelante —cuándo apostar, "
+        "cuándo retirarte, qué manos jugar— existe para una sola cosa: ganar fichas. "
+        "Quedate con esta idea, porque le vas a dar sentido a todo el resto.",
+ como_funciona="Hay exactamente dos formas de ganar un bote, ni una más. Primera: "
+        "llegás hasta el final de la mano con la mejor mano y te la llevás mostrando "
+        "tus cartas. Segunda —y esta suele sorprender al que arranca—: apostás, todos "
+        "los demás se retiran, y el bote es tuyo sin que nadie muestre nada. Las dos "
+        "valen exactamente igual: fichas ganadas son fichas ganadas.",
+ cuando_lo_uso="Siempre. Antes de cada decisión, preguntate: ¿esto me acerca a "
+        "llevarme el bote, o me está costando fichas sin necesidad?",
  cuando_no=None,
  ejemplo="Hay 8 fichas en el bote. Tu rival apuesta 4 más. Si pagás y ganás, te "
         "llevás 16. Si te retirás, perdés lo que ya pusiste pero no arriesgás más. "
         "Toda la tensión del póker está ahí: cuánto arriesgar para llevarte el bote.",
- error_comun="Jugar para 'ganar esta mano' a toda costa. No querés ganar todas las "
-        "manos: querés ganar fichas. A veces la mejor jugada es tirar y perder un "
-        "bote chico.",
- idea_clave="Ganás fichas ganando botes. No hace falta ganar todas las manos.",
+ error_comun="Jugar para 'ganar esta mano' a toda costa. No hace falta ganar todas "
+        "las manos —ni siquiera la mayoría—: alcanza con ganar fichas a la larga. A "
+        "veces la jugada correcta es soltar la mano y perder un bote chico.",
+ idea_clave="Ganás un bote de dos formas: con la mejor mano, o porque los demás se "
+        "retiran. No hace falta ganar todas las manos.",
 ),
 
 "T002": dict(  # La baraja
  que_es="Se juega con una baraja de 52 cartas: 13 valores (2, 3, 4, 5, 6, 7, 8, 9, "
-        "10, J, Q, K, A) en 4 palos (picas ♠, corazones ♥, diamantes ♦, tréboles ♣).",
+        "10, J, Q, K, A) en 4 palos (picas ♠, corazones ♥, diamantes ♦, tréboles ♣). "
+        "13 × 4 = 52.",
  por_que_importa="Saber qué cartas existen y cuántas quedan por salir es la base de "
         "todo lo que viene después: cuánto vale tu mano, qué puede tener el rival, "
         "qué carta te ayudaría.",
- como_funciona="Los valores van del 2 (el más bajo) al As (el más alto). El As "
-        "también puede hacer de carta más baja en una escalera A-2-3-4-5. Los 4 palos "
-        "valen lo mismo entre sí: ninguno le gana a otro.",
+ como_funciona="Los valores van del 2 (el más bajo) al As (el más alto). Ojo con "
+        "esto: el As también puede hacer de carta más baja, en una escalera "
+        "A-2-3-4-5. Fijate que los 4 palos valen exactamente lo mismo entre sí: "
+        "ninguno le gana a otro, nunca.",
  cuando_lo_uso="Cada vez que pensás '¿qué carta me ayudaría?' o '¿qué puede tener el "
         "rival?', estás contando cartas de la baraja.",
  cuando_no=None,
  ejemplo="Hay 4 ases en la baraja. Si vos tenés uno en la mano, quedan 3 dando "
         "vueltas: en el centro de la mesa, en la mano de un rival, o todavía en el "
         "mazo.",
- error_comun="Creer que un palo vale más que otro. Cinco picas y cinco tréboles "
-        "valen exactamente lo mismo; lo que decide es el valor de las cartas.",
+ error_comun="Creer que un palo vale más que otro —por ejemplo, que un color de "
+        "picas le gana a un color de corazones—. No: los 4 palos valen exactamente "
+        "lo mismo; lo único que decide es el valor de las cartas.",
  idea_clave="52 cartas: 13 valores × 4 palos. El As es la más alta (y a veces la más "
-        "baja).",
+        "baja). Los palos nunca desempatan.",
 ),
 
 "T003": dict(  # Cartas privadas
- que_es="Al empezar la mano, cada jugador recibe 2 cartas boca abajo que solo ve él. "
-        "Son tus cartas privadas (también: 'tu mano' o 'hole cards').",
- por_que_importa="Son tu información secreta. El póker es un juego de información "
-        "incompleta: vos sabés tus 2 cartas, el rival sabe las suyas, y nadie ve las "
-        "del otro. Toda la ventaja está en usar bien lo que sabés y estimar lo que no.",
- como_funciona="Las 2 cartas privadas se combinan con las 5 comunitarias del centro. "
-        "Podés usar las 2, 1 o ninguna: siempre se arma la mejor mano de 5 cartas "
-        "posible con las 7 disponibles.",
- cuando_lo_uso="Antes de que salga cualquier carta común, tus 2 cartas son toda la "
-        "información que tenés. Elegir bien qué manos jugar y cuáles tirar es la "
-        "decisión más rentable del póker.",
+ que_es="Mirá: al arrancar la mano, cada jugador recibe 2 cartas boca abajo. Son tus "
+        "cartas privadas —también se les dice 'tu mano' o 'hole cards'— y las ves "
+        "solamente vos.",
+ por_que_importa="Cada jugador de la mesa tiene sus propias 2 cartas privadas, tan "
+        "secretas como las tuyas. El póker es un juego de información incompleta: "
+        "vos sabés lo tuyo, cada rival sabe lo suyo, y nadie ve lo del otro.",
+ como_funciona="Se reparten al principio de la mano, antes de que salga ninguna "
+        "carta en el centro de la mesa. Cada jugador mira solamente las propias — "
+        "las del resto quedan boca abajo para todos los demás.",
+ cuando_lo_uso="Cada vez que te toca actuar, lo primero que tenés son estas 2 "
+        "cartas. Más adelante vas a aprender a usarlas para decidir qué hacer; por "
+        "ahora, quedate con la idea de que son tuyas, y de nadie más.",
  cuando_no=None,
- ejemplo="Tenés A♠ K♠. Son dos cartas altas y del mismo palo: una mano fuerte para "
-        "entrar. Con 7♦ 2♣ tenés la peor mano posible: casi siempre se tira.",
- error_comun="Enamorarte de cualquier mano solo porque es tuya. La mayoría de las "
-        "manos que recibís no valen la pena jugarlas.",
- idea_clave="2 cartas que solo ves vos. Son tu información: usala bien y no juegues "
-        "cualquier cosa.",
+ ejemplo="Recibís A♠ K♠. Tu rival, sentado al lado, recibió otras dos cartas: vos no "
+        "las ves, y él tampoco ve las tuyas.",
+ error_comun="Pensar que, como son 'tuyas', ya valen algo por sí solas. Todavía no "
+        "vimos qué hace que una mano sea mejor o peor que otra —eso viene en las "
+        "próximas teorías—, así que no hace falta que te adelantes.",
+ idea_clave="2 cartas que solo ves vos. Cada jugador tiene las suyas, igual de "
+        "secretas.",
 ),
 
 "T004": dict(  # Cartas comunitarias
- que_es="Son 5 cartas que se abren boca arriba en el centro de la mesa, a lo largo "
-        "de la mano. Las comparten TODOS los jugadores. También se las llama 'el "
-        "board'.",
- por_que_importa="Como son de todos, cambian la mano de todos a la vez. Una carta "
-        "que te ayuda a vos también puede ayudar al rival. Leer bien el board es "
-        "medio juego.",
- como_funciona="No salen todas juntas: primero 3 (el flop), después 1 (el turn) y "
-        "por último 1 (el river). Entre carta y carta hay una ronda de apuestas.",
- cuando_lo_uso="Cada vez que sale una carta nueva en el centro, volvé a mirar el "
-        "board: ¿mejoró tu mano?, ¿la de un rival?, ¿esta carta ayuda más a vos o "
-        "a él?",
+ que_es="Fijate en esto: además de tus cartas privadas, hay 5 cartas más que se "
+        "abren boca arriba en el centro de la mesa. Se llaman cartas comunitarias, o "
+        "'el board' — y las puede usar CUALQUIER jugador que siga en la mano, no "
+        "solo vos.",
+ por_que_importa="Como son de todos, una carta que te ayuda a vos también puede "
+        "estar ayudando a un rival al mismo tiempo. El board no es tuyo ni de nadie "
+        "en particular: es compartido.",
+ como_funciona="No salen las 5 juntas: primero aparecen 3 de una vez (eso es el "
+        "flop), después 1 sola (el turn), y por último 1 más (el river). 3 + 1 + 1 = "
+        "5. Entre carta y carta hay una ronda de apuestas, que vas a ver en detalle "
+        "más adelante.",
+ cuando_lo_uso="Cada vez que sale una carta nueva en el centro —el flop, el turn o "
+        "el river— esa carta pasa a estar disponible para todos los que sigan en la "
+        "mano.",
  cuando_no=None,
- ejemplo="Board: K♥ 8♥ 3♣. Tenés K♠ Q♠: pareja de reyes. Pero hay dos corazones en "
-        "la mesa: si alguien tiene dos corazones más, le falta uno para cinco del "
-        "mismo palo.",
- error_comun="Mirar solo si el board te ayudó a vos. El board es de los dos: siempre "
-        "preguntate qué le pudo dar al rival.",
- idea_clave="5 cartas de todos, en el centro. Salen 3 + 1 + 1. Cambian la mano de "
-        "todos.",
+ ejemplo="Preflop no hay ninguna carta comunitaria todavía. Sale el flop: 3 cartas "
+        "juntas, por ejemplo K♥ 8♥ 3♣. Sale el turn: 1 carta más. Sale el river: la "
+        "última. Ahí ya están las 5.",
+ error_comun="Pensar que las cartas comunitarias son 'tuyas' porque las ves y las "
+        "usás vos. No: las ve y las puede usar cualquiera que siga en la mano.",
+ idea_clave="5 cartas de todos, en el centro. Salen 3 + 1 + 1 (flop, turn, río). "
+        "Cambian la mano de todos, no solo la tuya.",
 ),
 
 "T005": dict(  # La mano de 5 cartas
- que_es="Tu mano final son las 5 mejores cartas que podés armar entre tus 2 privadas "
-        "y las 5 comunitarias. Nunca son más de 5 cartas.",
- por_que_importa="Al final de la mano se comparan manos de 5 cartas. Saber cuál es "
-        "tu mejor combinación —y si de verdad usás tus cartas o no— es lo que te dice "
-        "si vas ganando o perdiendo.",
- como_funciona="Tenés 7 cartas disponibles (2 + 5). Elegís las 5 que forman la mejor "
-        "combinación y descartás las otras 2. Podés terminar usando tus 2 cartas, "
-        "solo 1, o ninguna (jugando el board).",
- cuando_lo_uso="Antes de decidir en la última calle, armá mentalmente tu mejor mano "
-        "de 5 y compará con lo que podría tener el rival.",
+ que_es="Ahora juntemos todo. Tus 2 cartas privadas más las 5 comunitarias son 7 "
+        "cartas disponibles. Pero ojo: tu mano final NUNCA son 7 — siempre son las "
+        "mejores 5 que puedas armar con esas 7.",
+ por_que_importa="Al final de la mano se comparan manos de 5 cartas, nunca de 7. "
+        "Saber armar tu mejor combinación de 5 es lo que te dice, en el momento, si "
+        "vas ganando o perdiendo.",
+ como_funciona="De las 7 cartas disponibles (2 privadas + 5 comunitarias) elegís las "
+        "5 que forman tu mejor combinación, y las otras 2 quedan afuera, no cuentan "
+        "para nada. No hace falta que memorices ninguna fórmula todavía: alcanza con "
+        "saber que podés terminar usando tus 2 cartas privadas, solo 1, o ninguna "
+        "—jugando directamente el board—.",
+ cuando_lo_uso="Cada vez que tengas cartas comunitarias en la mesa, tu mano de "
+        "verdad son las mejores 5 entre las que tenés disponibles en ese momento.",
  cuando_no=None,
- ejemplo="Tenés A♠ 5♦. Board: A♥ K♦ 9♣ 7♠ 2♠. Tu mejor mano de 5: A♠ A♥ K♦ 9♣ 7♠ "
-        "(pareja de ases). Las picas no alcanzan para cinco del mismo palo: solo "
-        "tenés 3.",
- error_comun="Contar 6 o 7 cartas como si formaran una 'súper mano'. Siempre son 5, "
-        "ni una más.",
- idea_clave="Tu mano son las 5 mejores de las 7 disponibles. El resto no cuenta.",
+ ejemplo="Tenés A♠ 5♦. Board: A♥ K♦ 9♣ 7♠ 2♠. Eso son 7 cartas. Tu mejor mano de 5 "
+        "es A♠ A♥ K♦ 9♣ 7♠ (pareja de ases): el 5♦ y el 2♠ sobran, no forman parte "
+        "de nada mejor.",
+ error_comun="Contar las 6 o 7 cartas disponibles como si formaran una 'súper "
+        "mano'. Acá está la clave: siempre son 5, ni una más.",
+ idea_clave="Tu mano son las 5 mejores de las 7 disponibles. El resto no cuenta, por "
+        "más que sean cartas tuyas.",
 ),
 
 # ============================================================
@@ -147,8 +161,10 @@ N1 = {
         "mostrar, o me conviene ganar antes, haciendo que el rival se retire?'",
  cuando_no="Si todos menos uno se retiran (fold) antes del final, no hay showdown: "
         "nadie muestra y el bote va para el que quedó.",
- ejemplo="Dos jugadores llegan al final. Uno tiene pareja de ases; el otro, pareja "
-        "de reyes. En el showdown gana la pareja de ases: se lleva el bote.",
+ ejemplo="Dos jugadores llegan al final sin retirarse. Los dos apostaron fuerte, "
+        "pero uno apostó un poco más al cierre. Muestran las cartas: la mano de 5 "
+        "de uno vale más que la del otro. Esa gana el bote —no importa quién "
+        "apostó más al final.",
  error_comun="Creer que el que apostó último 'gana automáticamente'. En el showdown "
         "gana la mejor mano de 5, no la última apuesta.",
  idea_clave="Showdown = se muestran las cartas. Gana la mejor mano de 5; empate "
@@ -167,8 +183,8 @@ N1 = {
         "apostás para que el rival pague con manos peores y así cobrar más.",
  cuando_no="Con una mano floja no querés llegar al showdown: vas a perder la "
         "comparación. Ahí tu única chance es que el rival se retire.",
- ejemplo="Tenés pareja de reyes; el rival, pareja de ochos. Llegan los dos al final "
-        "y muestran: tu pareja es más alta, el bote es tuyo.",
+ ejemplo="Llegan los dos al final y muestran las cartas: tu mano de 5 le gana a la "
+        "del rival. El bote es tuyo, sin importar cómo apostó cada uno en el camino.",
  error_comun="Pagar la última apuesta 'para ver' con una mano que no le gana a nada. "
         "Si no podés ganar la comparación, ese pago es tirar fichas.",
  idea_clave="Ganar por cartas = mostrar la mejor mano de 5 al final. Necesitás mano "
@@ -183,16 +199,17 @@ N1 = {
         "seguir. Esto es lo que hace del póker un juego de decisiones y no de suerte.",
  como_funciona="Si apostás y todos se retiran, la mano termina ahí. No importa qué "
         "cartas tenías: nadie las ve y el bote va para vos.",
- cuando_lo_uso="Cuando tu mano es floja pero la historia que contás con tus apuestas "
-        "es creíble y el rival tiene una mano con la que le duele pagar.",
- cuando_no="Contra un rival que paga siempre: si nunca se retira, farolear "
-        "—apostar fuerte con una mano floja para que abandone— no sirve. Contra ese "
-        "rival ganás solo por cartas.",
- ejemplo="El board muestra A♠ K♦ 4♣. Vos no ligaste nada, pero apostás como si "
-        "tuvieras un as. El rival tiene una pareja chica, no le gusta ese board y se "
-        "retira. Ganaste el bote con la peor mano.",
- error_comun="Farolear sin pensar en qué puede tener el rival. Si su mano es fuerte, "
-        "no se va a ir, y vas a perder fichas de más.",
+ cuando_lo_uso="Es la otra chance de ganar el bote, además del showdown: no "
+        "depende de qué cartas tengas vos, depende de que los demás decidan "
+        "retirarse.",
+ cuando_no="Si el rival no se retira nunca, ganar por fold no es una opción con "
+        "esa mano: ahí tu única chance real es ganar por cartas, mostrando la "
+        "mejor mano en el showdown.",
+ ejemplo="Apostás en el flop. El rival lo piensa, decide no pagar, y se retira. La "
+        "mano termina ahí mismo: te llevás el bote sin mostrar tus cartas —ni "
+        "siquiera importa qué tenías.",
+ error_comun="Pensar que ganar por fold es un plan seguro. El rival puede no "
+        "retirarse nunca: no siempre vas a ganar el bote de esa forma.",
  idea_clave="Ganar por fold = todos se retiran. Se puede ganar el bote sin tener "
         "nada.",
 ),
@@ -255,8 +272,8 @@ N1 = {
         "para seguir viéndola es razonable.",
  cuando_no="No pagues 'por curiosidad' o 'para ver qué tenía'. Si tu mano no le gana "
         "a casi nada de lo que el rival podría tener, foldeá.",
- ejemplo="El rival apuesta 5 en el flop. Tenés una pareja media y querés seguir "
-        "viendo, pero no subir. Hacés call de 5.",
+ ejemplo="El rival apuesta 5 en el flop. Tu mano no es como para subir, pero tampoco "
+        "para tirarla: querés seguir viendo sin subir. Hacés call de 5.",
  error_comun="Pagar la última apuesta solo para no quedarte con la duda. Un call de "
         "curiosidad que no gana nunca es tirar fichas.",
  idea_clave="Call = igualar la apuesta para seguir. Cada call cuesta: no pagues "
@@ -275,8 +292,8 @@ N1 = {
         "benefician de que el rival se retire. Rara vez con manos medias.",
  cuando_no="Con una mano media que no le gana a lo que te va a pagar ni hace "
         "retirar a lo que te gana: esa mano prefiere hacer check.",
- ejemplo="Ligás trío (tres cartas iguales) en el flop. Apostás para que el rival, "
-        "que tiene pareja alta, pague. Cada ficha que te pague es tuya.",
+ ejemplo="Ligás una mano fuerte en el flop. Apostás para que el rival, que tiene "
+        "algo más flojo, pague igual. Cada ficha que te pague es tuya.",
  error_comun="Apostar 'porque sí', sin saber qué querés lograr. Antes de apostar, "
         "tené claro si buscás que te paguen o que se retiren.",
  idea_clave="Bet = ser el primero en apostar. Apostás para que te paguen (mano "
@@ -296,7 +313,7 @@ N1 = {
         "mano con la que le duele pagar.",
  cuando_no="No subas con manos medias 'para definir': si te vuelven a subir, quedás "
         "jugando un bote grande con una mano que no aguanta.",
- ejemplo="El rival abre a 3. Tenés A♠ A♦ (la mejor mano antes del flop). Subís a 9 "
+ ejemplo="El rival abre a 3. Tenés A♠ A♦, una mano que te encanta jugar. Subís a 9 "
         "para agrandar el bote desde el principio.",
  error_comun="Subir con una mano que solo hace pagar a lo que te gana y retirarse a "
         "lo que le ganás. Antes de subir, pensá: '¿quién me paga y quién se va?'",
@@ -318,7 +335,7 @@ N1 = {
  cuando_no="No vuelvas a subir 'porque me molesta que suban'. Sin una mano fuerte o "
         "un plan, solo agrandás tu pérdida.",
  ejemplo="UTG abre a 3. El botón sube a 9 (una 3-bet). Vos, en la ciega grande, "
-        "tenés A♠ A♦ y volvés a subir a 27 (una 4-bet).",
+        "tenés una mano excelente y volvés a subir a 27 (una 4-bet).",
  error_comun="Tratar toda re-subida del rival como un engaño. La mayoría de las "
         "veces es una mano enorme: respetala hasta tener razones para no hacerlo.",
  idea_clave="Re-raise = subir sobre una subida. Cada escalón = manos más fuertes.",
@@ -336,7 +353,7 @@ N1 = {
  cuando_lo_uso="Cuando te quedan pocas fichas y tenés una mano fuerte. O con una "
         "mano a medio hacer con mucho potencial, que prefiere jugarse todo ahora "
         "antes que pagar apuestas incómodas después.",
- cuando_no="Con un stack profundo y una pareja media: ir all-in te hace ganar un "
+ cuando_no="Con un stack profundo y una mano media: ir all-in te hace ganar un "
         "bote chico o perder uno enorme. El all-in liviano es de los errores más "
         "caros.",
  ejemplo="Te quedan 12 ciegas grandes y tenés A♠ K♦. En vez de abrir chico, vas "

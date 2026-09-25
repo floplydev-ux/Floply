@@ -1,4 +1,6 @@
 import '../poker/card.dart';
+import '../poker/deck.dart';
+import '../poker/generation_exception.dart';
 import '../poker/hole_cards.dart';
 
 /// Un rango de manos con frecuencia por clase (`AKs -> 1.0`, `KJo -> 0.5`).
@@ -41,6 +43,46 @@ class HandRange {
 
   /// Porcentaje del total de manos (0..100) que representa el rango.
   double get percentOfAllHands => comboCount / 1326 * 100;
+
+  /// Reparte una mano concreta de este rango: sortea una clase con
+  /// probabilidad proporcional a su frecuencia (lotería ponderada) y la
+  /// reparte de [deck]. Si esa clase ya no tiene combos libres en el
+  /// mazo, reintenta con otra clase del rango — nunca cae en silencio a
+  /// "cualquier mano". Lanza [TemplateGenerationException] si el rango
+  /// está vacío o si ninguna de sus clases tiene combos disponibles.
+  HoleCards sample(Deck deck) {
+    final candidates = {
+      for (final entry in _frequencies.entries)
+        if (entry.value > 0) entry.key: entry.value,
+    };
+    if (candidates.isEmpty) {
+      throw TemplateGenerationException(
+          'HandRange.sample: el rango está vacío (sin clases con '
+          'frecuencia > 0).');
+    }
+
+    while (candidates.isNotEmpty) {
+      final totalWeight = candidates.values.fold(0.0, (sum, w) => sum + w);
+      var roll = deck.nextDouble() * totalWeight;
+      var chosen = candidates.keys.first;
+      for (final entry in candidates.entries) {
+        roll -= entry.value;
+        if (roll <= 0) {
+          chosen = entry.key;
+          break;
+        }
+      }
+
+      final hand = deck.dealHandOfClass(chosen);
+      if (hand != null) return hand;
+      candidates.remove(chosen);
+    }
+
+    throw TemplateGenerationException(
+        'HandRange.sample: ninguna clase del rango tiene combos '
+        'disponibles en el mazo (todas bloqueadas por cartas ya '
+        'repartidas).');
+  }
 
   /// Une dos rangos quedándose con la frecuencia más alta por clase.
   HandRange merge(HandRange other) {

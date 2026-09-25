@@ -492,8 +492,8 @@ N3 = {
         "acostumbrarte a hacerte la pregunta.",
  cuando_lo_uso="Antes de cada pago y de cada apuesta, sin excepción.",
  cuando_no=None,
- ejemplo="El bote es 20 BB y el rival apuesta 10. Seguir te cuesta 10 y podés ganar "
-        "30 (los 20 del bote + sus 10). Con eso sobre la mesa: ¿tu mano gana "
+ ejemplo="El bote es 15 BB y el rival apuesta 5. Seguir te cuesta 5 y podés ganar "
+        "20 (los 15 del bote + sus 5). Con eso sobre la mesa: ¿tu mano gana "
         "suficientes veces como para que valga la pena? Esa pregunta se aprende a "
         "responder en el Nivel 6.",
  error_comun="Pagar sin pensar en el precio, solo porque 'quiero ver'. Cada pago "

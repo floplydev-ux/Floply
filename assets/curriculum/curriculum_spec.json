@@ -45,11 +45,7 @@
      "prerrequisitos": [],
      "n_teorias": 5,
      "conceptos_clave": [],
-     "legacy": {
-      "table_scripts": [
-       "1.1"
-      ]
-     }
+     "legacy": null
     },
     {
      "code": "1.2",
@@ -67,14 +63,7 @@
      "conceptos_clave": [
       "rules"
      ],
-     "legacy": {
-      "table_scripts": [
-       "1.2"
-      ],
-      "exercise_sets": [
-       "1.1"
-      ]
-     }
+     "legacy": null
     },
     {
      "code": "1.3",
@@ -92,14 +81,7 @@
      "conceptos_clave": [
       "rules"
      ],
-     "legacy": {
-      "table_scripts": [
-       "1.3"
-      ],
-      "exercise_sets": [
-       "1.3"
-      ]
-     }
+     "legacy": null
     },
     {
      "code": "1.4",
@@ -1412,16 +1394,16 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El póker es un juego de apuestas con cartas. En cada mano, los jugadores van poniendo fichas en el centro de la mesa: ese montón se llama BOTE. El objetivo de la mano es llevarte el bote.",
-    "por_que_importa": "Todo lo que vas a aprender —cuándo apostar, cuándo retirarte, qué manos jugar— existe para una sola cosa: ganar fichas a la larga. Si perdés de vista el objetivo, cada decisión se vuelve un capricho.",
-    "como_funciona": "La mano se juega por rondas. En cada ronda, los jugadores que siguen apuestan, igualan o se retiran. La mano termina de dos formas: queda un solo jugador (los demás se retiraron) o los que quedan muestran las cartas. En los dos casos, el bote entero va para uno.",
-    "cuando_lo_uso": "Siempre. Antes de cada decisión, preguntate: ¿esto me acerca a ganar el bote, o me está costando fichas sin necesidad?",
+    "que_es": "Vamos paso a paso. En cada mano de póker, los jugadores van poniendo fichas en el centro de la mesa a medida que apuestan: a ese montón se lo llama el BOTE. El objetivo de la mano es uno solo: llevarte ese bote.",
+    "por_que_importa": "Todo lo que vas a aprender de acá en adelante —cuándo apostar, cuándo retirarte, qué manos jugar— existe para una sola cosa: ganar fichas. Quedate con esta idea, porque le vas a dar sentido a todo el resto.",
+    "como_funciona": "Hay exactamente dos formas de ganar un bote, ni una más. Primera: llegás hasta el final de la mano con la mejor mano y te la llevás mostrando tus cartas. Segunda —y esta suele sorprender al que arranca—: apostás, todos los demás se retiran, y el bote es tuyo sin que nadie muestre nada. Las dos valen exactamente igual: fichas ganadas son fichas ganadas.",
+    "cuando_lo_uso": "Siempre. Antes de cada decisión, preguntate: ¿esto me acerca a llevarme el bote, o me está costando fichas sin necesidad?",
     "ejemplo": "Hay 8 fichas en el bote. Tu rival apuesta 4 más. Si pagás y ganás, te llevás 16. Si te retirás, perdés lo que ya pusiste pero no arriesgás más. Toda la tensión del póker está ahí: cuánto arriesgar para llevarte el bote.",
-    "error_comun": "Jugar para 'ganar esta mano' a toda costa. No querés ganar todas las manos: querés ganar fichas. A veces la mejor jugada es tirar y perder un bote chico.",
-    "idea_clave": "Ganás fichas ganando botes. No hace falta ganar todas las manos."
+    "error_comun": "Jugar para 'ganar esta mano' a toda costa. No hace falta ganar todas las manos —ni siquiera la mayoría—: alcanza con ganar fichas a la larga. A veces la jugada correcta es soltar la mano y perder un bote chico.",
+    "idea_clave": "Ganás un bote de dos formas: con la mejor mano, o porque los demás se retiran. No hace falta ganar todas las manos."
    },
    "pasos_mesa": null,
-   "idea_clave": "Ganás fichas ganando botes. No hace falta ganar todas las manos.",
+   "idea_clave": "Ganás un bote de dos formas: con la mejor mano, o porque los demás se retiran. No hace falta ganar todas las manos.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -1450,16 +1432,16 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Se juega con una baraja de 52 cartas: 13 valores (2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A) en 4 palos (picas ♠, corazones ♥, diamantes ♦, tréboles ♣).",
+    "que_es": "Se juega con una baraja de 52 cartas: 13 valores (2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A) en 4 palos (picas ♠, corazones ♥, diamantes ♦, tréboles ♣). 13 × 4 = 52.",
     "por_que_importa": "Saber qué cartas existen y cuántas quedan por salir es la base de todo lo que viene después: cuánto vale tu mano, qué puede tener el rival, qué carta te ayudaría.",
-    "como_funciona": "Los valores van del 2 (el más bajo) al As (el más alto). El As también puede hacer de carta más baja en una escalera A-2-3-4-5. Los 4 palos valen lo mismo entre sí: ninguno le gana a otro.",
+    "como_funciona": "Los valores van del 2 (el más bajo) al As (el más alto). Ojo con esto: el As también puede hacer de carta más baja, en una escalera A-2-3-4-5. Fijate que los 4 palos valen exactamente lo mismo entre sí: ninguno le gana a otro, nunca.",
     "cuando_lo_uso": "Cada vez que pensás '¿qué carta me ayudaría?' o '¿qué puede tener el rival?', estás contando cartas de la baraja.",
     "ejemplo": "Hay 4 ases en la baraja. Si vos tenés uno en la mano, quedan 3 dando vueltas: en el centro de la mesa, en la mano de un rival, o todavía en el mazo.",
-    "error_comun": "Creer que un palo vale más que otro. Cinco picas y cinco tréboles valen exactamente lo mismo; lo que decide es el valor de las cartas.",
-    "idea_clave": "52 cartas: 13 valores × 4 palos. El As es la más alta (y a veces la más baja)."
+    "error_comun": "Creer que un palo vale más que otro —por ejemplo, que un color de picas le gana a un color de corazones—. No: los 4 palos valen exactamente lo mismo; lo único que decide es el valor de las cartas.",
+    "idea_clave": "52 cartas: 13 valores × 4 palos. El As es la más alta (y a veces la más baja). Los palos nunca desempatan."
    },
    "pasos_mesa": null,
-   "idea_clave": "52 cartas: 13 valores × 4 palos. El As es la más alta (y a veces la más baja).",
+   "idea_clave": "52 cartas: 13 valores × 4 palos. El As es la más alta (y a veces la más baja). Los palos nunca desempatan.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -1488,16 +1470,16 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Al empezar la mano, cada jugador recibe 2 cartas boca abajo que solo ve él. Son tus cartas privadas (también: 'tu mano' o 'hole cards').",
-    "por_que_importa": "Son tu información secreta. El póker es un juego de información incompleta: vos sabés tus 2 cartas, el rival sabe las suyas, y nadie ve las del otro. Toda la ventaja está en usar bien lo que sabés y estimar lo que no.",
-    "como_funciona": "Las 2 cartas privadas se combinan con las 5 comunitarias del centro. Podés usar las 2, 1 o ninguna: siempre se arma la mejor mano de 5 cartas posible con las 7 disponibles.",
-    "cuando_lo_uso": "Antes de que salga cualquier carta común, tus 2 cartas son toda la información que tenés. Elegir bien qué manos jugar y cuáles tirar es la decisión más rentable del póker.",
-    "ejemplo": "Tenés A♠ K♠. Son dos cartas altas y del mismo palo: una mano fuerte para entrar. Con 7♦ 2♣ tenés la peor mano posible: casi siempre se tira.",
-    "error_comun": "Enamorarte de cualquier mano solo porque es tuya. La mayoría de las manos que recibís no valen la pena jugarlas.",
-    "idea_clave": "2 cartas que solo ves vos. Son tu información: usala bien y no juegues cualquier cosa."
+    "que_es": "Mirá: al arrancar la mano, cada jugador recibe 2 cartas boca abajo. Son tus cartas privadas —también se les dice 'tu mano' o 'hole cards'— y las ves solamente vos.",
+    "por_que_importa": "Cada jugador de la mesa tiene sus propias 2 cartas privadas, tan secretas como las tuyas. El póker es un juego de información incompleta: vos sabés lo tuyo, cada rival sabe lo suyo, y nadie ve lo del otro.",
+    "como_funciona": "Se reparten al principio de la mano, antes de que salga ninguna carta en el centro de la mesa. Cada jugador mira solamente las propias — las del resto quedan boca abajo para todos los demás.",
+    "cuando_lo_uso": "Cada vez que te toca actuar, lo primero que tenés son estas 2 cartas. Más adelante vas a aprender a usarlas para decidir qué hacer; por ahora, quedate con la idea de que son tuyas, y de nadie más.",
+    "ejemplo": "Recibís A♠ K♠. Tu rival, sentado al lado, recibió otras dos cartas: vos no las ves, y él tampoco ve las tuyas.",
+    "error_comun": "Pensar que, como son 'tuyas', ya valen algo por sí solas. Todavía no vimos qué hace que una mano sea mejor o peor que otra —eso viene en las próximas teorías—, así que no hace falta que te adelantes.",
+    "idea_clave": "2 cartas que solo ves vos. Cada jugador tiene las suyas, igual de secretas."
    },
    "pasos_mesa": null,
-   "idea_clave": "2 cartas que solo ves vos. Son tu información: usala bien y no juegues cualquier cosa.",
+   "idea_clave": "2 cartas que solo ves vos. Cada jugador tiene las suyas, igual de secretas.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -1526,16 +1508,16 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Son 5 cartas que se abren boca arriba en el centro de la mesa, a lo largo de la mano. Las comparten TODOS los jugadores. También se las llama 'el board'.",
-    "por_que_importa": "Como son de todos, cambian la mano de todos a la vez. Una carta que te ayuda a vos también puede ayudar al rival. Leer bien el board es medio juego.",
-    "como_funciona": "No salen todas juntas: primero 3 (el flop), después 1 (el turn) y por último 1 (el river). Entre carta y carta hay una ronda de apuestas.",
-    "cuando_lo_uso": "Cada vez que sale una carta nueva en el centro, volvé a mirar el board: ¿mejoró tu mano?, ¿la de un rival?, ¿esta carta ayuda más a vos o a él?",
-    "ejemplo": "Board: K♥ 8♥ 3♣. Tenés K♠ Q♠: pareja de reyes. Pero hay dos corazones en la mesa: si alguien tiene dos corazones más, le falta uno para cinco del mismo palo.",
-    "error_comun": "Mirar solo si el board te ayudó a vos. El board es de los dos: siempre preguntate qué le pudo dar al rival.",
-    "idea_clave": "5 cartas de todos, en el centro. Salen 3 + 1 + 1. Cambian la mano de todos."
+    "que_es": "Fijate en esto: además de tus cartas privadas, hay 5 cartas más que se abren boca arriba en el centro de la mesa. Se llaman cartas comunitarias, o 'el board' — y las puede usar CUALQUIER jugador que siga en la mano, no solo vos.",
+    "por_que_importa": "Como son de todos, una carta que te ayuda a vos también puede estar ayudando a un rival al mismo tiempo. El board no es tuyo ni de nadie en particular: es compartido.",
+    "como_funciona": "No salen las 5 juntas: primero aparecen 3 de una vez (eso es el flop), después 1 sola (el turn), y por último 1 más (el river). 3 + 1 + 1 = 5. Entre carta y carta hay una ronda de apuestas, que vas a ver en detalle más adelante.",
+    "cuando_lo_uso": "Cada vez que sale una carta nueva en el centro —el flop, el turn o el river— esa carta pasa a estar disponible para todos los que sigan en la mano.",
+    "ejemplo": "Preflop no hay ninguna carta comunitaria todavía. Sale el flop: 3 cartas juntas, por ejemplo K♥ 8♥ 3♣. Sale el turn: 1 carta más. Sale el river: la última. Ahí ya están las 5.",
+    "error_comun": "Pensar que las cartas comunitarias son 'tuyas' porque las ves y las usás vos. No: las ve y las puede usar cualquiera que siga en la mano.",
+    "idea_clave": "5 cartas de todos, en el centro. Salen 3 + 1 + 1 (flop, turn, río). Cambian la mano de todos, no solo la tuya."
    },
    "pasos_mesa": null,
-   "idea_clave": "5 cartas de todos, en el centro. Salen 3 + 1 + 1. Cambian la mano de todos.",
+   "idea_clave": "5 cartas de todos, en el centro. Salen 3 + 1 + 1 (flop, turn, río). Cambian la mano de todos, no solo la tuya.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -1564,16 +1546,16 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tu mano final son las 5 mejores cartas que podés armar entre tus 2 privadas y las 5 comunitarias. Nunca son más de 5 cartas.",
-    "por_que_importa": "Al final de la mano se comparan manos de 5 cartas. Saber cuál es tu mejor combinación —y si de verdad usás tus cartas o no— es lo que te dice si vas ganando o perdiendo.",
-    "como_funciona": "Tenés 7 cartas disponibles (2 + 5). Elegís las 5 que forman la mejor combinación y descartás las otras 2. Podés terminar usando tus 2 cartas, solo 1, o ninguna (jugando el board).",
-    "cuando_lo_uso": "Antes de decidir en la última calle, armá mentalmente tu mejor mano de 5 y compará con lo que podría tener el rival.",
-    "ejemplo": "Tenés A♠ 5♦. Board: A♥ K♦ 9♣ 7♠ 2♠. Tu mejor mano de 5: A♠ A♥ K♦ 9♣ 7♠ (pareja de ases). Las picas no alcanzan para cinco del mismo palo: solo tenés 3.",
-    "error_comun": "Contar 6 o 7 cartas como si formaran una 'súper mano'. Siempre son 5, ni una más.",
-    "idea_clave": "Tu mano son las 5 mejores de las 7 disponibles. El resto no cuenta."
+    "que_es": "Ahora juntemos todo. Tus 2 cartas privadas más las 5 comunitarias son 7 cartas disponibles. Pero ojo: tu mano final NUNCA son 7 — siempre son las mejores 5 que puedas armar con esas 7.",
+    "por_que_importa": "Al final de la mano se comparan manos de 5 cartas, nunca de 7. Saber armar tu mejor combinación de 5 es lo que te dice, en el momento, si vas ganando o perdiendo.",
+    "como_funciona": "De las 7 cartas disponibles (2 privadas + 5 comunitarias) elegís las 5 que forman tu mejor combinación, y las otras 2 quedan afuera, no cuentan para nada. No hace falta que memorices ninguna fórmula todavía: alcanza con saber que podés terminar usando tus 2 cartas privadas, solo 1, o ninguna —jugando directamente el board—.",
+    "cuando_lo_uso": "Cada vez que tengas cartas comunitarias en la mesa, tu mano de verdad son las mejores 5 entre las que tenés disponibles en ese momento.",
+    "ejemplo": "Tenés A♠ 5♦. Board: A♥ K♦ 9♣ 7♠ 2♠. Eso son 7 cartas. Tu mejor mano de 5 es A♠ A♥ K♦ 9♣ 7♠ (pareja de ases): el 5♦ y el 2♠ sobran, no forman parte de nada mejor.",
+    "error_comun": "Contar las 6 o 7 cartas disponibles como si formaran una 'súper mano'. Acá está la clave: siempre son 5, ni una más.",
+    "idea_clave": "Tu mano son las 5 mejores de las 7 disponibles. El resto no cuenta, por más que sean cartas tuyas."
    },
    "pasos_mesa": null,
-   "idea_clave": "Tu mano son las 5 mejores de las 7 disponibles. El resto no cuenta.",
+   "idea_clave": "Tu mano son las 5 mejores de las 7 disponibles. El resto no cuenta, por más que sean cartas tuyas.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -1607,7 +1589,7 @@
     "como_funciona": "Ocurre solo si al menos dos jugadores llegan al final sin retirarse. Se comparan las mejores manos de 5 cartas y gana la más alta. Si hay empate exacto, el bote se reparte.",
     "cuando_lo_uso": "Todo el tiempo pensás en el showdown: '¿esta mano quiere llegar a mostrar, o me conviene ganar antes, haciendo que el rival se retire?'",
     "cuando_no": "Si todos menos uno se retiran (fold) antes del final, no hay showdown: nadie muestra y el bote va para el que quedó.",
-    "ejemplo": "Dos jugadores llegan al final. Uno tiene pareja de ases; el otro, pareja de reyes. En el showdown gana la pareja de ases: se lleva el bote.",
+    "ejemplo": "Dos jugadores llegan al final sin retirarse. Los dos apostaron fuerte, pero uno apostó un poco más al cierre. Muestran las cartas: la mano de 5 de uno vale más que la del otro. Esa gana el bote —no importa quién apostó más al final.",
     "error_comun": "Creer que el que apostó último 'gana automáticamente'. En el showdown gana la mejor mano de 5, no la última apuesta.",
     "idea_clave": "Showdown = se muestran las cartas. Gana la mejor mano de 5; empate exacto, bote repartido."
    },
@@ -1647,7 +1629,7 @@
     "como_funciona": "Cerrada la última ronda de apuestas, los jugadores que quedan muestran. Se compara la mejor mano de 5 de cada uno y el bote va para la más alta.",
     "cuando_lo_uso": "Cuando tenés una mano fuerte, jugás para llegar al showdown: apostás para que el rival pague con manos peores y así cobrar más.",
     "cuando_no": "Con una mano floja no querés llegar al showdown: vas a perder la comparación. Ahí tu única chance es que el rival se retire.",
-    "ejemplo": "Tenés pareja de reyes; el rival, pareja de ochos. Llegan los dos al final y muestran: tu pareja es más alta, el bote es tuyo.",
+    "ejemplo": "Llegan los dos al final y muestran las cartas: tu mano de 5 le gana a la del rival. El bote es tuyo, sin importar cómo apostó cada uno en el camino.",
     "error_comun": "Pagar la última apuesta 'para ver' con una mano que no le gana a nada. Si no podés ganar la comparación, ese pago es tirar fichas.",
     "idea_clave": "Ganar por cartas = mostrar la mejor mano de 5 al final. Necesitás mano de verdad."
    },
@@ -1685,10 +1667,10 @@
     "que_es": "Ganás 'por fold' cuando todos los demás se retiran y quedás solo en la mano. El bote es tuyo sin mostrar las cartas.",
     "por_que_importa": "Es la otra forma de ganar el bote, y es enorme: podés llevarte manos sin tener nada, solo apostando de forma que al rival no le convenga seguir. Esto es lo que hace del póker un juego de decisiones y no de suerte.",
     "como_funciona": "Si apostás y todos se retiran, la mano termina ahí. No importa qué cartas tenías: nadie las ve y el bote va para vos.",
-    "cuando_lo_uso": "Cuando tu mano es floja pero la historia que contás con tus apuestas es creíble y el rival tiene una mano con la que le duele pagar.",
-    "cuando_no": "Contra un rival que paga siempre: si nunca se retira, farolear —apostar fuerte con una mano floja para que abandone— no sirve. Contra ese rival ganás solo por cartas.",
-    "ejemplo": "El board muestra A♠ K♦ 4♣. Vos no ligaste nada, pero apostás como si tuvieras un as. El rival tiene una pareja chica, no le gusta ese board y se retira. Ganaste el bote con la peor mano.",
-    "error_comun": "Farolear sin pensar en qué puede tener el rival. Si su mano es fuerte, no se va a ir, y vas a perder fichas de más.",
+    "cuando_lo_uso": "Es la otra chance de ganar el bote, además del showdown: no depende de qué cartas tengas vos, depende de que los demás decidan retirarse.",
+    "cuando_no": "Si el rival no se retira nunca, ganar por fold no es una opción con esa mano: ahí tu única chance real es ganar por cartas, mostrando la mejor mano en el showdown.",
+    "ejemplo": "Apostás en el flop. El rival lo piensa, decide no pagar, y se retira. La mano termina ahí mismo: te llevás el bote sin mostrar tus cartas —ni siquiera importa qué tenías.",
+    "error_comun": "Pensar que ganar por fold es un plan seguro. El rival puede no retirarse nunca: no siempre vas a ganar el bote de esa forma.",
     "idea_clave": "Ganar por fold = todos se retiran. Se puede ganar el bote sin tener nada."
    },
    "pasos_mesa": null,
@@ -1827,7 +1809,7 @@
     "como_funciona": "Igualás el monto de la última apuesta. Si nadie sube después, la ronda se cierra y sale la carta siguiente.",
     "cuando_lo_uso": "Cuando tu mano es buena para seguir pero no lo bastante fuerte para subir, o cuando estás esperando una carta que te haría ganar y el precio para seguir viéndola es razonable.",
     "cuando_no": "No pagues 'por curiosidad' o 'para ver qué tenía'. Si tu mano no le gana a casi nada de lo que el rival podría tener, foldeá.",
-    "ejemplo": "El rival apuesta 5 en el flop. Tenés una pareja media y querés seguir viendo, pero no subir. Hacés call de 5.",
+    "ejemplo": "El rival apuesta 5 en el flop. Tu mano no es como para subir, pero tampoco para tirarla: querés seguir viendo sin subir. Hacés call de 5.",
     "error_comun": "Pagar la última apuesta solo para no quedarte con la duda. Un call de curiosidad que no gana nunca es tirar fichas.",
     "idea_clave": "Call = igualar la apuesta para seguir. Cada call cuesta: no pagues cualquier cosa."
    },
@@ -1874,7 +1856,7 @@
     "como_funciona": "Elegís un monto (dentro de lo que permita la mesa) y lo ponés en el bote. Los rivales, uno por uno, deciden qué hacer con tu apuesta.",
     "cuando_lo_uso": "Con manos fuertes que quieren pago. Con manos flojas que se benefician de que el rival se retire. Rara vez con manos medias.",
     "cuando_no": "Con una mano media que no le gana a lo que te va a pagar ni hace retirar a lo que te gana: esa mano prefiere hacer check.",
-    "ejemplo": "Ligás trío (tres cartas iguales) en el flop. Apostás para que el rival, que tiene pareja alta, pague. Cada ficha que te pague es tuya.",
+    "ejemplo": "Ligás una mano fuerte en el flop. Apostás para que el rival, que tiene algo más flojo, pague igual. Cada ficha que te pague es tuya.",
     "error_comun": "Apostar 'porque sí', sin saber qué querés lograr. Antes de apostar, tené claro si buscás que te paguen o que se retiren.",
     "idea_clave": "Bet = ser el primero en apostar. Apostás para que te paguen (mano fuerte) o para que se retiren (mano floja)."
    },
@@ -1921,7 +1903,7 @@
     "como_funciona": "Tenés que subir al menos otro tanto de lo que había que pagar (subir 'un poquito' no está permitido; la regla exacta la ves en la mesa). Los rivales vuelven a decidir: pagar tu subida, volver a subir o retirarse.",
     "cuando_lo_uso": "Con manos muy fuertes que quieren un bote grande. O para hacer retirar al rival cuando la subida cuenta una historia creíble y él tiene una mano con la que le duele pagar.",
     "cuando_no": "No subas con manos medias 'para definir': si te vuelven a subir, quedás jugando un bote grande con una mano que no aguanta.",
-    "ejemplo": "El rival abre a 3. Tenés A♠ A♦ (la mejor mano antes del flop). Subís a 9 para agrandar el bote desde el principio.",
+    "ejemplo": "El rival abre a 3. Tenés A♠ A♦, una mano que te encanta jugar. Subís a 9 para agrandar el bote desde el principio.",
     "error_comun": "Subir con una mano que solo hace pagar a lo que te gana y retirarse a lo que le ganás. Antes de subir, pensá: '¿quién me paga y quién se va?'",
     "idea_clave": "Raise = subir una apuesta existente. Es la jugada más fuerte: mano grande, o presión con una historia creíble."
    },
@@ -1968,7 +1950,7 @@
     "como_funciona": "Antes del flop, la primera subida se llama 'open raise', la re-subida '3-bet' y la siguiente '4-bet'. Cada escalón representa una mano más fuerte. Cómo y cuándo usarlas es todo el Nivel 7.",
     "cuando_lo_uso": "Con tus mejores manos. Como jugada de presión, solo si tenés un plan claro. Por ahora alcanza con reconocerla cuando la ves.",
     "cuando_no": "No vuelvas a subir 'porque me molesta que suban'. Sin una mano fuerte o un plan, solo agrandás tu pérdida.",
-    "ejemplo": "UTG abre a 3. El botón sube a 9 (una 3-bet). Vos, en la ciega grande, tenés A♠ A♦ y volvés a subir a 27 (una 4-bet).",
+    "ejemplo": "UTG abre a 3. El botón sube a 9 (una 3-bet). Vos, en la ciega grande, tenés una mano excelente y volvés a subir a 27 (una 4-bet).",
     "error_comun": "Tratar toda re-subida del rival como un engaño. La mayoría de las veces es una mano enorme: respetala hasta tener razones para no hacerlo.",
     "idea_clave": "Re-raise = subir sobre una subida. Cada escalón = manos más fuertes."
    },
@@ -2014,7 +1996,7 @@
     "por_que_importa": "Es la apuesta máxima y sin vuelta atrás. Define la mano: si te pagan, se muestran las cartas y no hay más decisiones. Usarla bien o mal cambia sesiones enteras.",
     "como_funciona": "Ponés tu stack entero (todas tus fichas en la mesa). Si un rival tiene menos y paga, solo se juega lo que él pueda cubrir; el resto vuelve a vos. Nunca podés perder más de lo que tenés en la mesa.",
     "cuando_lo_uso": "Cuando te quedan pocas fichas y tenés una mano fuerte. O con una mano a medio hacer con mucho potencial, que prefiere jugarse todo ahora antes que pagar apuestas incómodas después.",
-    "cuando_no": "Con un stack profundo y una pareja media: ir all-in te hace ganar un bote chico o perder uno enorme. El all-in liviano es de los errores más caros.",
+    "cuando_no": "Con un stack profundo y una mano media: ir all-in te hace ganar un bote chico o perder uno enorme. El all-in liviano es de los errores más caros.",
     "ejemplo": "Te quedan 12 ciegas grandes y tenés A♠ K♦. En vez de abrir chico, vas all-in: presionás fuerte y te evitás decisiones difíciles después del flop.",
     "error_comun": "Ir all-in 'para no pensar'. El all-in resuelve la mano, pero si lo hacés con la mano equivocada, la resuelve en contra tuya.",
     "idea_clave": "All-in = todas tus fichas. Máxima presión, cero vuelta atrás. Nunca perdés más de lo que tenés en la mesa."
@@ -2496,7 +2478,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Todas las manos de póker se ordenan en una escala fija, de la más débil a la más fuerte. Cuando dos jugadores muestran las cartas, gana la que está más arriba en la escala.",
+    "que_es": "Todas las manos de póker se ordenan en una escala fija, de la más débil a la más fuerte. En el showdown, gana la que está más arriba en la escala.",
     "por_que_importa": "Sin esta escala no podés saber si ganaste. Es la tabla que vas a tener en la cabeza el resto de tu vida como jugador: cuanto antes la automatices, mejor.",
     "como_funciona": "Son 10 categorías. De abajo hacia arriba: carta alta, pareja, doble pareja, trío, escalera, color, full, póker, escalera de color y —la mejor de todas— la escalera real. Cada categoría le gana a todas las de abajo, sin importar las cartas sueltas.",
     "ejemplo": "Un color (cinco del mismo palo) siempre le gana a una escalera (cinco seguidas), aunque la escalera use cartas más altas. La categoría manda primero.",
@@ -2641,7 +2623,7 @@
     "como_funciona": "Entre dos dobles parejas: primero se compara la pareja más alta de cada uno; si empatan, la segunda pareja; si también empatan, la quinta carta.",
     "cuando_lo_uso": "'Tengo doble pareja', 'el board me dio dos pares'.",
     "ejemplo": "Tenés A♦ 9♠. Board: A♣ 9♥ 4♠ 2♦ 7♣. Dos ases y dos nueves: doble pareja (ases y nueves), con el 7 de acompañamiento.",
-    "error_comun": "Enamorarte de la doble pareja cuando la mesa tiene una pareja propia (por ejemplo 9♥ 9♦ en el board): ahí alguien puede tener full y tu mano ya no es la mejor.",
+    "error_comun": "Enamorarte de la doble pareja cuando el board tiene una pareja propia (por ejemplo 9♥ 9♦): ahí alguien puede tener full y tu mano ya no es la mejor.",
     "idea_clave": "Doble pareja = dos parejas. Le gana a una pareja; le pierde a un trío o más."
    },
    "pasos_mesa": null,
@@ -2688,7 +2670,7 @@
     "como_funciona": "Se forma con una pareja en tu mano más una carta igual en el board, o con una carta tuya más dos iguales en el board. Entre dos tríos, gana el de valor más alto.",
     "cuando_lo_uso": "'Ligué trío', 'tengo trío de ochos'.",
     "ejemplo": "Tenés 8♥ 8♦. Flop: 8♠ K♣ 4♦. Tres ochos: trío, con K y 4 de acompañamiento.",
-    "error_comun": "Con la mesa K♠ K♦ 4♣ y K♥ Q♠ en la mano, cantar 'doble pareja'. No: tres reyes es trío de reyes (K K K Q 4).",
+    "error_comun": "Con el board K♠ K♦ 4♣ y K♥ Q♠ en la mano, cantar 'doble pareja'. No: tres reyes es trío de reyes (K K K Q 4).",
     "idea_clave": "Trío = tres cartas iguales. Le gana a la doble pareja."
    },
    "pasos_mesa": null,
@@ -2733,7 +2715,7 @@
     "que_es": "Cinco cartas de valor seguido, de cualquier palo (por ejemplo, 6-7-8-9-10). También se la llama 'seguida'.",
     "por_que_importa": "Mano fuerte que muchos principiantes no ven venir en el board. Le gana al trío y a la doble pareja.",
     "como_funciona": "Cuentan solo los valores, no los palos. El As sirve de carta más alta (10-J-Q-K-A) o de más baja (A-2-3-4-5). No se puede 'dar la vuelta': Q-K-A-2-3 no es escalera.",
-    "cuando_lo_uso": "'Tengo escalera'; o al leer el board: 'hay cuatro cartas seguidas en la mesa, cuidado'.",
+    "cuando_lo_uso": "'Tengo escalera'; o al leer el board: 'hay cuatro cartas seguidas en el board, cuidado'.",
     "ejemplo": "Tenés 9♣ 8♦. Board: 7♠ 6♥ 5♣ K♦ 2♠. Con 9-8-7-6-5 tenés una escalera al 9.",
     "error_comun": "Contar una escalera 'casi hecha' como si estuviera lista. 8-9-J-Q, con el hueco del 10, todavía no es nada.",
     "idea_clave": "Escalera = 5 valores seguidos, palos mezclados. El As va arriba o abajo, nunca en el medio."
@@ -2825,9 +2807,9 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "Un trío y una pareja juntos en la misma mano de 5 (tres reyes y dos sietes). En inglés, 'full house'. Se dice 'full de reyes'.",
-    "por_que_importa": "Mano muy fuerte: le gana al color y a la escalera. Cuando la mesa tiene una pareja, siempre hay que tenerlo en cuenta.",
+    "por_que_importa": "Mano muy fuerte: le gana al color y a la escalera. Cuando el board tiene una pareja, siempre hay que tenerlo en cuenta.",
     "como_funciona": "Entre dos fulls decide primero el trío: full de reyes le gana a full de damas. Solo si los tríos empatan, decide la pareja.",
-    "cuando_lo_uso": "'Tengo full'; o al leer el board: 'la mesa se emparejó, alguien puede tener full'.",
+    "cuando_lo_uso": "'Tengo full'; o al leer el board: 'el board se emparejó, alguien puede tener full'.",
     "ejemplo": "Tenés K♥ K♦. Board: K♠ 9♣ 9♦ 4♠ 2♥. Tres reyes y dos nueves: full de reyes.",
     "error_comun": "Cantar 'full' cuando en realidad tenés trío y una carta suelta. Hace falta trío Y pareja: tres reyes con K-9-4 de acompañamiento es solo trío.",
     "idea_clave": "Full = trío + pareja. Le gana al color. Entre dos fulls, decide el trío."
@@ -2967,7 +2949,7 @@
    "contenido": {
     "que_es": "La escalera de color más alta posible: 10-J-Q-K-A, todas del mismo palo. En inglés, 'royal flush'. Es tan especial que se la nombra aparte.",
     "por_que_importa": "Es la mejor mano del póker. No existe nada que le gane.",
-    "como_funciona": "Es un caso puntual de escalera de color. No hay 'escaleras reales más chicas': o tenés 10-J-Q-K-A del mismo palo, o no. Solo se reparte el bote si la escalera real está entera en la mesa y todos la juegan.",
+    "como_funciona": "Es un caso puntual de escalera de color. No hay 'escaleras reales más chicas': o tenés 10-J-Q-K-A del mismo palo, o no. Solo se reparte el bote si la escalera real está entera en el board y todos la juegan.",
     "cuando_lo_uso": "Probablemente la veas unas pocas veces en toda tu vida de jugador.",
     "ejemplo": "Tenés A♦ K♦. Board: Q♦ J♦ 10♦ 5♣ 2♠. Tenés 10-J-Q-K-A de diamantes: escalera real. Imbatible.",
     "idea_clave": "Escalera real = 10-J-Q-K-A del mismo palo. La mejor mano posible."
@@ -3045,7 +3027,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El kicker es una carta que no forma parte de tu combinación pero que sirve para desempatar contra una mano de la misma categoría.",
+    "que_es": "El kicker es el nombre técnico de lo que veníamos llamando 'carta de acompañamiento': una carta que no forma parte de tu combinación pero que sirve para desempatar contra una mano de la misma categoría.",
     "por_que_importa": "Muchísimos botes se deciden por el kicker, sobre todo cuando los dos jugadores emparejaron la misma carta del board. Ignorarlo es un error caro y muy común.",
     "como_funciona": "Si los dos tienen la misma pareja (por ejemplo, los dos emparejaron el As del board), se compara la carta más alta que la acompaña. A-K le gana a A-Q. Si esa también empata, la siguiente, hasta 5 cartas. Si las 5 son iguales, es empate (bote repartido).",
     "cuando_lo_uso": "Cuando compartís la mano hecha con el rival: misma pareja, mismo trío. Ahí decide el kicker.",
@@ -3090,7 +3072,7 @@
     "por_que_importa": "Cierra el tema: con la categoría más estas reglas, podés resolver cualquier showdown sin dudar.",
     "como_funciona": "Se comparan las 5 cartas de cada mano en orden de importancia. Pareja: primero el valor de la pareja, después los kickers de mayor a menor. Doble pareja: la pareja más alta, después la segunda, después el kicker. Trío y póker: el valor del trío o del póker. Escalera, color y escalera de color: la carta más alta. Full: primero el trío, después la pareja. Si las 5 cartas que cuentan son iguales, el bote se reparte.",
     "cuando_lo_uso": "Cada vez que dos manos caen en la misma categoría.",
-    "ejemplo": "Board: A♠ 9♠ 4♠ 7♥ 2♣. Vos tenés K♠ J♠; el rival, Q♠ 8♠. Los dos tienen color de picas. Se compara de mayor a menor: los dos usan el A♠ de la mesa, pero después tu K le gana a su Q. Ganás.",
+    "ejemplo": "Board: A♠ 9♠ 4♠ 7♥ 2♣. Vos tenés K♠ J♠; el rival, Q♠ 8♠. Los dos tienen color de picas. Se compara de mayor a menor: los dos usan el A♠ del board, pero después tu K le gana a su Q. Ganás.",
     "error_comun": "Repartir el bote 'porque los dos tienen color'. Solo se reparte si las 5 cartas que cuentan son idénticas; casi siempre alguna desempata.",
     "idea_clave": "Misma categoría → se comparan las 5 cartas en orden. Solo hay reparto si son idénticas."
    },
@@ -3168,7 +3150,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El paso práctico de mirar tus 7 cartas (2 privadas + 5 de la mesa) y armar la mejor mano de 5 posible. Es lo que hacés, en la cabeza, en cada showdown.",
+    "que_es": "El paso práctico de mirar tus 7 cartas (2 privadas + 5 del board) y armar la mejor mano de 5 posible. Es lo que hacés, en la cabeza, en cada showdown.",
     "por_que_importa": "Es la habilidad que cierra el Nivel 2. Si la tenés, podés mirar cualquier mano y decir qué tenés y qué tan fuerte es.",
     "como_funciona": "Un método simple, siempre en el mismo orden: 1) el palo — ¿hay cinco del mismo? 2) la secuencia — ¿hay cinco seguidas? 3) los repetidos — ¿pares, tríos, póker? Te quedás con la categoría más alta que encontrás y completás con las cartas más altas que sobren.",
     "cuando_lo_uso": "En cada showdown, y cada vez que sale una carta nueva en el board.",
@@ -4112,7 +4094,7 @@
     "por_que_importa": "Es la base de todo lo que viene. Foldear cuesta 0. Pagar cuesta lo que valga la apuesta. Antes de poner una ficha, la pregunta siempre es: '¿lo que puedo ganar justifica lo que me cuesta?'.",
     "como_funciona": "Ponés en la balanza dos cosas: lo que te cuesta seguir (la apuesta que tenés delante) y lo que podés llevarte (el bote, más lo que el rival ponga después). Todavía no hace falta ningún cálculo fino: alcanza con acostumbrarte a hacerte la pregunta.",
     "cuando_lo_uso": "Antes de cada pago y de cada apuesta, sin excepción.",
-    "ejemplo": "El bote es 20 BB y el rival apuesta 10. Seguir te cuesta 10 y podés ganar 30 (los 20 del bote + sus 10). Con eso sobre la mesa: ¿tu mano gana suficientes veces como para que valga la pena? Esa pregunta se aprende a responder en el Nivel 6.",
+    "ejemplo": "El bote es 15 BB y el rival apuesta 5. Seguir te cuesta 5 y podés ganar 20 (los 15 del bote + sus 5). Con eso sobre la mesa: ¿tu mano gana suficientes veces como para que valga la pena? Esa pregunta se aprende a responder en el Nivel 6.",
     "error_comun": "Pagar sin pensar en el precio, solo porque 'quiero ver'. Cada pago que no se justifica es una fuga.",
     "idea_clave": "Toda decisión tiene un precio. Foldear cuesta 0. Antes de pagar, pensá qué ganás y qué te cuesta."
    },
@@ -4589,7 +4571,7 @@
    "contenido": {
     "que_es": "La textura del board es cómo se relacionan entre sí sus cartas: sus palos, sus valores y qué tan conectadas están. Un board seco es una textura con pocas conexiones: cartas de valores separados y de palos distintos (por ejemplo K♠7♦2♣).",
     "por_que_importa": "Es el tipo de board más simple de leer: casi nadie tiene un proyecto porque no hay dos cartas seguidas ni dos del mismo palo. Lo que ves es, en general, lo que hay.",
-    "como_funciona": "Mirá las 3 cartas del flop: si están lejos en valor y no hay dos del mismo palo, es seco. En un board así, las manos hechas valen más tranquilas, porque hay pocas cartas por venir que cambien mucho la situación.",
+    "como_funciona": "Las 3 cartas del flop lo definen: si están lejos en valor y no hay dos del mismo palo, es seco. En un board así, las manos hechas valen más tranquilas, porque hay pocas cartas por venir que cambien mucho la situación.",
     "cuando_lo_uso": "Apenas se abre el flop: '¿hay cartas seguidas o del mismo palo? Si no, es un board seco.'",
     "ejemplo": "Flop K♠7♦2♣: valores separados, tres palos distintos. Muy poco puede completar algo grande ahí.",
     "error_comun": "Jugar todos los boards igual de 'tranquilo'. Un board seco de hoy puede volverse coordinado con una sola carta del turn.",
@@ -4630,8 +4612,8 @@
    "contenido": {
     "que_es": "Un board coordinado es lo contrario del seco: cartas de valores cercanos, con muchas combinaciones posibles de escalera (por ejemplo 9♠8♦7♣).",
     "por_que_importa": "En un board así hay muchas más manos posibles: escaleras hechas, proyectos abiertos, incluso trío. Hay que jugar con más cuidado: lo que parecía una buena mano puede estar perdiendo.",
-    "como_funciona": "Mirá si las 3 cartas del flop están cerca en valor, aunque no sean seguidas exactas. Cuanto más cerca, más 'coordinado' y más proyectos hay dando vueltas.",
-    "cuando_lo_uso": "Apenas ves el flop: '¿estas cartas están cerca en valor? Si sí, mucha gente puede tener algo.'",
+    "como_funciona": "Preguntate si las 3 cartas del flop están cerca en valor, aunque no sean seguidas exactas. Cuanto más cerca, más 'coordinado' y más proyectos hay dando vueltas.",
+    "cuando_lo_uso": "En cuanto se abre el flop: '¿estas cartas están cerca en valor? Si sí, mucha gente puede tener algo.'",
     "ejemplo": "Flop 9♠8♦7♣: cualquier mano con 10-6, 6-5, o un 9, un 8 o un 7 ya tiene algo hecho o un proyecto fuerte.",
     "error_comun": "Apostar fuerte en un board coordinado con una mano media, sin pensar en cuánta gente puede tener ya una escalera o algo mejor.",
     "idea_clave": "Board coordinado = cartas cercanas. Muchos proyectos y manos hechas dando vueltas."
@@ -4671,8 +4653,8 @@
    "contenido": {
     "que_es": "Un board monótono tiene las 3 cartas del flop del mismo palo (por ejemplo Q♠9♠4♠).",
     "por_que_importa": "Cualquiera con dos cartas de ese palo ya tiene color hecho. Es el board donde más hay que respetar la posibilidad de color.",
-    "como_funciona": "Mirá los palos del flop: si los 3 son iguales, es monótono. A partir de ahí, cualquier apuesta fuerte puede significar color; y si vos no tenés cartas de ese palo, tu mano hecha vale menos de lo normal.",
-    "cuando_lo_uso": "Apenas ves el flop: '¿las 3 cartas son del mismo palo?'",
+    "como_funciona": "Los palos del flop lo dicen todo: si los 3 son iguales, es monótono. A partir de ahí, cualquier apuesta fuerte puede significar color; y si vos no tenés cartas de ese palo, tu mano hecha vale menos de lo normal.",
+    "cuando_lo_uso": "Al ver el flop, primero los palos: '¿las 3 cartas son del mismo palo?'",
     "ejemplo": "Flop Q♠9♠4♠. Cualquiera con dos picas ya tiene color. Un trío de nueves ahí es fuerte, pero puede estar perdiendo contra un color.",
     "error_comun": "Ignorar el color posible porque 'yo tengo una mano hecha buena'. En un board monótono, hasta un full puede perder si el rival tiene escalera de color, y una mano hecha modesta pierde seguido contra el color.",
     "idea_clave": "Board monótono = 3 cartas del mismo palo. El color siempre está en juego."
@@ -4712,8 +4694,8 @@
    "contenido": {
     "que_es": "Un board rainbow tiene las 3 cartas del flop de 3 palos distintos (por ejemplo K♠9♥4♣): ningún proyecto de color es posible todavía.",
     "por_que_importa": "Es una preocupación menos: nadie puede tener color hecho ni proyecto de color con solo 3 cartas de palos distintos en la mesa.",
-    "como_funciona": "Mirá los palos: si los 3 son diferentes, es rainbow. Ojo: el turn o el river pueden repetir un palo y abrir una posibilidad de color que antes no existía.",
-    "cuando_lo_uso": "Apenas ves el flop: '¿los 3 palos son distintos? Entonces, por ahora, no hay color en juego.'",
+    "como_funciona": "Contá los palos: si los 3 son diferentes, es rainbow. Eso sí, el turn o el river pueden repetir un palo y abrir una posibilidad de color que antes no existía.",
+    "cuando_lo_uso": "Con el flop recién servido: '¿los 3 palos son distintos? Entonces, por ahora, no hay color en juego.'",
     "ejemplo": "Flop K♠9♥4♣: rainbow. Si el turn trae otra pica (por ejemplo 7♠), el board deja de ser rainbow y ahí sí puede haber proyecto de color.",
     "error_comun": "Suponer que como el flop es rainbow, el color nunca va a ser un problema en esa mano. Alcanza con que salga una carta más del mismo palo para que la situación cambie.",
     "idea_clave": "Board rainbow = 3 palos distintos en el flop. Sin color en juego, por ahora."
@@ -4753,7 +4735,7 @@
    "contenido": {
     "que_es": "Un board pareado tiene dos cartas del mismo valor entre las que salieron (por ejemplo J♠J♦4♣).",
     "por_que_importa": "Habilita el full house y el póker para cualquiera que tenga la tercera de ese valor. También hace que una doble pareja 'de las tuyas' sea menos segura.",
-    "como_funciona": "Mirá si dos de las cartas del board repiten valor. A partir de ahí, cualquier carta de ese mismo valor en la mano de un rival le da trío usando la pareja del board, y si tenés vos la tercera, tenés póker.",
+    "como_funciona": "Preguntate si dos de las cartas del board repiten valor. A partir de ahí, cualquier carta de ese mismo valor en la mano de un rival le da trío usando la pareja del board, y si tenés vos la tercera, tenés póker.",
     "cuando_lo_uso": "Apenas ves el flop, turn o river: '¿hay dos cartas iguales en la mesa?'",
     "ejemplo": "Board J♠J♦4♣. Cualquiera con un J en la mano tiene trío de jotas. Si vos tenés Q♣Q♥, tu pareja de damas ya no es tan tranquila: un J solo en la mano del rival te pasa por arriba.",
     "error_comun": "Mirar un board pareado y solo pensar en tu propia mano, sin preguntarte quién más podría tener esa carta repetida.",
@@ -4795,14 +4777,14 @@
    "contenido": {
     "que_es": "Mirar el board y preguntarte qué escaleras son posibles con las cartas que salieron.",
     "por_que_importa": "Te dice qué tan peligroso es el board para vos y qué tenés que vigilar en las próximas cartas.",
-    "como_funciona": "Fijate qué tan cerca están los valores del board. Con 3 cartas seguidas o casi seguidas, hay varias escaleras posibles; con cartas muy separadas, casi ninguna.",
+    "como_funciona": "Esto depende de qué tan cerca están los valores del board: con 3 cartas seguidas o casi seguidas, hay varias escaleras posibles; con cartas muy separadas, casi ninguna.",
     "cuando_lo_uso": "En cada flop, turn y river nuevo: '¿qué escalera se podría estar armando acá?'",
     "ejemplo": "Board 9♠7♦6♣. Con 8-5 en la mano ya tenés escalera hecha: 5-6-7-8-9. Con T-8 también: 6-7-8-9-T. En cambio con 8-4 todavía NO tenés escalera: te falta un 5 o un T para completarla — es solo una posibilidad, no una mano hecha.",
     "error_comun": "Mirar solo si VOS tenés escalera, sin pensar qué escaleras podría tener el rival con ese board.",
-    "idea_clave": "Mirá el board y preguntate qué escaleras son posibles, las tuyas y las del rival."
+    "idea_clave": "Preguntate siempre, ante cada board, qué escaleras son posibles: las tuyas y las del rival."
    },
    "pasos_mesa": null,
-   "idea_clave": "Mirá el board y preguntate qué escaleras son posibles, las tuyas y las del rival.",
+   "idea_clave": "Preguntate siempre, ante cada board, qué escaleras son posibles: las tuyas y las del rival.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -4842,10 +4824,10 @@
     "cuando_lo_uso": "En cada calle nueva: '¿cuántas cartas de un mismo palo hay en la mesa?'",
     "ejemplo": "Board K♠9♠4♦. Dos picas en la mesa: nadie tiene color todavía, pero cualquiera con dos picas en la mano está en proyecto de color.",
     "error_comun": "Confundir 'hay 2 cartas de un palo' con 'ya hay color'. Con 2 en el board hace falta 3 en tu mano, o esperar una carta más para completarlo.",
-    "idea_clave": "Mirá cuántas cartas de un mismo palo hay en el board: 3 es color hecho posible, 2 es proyecto posible."
+    "idea_clave": "Contá cuántas cartas de un mismo palo hay en el board: 3 es color hecho posible, 2 es proyecto posible."
    },
    "pasos_mesa": null,
-   "idea_clave": "Mirá cuántas cartas de un mismo palo hay en el board: 3 es color hecho posible, 2 es proyecto posible.",
+   "idea_clave": "Contá cuántas cartas de un mismo palo hay en el board: 3 es color hecho posible, 2 es proyecto posible.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -5010,7 +4992,7 @@
    "contenido": {
     "que_es": "Identificar, calle a calle, qué cartas del turn o del river te ayudan específicamente a vos.",
     "por_que_importa": "Es la otra cara de la carta peligrosa: saber qué te conviene te ayuda a decidir si seguís pagando por ver la próxima carta.",
-    "como_funciona": "Mirá tu proyecto o tu mano y preguntate: '¿qué carta la mejora?'. Puede ser una que completa tu color o escalera, o una que te da una pareja más fuerte.",
+    "como_funciona": "Repasá tu proyecto o tu mano y preguntate: '¿qué carta la mejora?'. Puede ser una que completa tu color o escalera, o una que te da una pareja más fuerte.",
     "cuando_lo_uso": "Antes de pagar para ver una carta más: '¿qué necesito que salga?'",
     "ejemplo": "Tenés K♠Q♠. Board: J♠6♠2♦. Cualquier pica te completa color; un K o una Q te da una pareja alta. Ya sabés exactamente qué estás esperando.",
     "error_comun": "Seguir jugando 'a ver qué sale' sin tener claro qué carta específica te mejora.",
@@ -5053,7 +5035,7 @@
    "contenido": {
     "que_es": "Pensar, calle a calle, qué cartas podrían estar ayudando al rival según cómo jugó la mano hasta ahí.",
     "por_que_importa": "Completa el cuadro: no alcanza con mirar tu propia mano y tus propias cartas buenas; el rival también tiene cartas que lo mejoran, y a veces coinciden con las tuyas.",
-    "como_funciona": "Mirá el board y preguntate qué proyectos son posibles ahí y qué manos hechas caben. Esas son las cartas que, si aparecen, probablemente lo ayudan a él.",
+    "como_funciona": "Pensá el board desde el otro lado de la mesa: qué proyectos son posibles ahí y qué manos hechas caben. Esas son las cartas que, si aparecen, probablemente lo ayudan a él.",
     "cuando_lo_uso": "Junto con leer tus propias cartas buenas, cada vez que sale una carta nueva: pensás las dos caras, la tuya y la de él.",
     "ejemplo": "Tenés trío de seises (6♦6♥ + 6♣ del board). Board: J♠9♠6♣. Un 10 o una pica más ayudan a cualquiera que tenga un proyecto de escalera o de color: son cartas que probablemente lo favorecen a él, aunque tu trío siga siendo trío.",
     "error_comun": "Suponer que si tu mano no cambió, la situación tampoco cambió. El board le puede haber dado algo mejor al rival sin tocar tu mano en nada.",
@@ -5138,7 +5120,7 @@
    "contenido": {
     "que_es": "Top pair es cuando tu pareja se forma con la carta más alta del board.",
     "por_que_importa": "Es, en general, la mejor pareja posible en ese flop — aunque no es automáticamente una mano invencible: hay que seguir mirando el kicker y el resto del board.",
-    "como_funciona": "Mirá la carta más alta del board y fijate si una de tus cartas privadas coincide con ella.",
+    "como_funciona": "Identificá la carta más alta del board y comprobá si una de tus cartas privadas coincide con ella.",
     "cuando_lo_uso": "Al leer tu mano en el flop: '¿emparejé la carta más alta de la mesa?'",
     "ejemplo": "Board K♠7♦2♣. Tenés K♥9♠: emparejaste el rey, la carta más alta del board. Eso es top pair, con kicker 9.",
     "error_comun": "Confiar ciegamente en cualquier top pair. Con un kicker bajo, un top pair puede perder contra otro top pair mejor acompañado.",
@@ -5181,14 +5163,14 @@
    "contenido": {
     "que_es": "Middle pair es cuando tu pareja se forma con la carta del medio del board (ni la más alta, ni la más baja).",
     "por_que_importa": "Es una mano incómoda: le gana a manos peores, pero un top pair del rival —muy posible— la deja atrás.",
-    "como_funciona": "Ordená las 3 cartas del flop de mayor a menor y fijate cuál emparejaste. Si es la del medio, tenés middle pair.",
+    "como_funciona": "Ordená las 3 cartas del flop de mayor a menor y comprobá cuál emparejaste. Si es la del medio, tenés middle pair.",
     "cuando_lo_uso": "Al leer tu mano en el flop: '¿emparejé la carta del medio?'",
     "ejemplo": "Board K♠7♦2♣. Tenés 7♥9♠: emparejaste el 7, la carta del medio. Middle pair.",
     "error_comun": "Jugar un middle pair con la misma confianza que un top pair. Contra apuestas grandes, un middle pair necesita mucho más cuidado.",
-    "idea_clave": "Middle pair = pareja con la carta del medio del board. Ojo con lo que apuesta el rival."
+    "idea_clave": "Middle pair = pareja con la carta del medio del board. Prestale atención a lo que apuesta el rival."
    },
    "pasos_mesa": null,
-   "idea_clave": "Middle pair = pareja con la carta del medio del board. Ojo con lo que apuesta el rival.",
+   "idea_clave": "Middle pair = pareja con la carta del medio del board. Prestale atención a lo que apuesta el rival.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -5224,7 +5206,7 @@
    "contenido": {
     "que_es": "Bottom pair es cuando tu pareja se forma con la carta más baja del board.",
     "por_que_importa": "Es la pareja más floja posible en ese flop: casi cualquier otra pareja del rival ya le gana.",
-    "como_funciona": "Mirá la carta más baja del board y fijate si la emparejaste.",
+    "como_funciona": "Identificá la carta más baja del board y comprobá si la emparejaste.",
     "cuando_lo_uso": "Al leer tu mano: '¿emparejé la carta más baja de la mesa?'",
     "ejemplo": "Board K♠7♦2♣. Tenés 2♥9♠: emparejaste el 2, la carta más baja. Bottom pair.",
     "error_comun": "Pagar apuestas grandes con un bottom pair 'porque es una pareja'. Suele ser una mano para soltar fácil frente a presión.",
@@ -5310,14 +5292,14 @@
    "contenido": {
     "que_es": "Formar una doble pareja usando tus 2 cartas privadas contra el board, típicamente emparejando dos de tus cartas con dos del board.",
     "por_que_importa": "Es un salto fuerte de categoría respecto de una sola pareja. Pero conviene distinguir una doble pareja 'de las tuyas' de una que ya viene armada en el board — esa última la comparte cualquiera.",
-    "como_funciona": "Mirá si cada una de tus cartas privadas coincide con una carta distinta del board.",
+    "como_funciona": "Comprobá si cada una de tus cartas privadas coincide con una carta distinta del board.",
     "cuando_lo_uso": "Al leer tu mano en el flop, turn o river.",
     "ejemplo": "Tenés K♠7♦. Board: K♥7♠2♣. Emparejaste el rey Y el 7 del board: doble pareja de reyes y sietes, hecha con tus dos cartas privadas.",
     "error_comun": "No notar cuándo la doble pareja ya está en el board (por ejemplo K♥7♠7♦) y que, en ese caso, cualquier rival la tiene también — no es tuya en particular.",
-    "idea_clave": "Doble pareja hecha = tus dos cartas privadas emparejaron dos del board. Fijate si es realmente tuya o ya está en la mesa."
+    "idea_clave": "Doble pareja hecha = tus dos cartas privadas emparejaron dos del board. Distinguí si es realmente tuya o ya está armada en la mesa."
    },
    "pasos_mesa": null,
-   "idea_clave": "Doble pareja hecha = tus dos cartas privadas emparejaron dos del board. Fijate si es realmente tuya o ya está en la mesa.",
+   "idea_clave": "Doble pareja hecha = tus dos cartas privadas emparejaron dos del board. Distinguí si es realmente tuya o ya está armada en la mesa.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -5435,7 +5417,7 @@
    "contenido": {
     "que_es": "Completar una escalera usando alguna combinación de tus cartas privadas y el board.",
     "por_que_importa": "Es una categoría muy por encima de cualquier pareja o trío. Muchos principiantes no la ven venir en boards conectados.",
-    "como_funciona": "Sumá tus 2 cartas privadas a las del board y fijate si hay 5 valores seguidos entre las 7.",
+    "como_funciona": "Sumá tus 2 cartas privadas a las del board y comprobá si hay 5 valores seguidos entre las 7.",
     "cuando_lo_uso": "En cualquier board donde haya cartas cercanas en valor: revisá siempre si armaste escalera.",
     "ejemplo": "Tenés J♠T♦. Board: 9♣8♥2♦, turn 7♠. J-T-9-8-7: escalera hecha.",
     "error_comun": "Festejar la escalera sin mirar si el board también trae 3 o más cartas del mismo palo. Una escalera puede estar perdiendo contra un color.",
@@ -5479,10 +5461,10 @@
     "cuando_lo_uso": "En cualquier board con 3 o más cartas de un mismo palo.",
     "ejemplo": "Tenés Q♠4♠. Board: J♠9♠2♦, turn 6♠. Cinco picas entre tus cartas y el board: color con la Q como carta más alta.",
     "error_comun": "Suponer que 'tengo color' ya es sinónimo de ganar. Si tu carta más alta de ese palo no es la más alta posible, alguien puede tener un color mejor.",
-    "idea_clave": "Color hecho = 5 del mismo palo entre tus 7 cartas. Fijate si es el más alto posible, no des por sentado que ganás."
+    "idea_clave": "Color hecho = 5 del mismo palo entre tus 7 cartas. Confirmá si es el más alto posible: no des por sentado que ganás."
    },
    "pasos_mesa": null,
-   "idea_clave": "Color hecho = 5 del mismo palo entre tus 7 cartas. Fijate si es el más alto posible, no des por sentado que ganás.",
+   "idea_clave": "Color hecho = 5 del mismo palo entre tus 7 cartas. Confirmá si es el más alto posible: no des por sentado que ganás.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -5555,7 +5537,7 @@
    "contenido": {
     "que_es": "'Los nuts' es la mejor mano posible que se puede armar en ese board específico, en ese momento de la mano.",
     "por_que_importa": "Tener los nuts significa que nadie te puede ganar en el showdown. Es el techo de fuerza para ese board.",
-    "como_funciona": "Mirá las cartas del board y preguntate: '¿cuál sería la mejor mano de 5 cartas que alguien podría armar con estas cartas comunitarias?'. Esa es 'los nuts' en ese momento; puede cambiar con cada carta nueva.",
+    "como_funciona": "Analizá las cartas del board y preguntate: '¿cuál sería la mejor mano de 5 cartas que alguien podría armar con estas cartas comunitarias?'. Esa es 'los nuts' en ese momento; puede cambiar con cada carta nueva.",
     "cuando_lo_uso": "En botes grandes, antes de comprometer muchas fichas: '¿tengo los nuts, o solo una mano fuerte?'",
     "ejemplo": "Board: K♠Q♠J♠T♦2♥. Los nuts ahí son la escalera de color con A♠T♠ — la mejor mano posible en ese board exacto.",
     "error_comun": "Creer que 'una mano muy fuerte' es lo mismo que 'los nuts'. Podés tener full y no ser los nuts si el board permite color o escalera de color.",
@@ -6636,15 +6618,15 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "El rango de apertura del cutoff (CO) es ancho: entran bastantes más manos que desde el HJ.",
-    "por_que_importa": "Desde el CO solo quedan dos jugadores por detrás antes del botón (además de las ciegas): el riesgo de encontrarte con algo mejor bajó bastante, y eso se refleja en un rango más generoso.",
+    "por_que_importa": "Desde el CO ya casi no quedan jugadores por detrás: solo el botón y las dos ciegas, tres en total. El riesgo de encontrarte con algo mejor bajó bastante, y eso se refleja en un rango más generoso.",
     "como_funciona": "Al rango del HJ le sumás manos conectadas, suited más bajas, y algunas broadways adicionales que todavía no entraban.",
     "cuando_lo_uso": "Cada vez que te toca actuar primero desde el CO y nadie entró antes.",
     "ejemplo": "Con Q♣9♣, floja para UTG o HJ, ya es una apertura razonable desde el CO.",
     "error_comun": "Jugar el CO con la misma prudencia que UTG, dejando pasar aperturas rentables solo por costumbre.",
-    "idea_clave": "CO = rango ancho. Solo dos jugadores por detrás antes del botón."
+    "idea_clave": "CO = rango ancho. Solo tres jugadores por detrás: el botón y las dos ciegas."
    },
    "pasos_mesa": null,
-   "idea_clave": "CO = rango ancho. Solo dos jugadores por detrás antes del botón.",
+   "idea_clave": "CO = rango ancho. Solo tres jugadores por detrás: el botón y las dos ciegas.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -6679,7 +6661,7 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "El rango de apertura del botón (BTN) es el más ancho de toda la mesa: entra la mayor cantidad de manos distintas de las seis posiciones.",
-    "por_que_importa": "El botón es la última posición en actuar preflop, y además va a estar EN posición durante el resto de la mano (actúa último en todas las rondas siguientes). Eso vale mucho: podés abrir bastante más ancho y seguir bien parado.",
+    "por_que_importa": "El botón es la última posición 'de mesa' en actuar preflop — después de él solo faltan hablar las dos ciegas — y además va a estar EN posición durante el resto de la mano: actúa último en todas las rondas siguientes (flop, turn, river). Eso vale mucho: podés abrir bastante más ancho y seguir bien parado.",
     "como_funciona": "Al rango del CO le sumás bastante más: conectores más bajos, suited variadas, broadways sueltas. Solo quedan las ciegas por detrás, y jugás con la ventaja de la posición en todas las calles siguientes.",
     "cuando_lo_uso": "Cada vez que te toca actuar primero desde el botón y nadie entró antes.",
     "ejemplo": "Con 8♠6♠, floja para casi cualquier otra posición, es una apertura razonable desde el botón: pocos rivales por detrás y jugás en posición el resto de la mano.",
@@ -6721,7 +6703,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El rango de apertura de la ciega chica (SB) se juega distinto a las demás posiciones, porque aunque actúa primero preflop, también va a actuar primero en todas las rondas siguientes — fuera de posición el resto de la mano.",
+    "que_es": "El rango de apertura de la ciega chica (SB) se juega distinto a las demás posiciones: para cuando le toca abrir, ya se retiraron todos los de mesa y solo falta hablar la ciega grande — pero en todas las rondas siguientes (flop, turn, river) la SB va a ser la primera en actuar, fuera de posición el resto de la mano.",
     "por_que_importa": "Tener posición o no importa mucho más allá de preflop: la SB abre con menos manos que el botón, a pesar de tener casi la misma cantidad de rivales por detrás, porque paga el costo de estar fuera de posición toda la mano.",
     "como_funciona": "El rango de la SB suele quedar entre el del CO y el del botón en amplitud: más ancho que posiciones tempranas, pero sin llegar a la amplitud del botón, por el costo de jugar fuera de posición después.",
     "cuando_lo_uso": "Cada vez que te toca actuar primero desde la SB (todos se retiraron o falta tu turno) y nadie entró todavía.",
@@ -7039,7 +7021,7 @@
     "por_que_importa": "Confiar en un out sucio como si fuera limpio te hace sobreestimar tus chances reales. Distinguirlos evita pagar de más pensando que estás más protegido de lo que estás.",
     "como_funciona": "Un out es sucio cuando, al completar tu proyecto, también completa (o puede completar) algo mejor para el rival — por ejemplo, la misma carta que te da color también le empareja el board a él para un full.",
     "cuando_lo_uso": "Al revisar tus outs en boards peligrosos (con posibilidad de color, escalera más alta, o cartas pareadas), donde alguno de tus outs también puede favorecer al rival.",
-    "ejemplo": "Tenés una escalera baja hecha, pero el board tiene tres cartas del mismo palo. Si sale una carta que 'mejora' el board para un color, esa misma carta no es un out para vos — o si te mejora a algo, igual podés perder contra un color. Ese tipo de situación es la lógica de un out sucio.",
+    "ejemplo": "Tenés un proyecto de color con A♠K♠ en un board 9♠8♦4♠ (9 outs a color). Uno de esos outs es justo el 8♠: si sale, completás tu color — pero esa misma carta también le da trío de ochos al rival, y si el rival ya tenía pareja de cuatros, ese trío se convierte en full. Ganás tu color y perdés la mano igual: ese out era sucio.",
     "error_comun": "Tratar cada out como si fuera garantía de ganar. Contra boards peligrosos, parte de tus outs pueden ser sucios sin que te des cuenta.",
     "idea_clave": "Out sucio = mejora tu mano, pero puede mejorar más todavía al rival. Cuenta menos que un out limpio."
    },
@@ -7790,7 +7772,7 @@
    ],
    "visualizacion_mesa": false,
    "contenido": {
-    "que_es": "Las reverse implied odds son el caso contrario a T por venir: situaciones donde, incluso completando tu proyecto, podés terminar perdiendo un bote MÁS GRANDE, porque tu mano completada sigue siendo vulnerable a algo mejor.",
+    "que_es": "Las reverse implied odds son el caso contrario a las implied odds (TN10): situaciones donde, incluso completando tu proyecto, podés terminar perdiendo un bote MÁS GRANDE, porque tu mano completada sigue siendo vulnerable a algo mejor.",
     "por_que_importa": "Te avisan que, en ciertos proyectos, la equity necesaria real debería ser MÁS ALTA que la que dan las pot odds puras — lo opuesto a las implied odds de TN10.",
     "como_funciona": "Preguntate: si completo mi proyecto, ¿existe una mano razonable que le gane igual? Si la respuesta es sí (por ejemplo, tu color no es el más alto posible), tenés reverse implied odds en contra.",
     "cuando_lo_uso": "Con proyectos donde tu mano completada puede seguir siendo vulnerable a algo mejor — por ejemplo, un color con cartas bajas en un board donde un color más alto también es posible.",
@@ -8334,7 +8316,7 @@
    "contenido": {
     "que_es": "Retirarte frente al open del rival porque tu mano no entra en tu rango de defensa para esa situación.",
     "por_que_importa": "Así como en N5 la mayoría de tus manos se foldeaban al abrir, acá pasa lo mismo respondiendo: la mayoría de las manos, la mayoría de las veces, no alcanzan para seguir.",
-    "como_funciona": "Si tu mano no entra ni en tu rango de call ni en tu rango de 3-bet para esa situación puntual, foldeás.",
+    "como_funciona": "Si tu mano no entra ni en tu rango de call ni en tu rango de 3-bet (T161) para esa situación puntual, foldeás.",
     "cuando_lo_uso": "Cada vez que tu mano no entra en tu rango de defensa contra ese open concreto.",
     "ejemplo": "UTG abre y estás en la BB con 9♠4♦: no entra en tu rango de defensa contra un open tan fuerte y tan temprano — foldeás.",
     "error_comun": "'Defender' la ciega grande con cualquier cosa solo porque 'ya pusiste esa ficha'. Esa ficha ya está en el bote pase lo que pase: no es un motivo para pagar.",
@@ -8820,7 +8802,7 @@
     "por_que_importa": "Antes de decidir cualquier cosa en el flop, necesitás saber con cuánto estás jugando: un bote 3-bet chico se juega distinto a uno grande.",
     "como_funciona": "Sumás lo que puso cada jugador durante el preflop: la 3-bet, más lo que pagó el otro para igualarla, más lo que ya había de las ciegas.",
     "cuando_lo_uso": "Al llegar al flop de un bote 3-bet, como primer dato antes de cualquier decisión.",
-    "ejemplo": "Open a 2.5 BB, 3-bet a 9 BB, call de 9 BB: el bote que llega al flop es de aproximadamente 19 BB (9+9+1 de la ciega grande ya cubierta).",
+    "ejemplo": "Open a 2.5 BB, 3-bet a 9 BB, call de 9 BB: el bote que llega al flop es de aproximadamente 19,5 BB (9 BB del 3-bettor + 9 BB de quien pagó + 1,5 BB de las dos ciegas que ya estaban perdidas en el medio).",
     "error_comun": "Llegar al flop de un bote 3-bet sin haber sumado cuánto hay realmente en el medio.",
     "idea_clave": "El tamaño del bote 3-bet es el primer dato concreto para jugar bien el resto de la mano."
    },
@@ -8856,11 +8838,11 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El SPR (stack-to-pot ratio, 'relación stack-bote') es cuántas veces entra el bote en el stack que te queda: stack ÷ bote.",
+    "que_es": "El SPR (stack-to-pot ratio, 'relación stack-bote') es cuántas veces entra el bote en el stack EFECTIVO — el más chico entre tu stack y el del rival, porque eso es lo máximo que realmente puede terminar en el medio —: stack efectivo ÷ bote.",
     "por_que_importa": "Un SPR bajo (poco stack en relación al bote) te acerca rápido a jugarte todo el stack; un SPR alto te deja más margen para decisiones más finas en varias calles.",
-    "como_funciona": "Dividís tu stack restante por el tamaño del bote. Los botes 3-bet, al ser más grandes de entrada con los mismos stacks, dejan un SPR más bajo que un bote normal.",
+    "como_funciona": "Dividís el stack efectivo (el más chico entre el tuyo y el del rival) por el tamaño del bote. Si ambos tienen el mismo stack, listo, ese número alcanza; si son distintos, siempre se usa el más chico. Los botes 3-bet, al ser más grandes de entrada con los mismos stacks, dejan un SPR más bajo que un bote normal.",
     "cuando_lo_uso": "Al llegar al flop, para entender qué tan 'comprometido' vas a estar con el resto de tu stack en esa mano.",
-    "ejemplo": "Con un stack de 100 BB y un bote de 19 BB (T165), el SPR es aproximadamente 5 (100÷19 ≈ 5,3) — bastante más bajo que en un bote normal de 6 BB con el mismo stack (SPR ≈ 16,6).",
+    "ejemplo": "Los dos jugadores tienen 100 BB de stack efectivo y el bote es de aproximadamente 19,5 BB (T165): el SPR es aproximadamente 5 (100÷19,5 ≈ 5,1) — bastante más bajo que en un bote normal de 6 BB con el mismo stack (SPR ≈ 16,6).",
     "error_comun": "Ignorar el SPR y jugar un bote 3-bet (SPR bajo) con la misma cautela que un bote de SPR alto, donde hay mucho más margen para maniobrar.",
     "idea_clave": "SPR = stack ÷ bote. Más bajo en botes 3-bet: te acerca más rápido a jugarte todo el stack."
    },
@@ -8900,7 +8882,7 @@
     "por_que_importa": "Saber leer ese rango te permite jugar mejor el resto de la mano: un rango de 3-bet (T161) combina valor y farol, y eso te da información concreta para trabajar.",
     "como_funciona": "Pensá en lo que ya sabés de rangos de 3-bet (T161): manos fuertes de valor combinadas con algunos faroles, según la posición y el estilo del rival.",
     "cuando_lo_uso": "Al enfrentar una 3-bet, antes de decidir tu respuesta.",
-    "ejemplo": "Un rival 3-betea desde el botón contra tu open del CO: su rango probablemente combina manos fuertes con algunos faroles — más amplio que si hubiera 3-beteado desde UTG.",
+    "ejemplo": "Un rival 3-betea desde el botón contra tu open del CO: su rango probablemente combina manos fuertes con algunos faroles — más amplio que si el mismo 3-bet viniera de la ciega grande, fuera de posición.",
     "error_comun": "Asumir que cualquier 3-bet significa automáticamente una mano premium, ignorando que los rangos de 3-bet incluyen faroles.",
     "idea_clave": "El rango del 3-bettor combina valor y farol — no asumas que siempre es lo mejor posible."
    },
@@ -8976,7 +8958,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "En un bote 3-bet, con SPR más bajo (T166) y menos calles por delante, la posición pesa todavía más que en un bote normal.",
+    "que_es": "En un bote 3-bet, con SPR más bajo (T166) y menos margen para maniobrar en las calles que faltan, la posición pesa todavía más que en un bote normal.",
     "por_que_importa": "Con menos margen de maniobra (SPR bajo), cada decisión vale más: tener información extra por estar en posición se vuelve más valioso, no menos.",
     "como_funciona": "Repasá lo que ya sabés de la posición (N3, N5): actuar último te da información antes de decidir. En un bote 3-bet, con el bote ya grande desde el arranque, esa ventaja se nota más rápido.",
     "cuando_lo_uso": "Al planear cómo vas a jugar un bote 3-bet, según si vas a estar en posición o fuera de ella.",
@@ -9135,7 +9117,7 @@
     "por_que_importa": "Con tus manos más fuertes de todas, conviene seguir agrandando el bote: es la misma lógica de la 3-bet por valor (T158), un escalón más arriba.",
     "como_funciona": "Elegís las manos que le ganan cómodo incluso al rango de 3-bet del rival (que ya es, en promedio, más fuerte que un rango de apertura) y subís de nuevo.",
     "cuando_lo_uso": "Con tus manos más fuertes, frente a una 3-bet.",
-    "ejemplo": "Abrís y te 3-betean. Con A♠A♦, 4-betear por valor: le ganás cómodo a la inmensa mayoría del rango de 3-bet del rival.",
+    "ejemplo": "Abrís y te 3-betean. Con K♠K♦, 4-betear por valor: le ganás cómodo a la inmensa mayoría del rango de 3-bet del rival — solo un As-As lo supera de entrada.",
     "error_comun": "Solo pagar con tus manos más fuertes por miedo a que el rival se retire, dejando de construir el bote más grande posible cuando estás claramente adelante.",
     "idea_clave": "4-bet por valor = con tu mano más fuerte, seguís agrandando el bote."
    },
@@ -9297,7 +9279,7 @@
    "contenido": {
     "que_es": "La c-bet funciona por dos motivos que se combinan: tenés la iniciativa (el rival reacciona a vos) y tu rango de apertura, en promedio, suele estar mejor parado que lo que el rival defendió.",
     "por_que_importa": "Entender POR QUÉ funciona te permite decidir cuándo sigue funcionando y cuándo no, en vez de c-betear en piloto automático.",
-    "como_funciona": "Tu rango de apertura (N5) incluye manos fuertes y también manos que fallaron el flop. Lo mismo el rango de defensa del rival. Pero como el rango del que abrió suele estar, en conjunto, un poco mejor parado en la mayoría de los boards, apostar ahí de entrada tiene sentido más seguido de lo que parece.",
+    "como_funciona": "Tu rango de apertura (N5) incluye manos fuertes y también manos que, la mayoría de las veces, terminan sin conectar el flop. Lo mismo el rango de defensa del rival. Pero como el rango del que abrió suele estar, en conjunto, un poco mejor parado en la mayoría de los boards, apostar ahí de entrada tiene sentido más seguido de lo que parece.",
     "cuando_lo_uso": "Como marco general para entender la lógica detrás de la c-bet, antes de ver los casos concretos (por valor, farol, proyecto) en 8.2.",
     "ejemplo": "Abrís con tu rango de apertura del CO y el botón paga con su rango de defensa: en la mayoría de los flops, tu rango en conjunto está un poco mejor parado — eso, sumado a la iniciativa, es la base de la c-bet.",
     "error_comun": "Pensar que la c-bet funciona 'porque el rival probablemente falló el flop, nomás'. También importa que tu propio rango, en conjunto, suele estar mejor parado en ese board.",
@@ -10019,7 +10001,7 @@
     "por_que_importa": "Así como hay cartas que te ayudan, hay cartas que ayudan al rival: reconocerlas te dice cuándo conviene frenar en vez de seguir apostando igual que antes.",
     "como_funciona": "Pensá en el rango probable del rival (según su acción en el flop) y preguntate si esa carta del turn completa algo de ese rango con más frecuencia de la que te ayuda a vos.",
     "cuando_lo_uso": "Al revisar el turn, como segunda pregunta: ¿esta carta ayudó más al rival que a mí?",
-    "ejemplo": "El rival pagó tu c-bet en un board con proyecto de color posible, y el turn trae la cuarta carta de ese palo: esa carta favorece más a un rango que incluya ese proyecto que a vos, que no lo tenías.",
+    "ejemplo": "El rival pagó tu c-bet en un flop con dos cartas del mismo palo, y el turn trae la tercera carta de ese palo: todavía no hay color hecho en el board, pero esa carta favorece más a un rango que incluya ese proyecto que a vos, que no lo tenías.",
     "error_comun": "Seguir apostando con el mismo entusiasmo del flop sin notar que la carta del turn benefició más al rango del rival que al tuyo.",
     "idea_clave": "Carta buena para el rival = completa más manos de SU rango probable que del tuyo."
    },
@@ -10218,7 +10200,7 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "El double barrel es el nombre específico para la SEGUNDA apuesta consecutiva: c-bet en el flop + apuesta en el turn.",
-    "por_que_importa": "Te da un vocabulario preciso para hablar de esta secuencia concreta, distinta de seguir apostando en el river también (eso sería un triple barrel, aunque no se use tanto ese término).",
+    "por_que_importa": "Te da un vocabulario preciso para hablar de esta secuencia concreta, distinta de seguir apostando en el río también (esa tercera apuesta seguida se suele llamar triple barrel, aunque acá no la desarrollamos como concepto aparte).",
     "como_funciona": "Es simplemente el barrel (T191) nombrado por su posición en la secuencia: la segunda apuesta seguida del mismo jugador.",
     "cuando_lo_uso": "Para nombrar con precisión la secuencia c-bet + apuesta en el turn, y pensar en ella como un plan de dos calles, no como dos decisiones sueltas.",
     "ejemplo": "C-beteaste el flop y apostaste de nuevo en el turn: eso es un double barrel.",
@@ -11116,12 +11098,12 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El rango del rival después de pasar no es 'nada': puede incluir manos medias, proyectos, e incluso alguna mano fuerte jugando pot control (N9). Pero SÍ suele quedar sin sus manos MÁS fuertes, porque esas suelen preferir apostar.",
+    "que_es": "El rango del rival después de pasar no es 'nada': puede incluir manos medias (algunas de ellas jugando pot control, N9: pasan a propósito para no inflar el bote) y proyectos. Pero SÍ suele quedar sin sus manos MÁS fuertes, porque esas suelen preferir apostar.",
     "por_que_importa": "Leer bien un check evita dos errores opuestos: pensar que 'pasó, seguro no tiene nada' (falso: puede tener pot control) o 'pasó, puede tener cualquier cosa' (tampoco: sus manos más fuertes suelen apostar).",
-    "como_funciona": "Un check saca del rango, sobre todo, las manos que casi siempre apostarían solas (los value bets más claros). Deja manos medias, proyectos, y a veces manos fuertes jugando con cautela.",
+    "como_funciona": "Un check saca del rango, sobre todo, las manos que casi siempre apostarían solas (los value bets más claros). Deja manos medias -algunas jugando pot control (N9)- y proyectos.",
     "cuando_lo_uso": "Cada vez que el rival pasa en vez de apostar, en cualquier calle.",
     "ejemplo": "El rival pasa el turn en un board donde una mano muy fuerte casi siempre apostaría: eso hace bastante menos probable (sin descartarlas del todo) que tenga esas manos más fuertes.",
-    "error_comun": "Interpretar cualquier check como 'debilidad total', olvidando que el pot control (N9) también usa el check con manos buenas.",
+    "error_comun": "Interpretar cualquier check como 'debilidad total', olvidando que el pot control (N9) también usa el check con manos medias que le ganan a parte del rango del rival.",
     "idea_clave": "Un check suele sacar del rango las manos MÁS fuertes (que casi siempre apuestan solas), no todas las manos buenas."
    },
    "pasos_mesa": null,
@@ -11230,7 +11212,7 @@
     "por_que_importa": "Es la idea central de todo el nivel: no leés el rango del rival una sola vez al final, lo vas recortando en cada acción, desde el open hasta el río.",
     "como_funciona": "Empezás con el rango más amplio posible (su rango de apertura) y, con cada acción nueva (T212-T217), sacás las manos que ya no son compatibles con lo que hizo.",
     "cuando_lo_uso": "A lo largo de toda la mano, actualizando tu estimación después de cada acción del rival.",
-    "ejemplo": "El rival abre (rango amplio) → paga tu 3-bet (se recorta: salen sus manos más flojas y sus manos más fuertes que hubieran 4-beteado) → c-betea el flop (se recorta más, según el board) → apuesta el turn de nuevo (se recorta todavía más).",
+    "ejemplo": "El rival abre (rango amplio) → paga tu 3-bet (se recorta: salen sus manos más flojas y sus manos más fuertes que hubieran 4-beteado) → paga tu c-bet en el flop (se recorta más, según el board) → paga tu apuesta en el turn de nuevo (se recorta todavía más).",
     "error_comun": "Reiniciar la lectura en cada calle, en vez de seguir recortando el mismo rango que ya venías construyendo.",
     "idea_clave": "Estrechar el rango = recortarlo acción por acción, no adivinarlo de una sola vez al final."
    },
@@ -11508,7 +11490,7 @@
     "por_que_importa": "Podés tener ventaja de rango sin tener ventaja de nuts, o al revés. Distinguirlas te dice qué tipo de apuestas podés hacer con confianza: la ventaja de nuts es lo que te permite apostar grande sin miedo a que te resuban con algo mejor.",
     "como_funciona": "Contás, en cada rango, cuántos combos llegan a la combinación más fuerte posible en ese board (o tienen chance real de llegar). El que tenga más, tiene ventaja de nuts.",
     "cuando_lo_uso": "Al decidir si conviene apostar tamaños grandes: la ventaja de nuts es lo que sostiene una apuesta grande sin miedo.",
-    "ejemplo": "En un board con proyecto de color visible, el jugador que 3-beteó preflop suele tener más combos de esa color específico (por las manos que entran en un rango de 3-bet) que el que solo defendió — ventaja de nuts en ese board.",
+    "ejemplo": "En un board con proyecto de color visible, el jugador que 3-beteó preflop suele tener más combos de ese color específico (por las manos que entran en un rango de 3-bet) que el que solo defendió — ventaja de nuts en ese board.",
     "error_comun": "Asumir que ventaja de rango y ventaja de nuts son lo mismo. Se puede tener una sin la otra.",
     "idea_clave": "Ventaja de nuts = tenés más combos de lo MÁS fuerte posible, específicamente, no solo 'en promedio mejor parado'."
    },
@@ -11550,10 +11532,10 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "La realización de equity es cuánto de tu equity 'cruda' (N6) terminás cobrando de verdad — porque no siempre se cobra toda: la posición, las decisiones futuras y la habilidad influyen.",
-    "por_que_importa": "Dos manos con la misma equity en el papel no ganan siempre lo mismo en la práctica: la que juega en posición, con más información en cada calle, suele cobrar una porción más grande de esa equity.",
-    "como_funciona": "Tu equity cruda es un número fijo en el momento del flop. Lo que pasa después — cómo jugás las calles siguientes, si estás en posición o no — determina si terminás cobrando toda esa equity, una parte, o incluso más (si además ganás fichas extra con faroles bien elegidos).",
-    "cuando_lo_uso": "Para entender por qué la posición (N3) vale tanto más allá de la equity cruda de tu mano.",
-    "ejemplo": "Dos jugadores con la misma equity cruda en un flop: el que juega en posición, viendo la reacción del rival en cada calle, suele terminar cobrando una porción mayor de esa equity que el que juega a ciegas.",
+    "por_que_importa": "Dos manos con la misma equity en el papel no ganan siempre lo mismo en la práctica: una mano fácil de jugar en cualquier calle suele cobrar casi toda su equity, mientras que otra, con la misma equity cruda pero complicada de jugar postflop, suele terminar cobrando bastante menos.",
+    "como_funciona": "Tu equity cruda es un número fijo en el momento del flop. Lo que pasa después — si estás en posición o no, qué tan fácil es tomar buenas decisiones con esa mano en cada calle, y tu propia habilidad para jugarla — determina si terminás cobrando toda esa equity, una parte, o incluso más (si además ganás fichas extra con faroles bien elegidos).",
+    "cuando_lo_uso": "Para entender por qué dos manos con la misma equity cruda no valen exactamente lo mismo en la práctica: una se juega fácil, la otra no.",
+    "ejemplo": "Un proyecto de escalera por las puntas y una pareja de ases hecha pueden llegar al flop con la misma equity cruda. Pero la pareja de ases es fácil de jugar en cualquier calle siguiente — sabés dónde estás parado —, mientras que el proyecto, si no completa, no te avisa hasta el final y es más difícil de jugar bien contra una apuesta. La pareja de ases termina cobrando una porción mayor de esa equity.",
     "error_comun": "Pensar que la equity cruda del flop ya define cuánto vas a ganar, sin considerar cuánto de esa equity realmente vas a poder cobrar.",
     "idea_clave": "Realización de equity = cuánto de tu equity cruda terminás cobrando de verdad. La posición ayuda a realizarla más."
    },
@@ -11705,7 +11687,7 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "Decidir, a propósito, cuándo conviene polarizar tu propio rango de apuesta (N9, T206): combinar valor muy fuerte y faroles, dejando afuera las manos medias.",
-    "por_que_importa": "Ya sabés qué es un rango polarizado; acá lo elegís como estrategia: es la forma correcta de apostar tamaños grandes, porque combina 'gano mucho si me pagan' con 'gano por fold equity si se retiran'.",
+    "por_que_importa": "Ya sabés qué es un rango polarizado; acá lo elegís como estrategia: con tamaños de apuesta grandes, polarizar es lo que mejor sostiene esa apuesta, porque combina 'gano mucho si me pagan' con 'gano por fold equity si se retiran'.",
     "como_funciona": "Con tamaños de apuesta grandes, conviene polarizar: metés tus mejores manos (que quieren pago) y tus mejores faroles (que quieren que se retiren), dejando las manos medias para tamaños más chicos o directamente para pasar.",
     "cuando_lo_uso": "Al elegir un tamaño de apuesta grande, pensando en qué tipo de rango lo sostiene.",
     "ejemplo": "Con una apuesta del tamaño del bote o más grande en el río, conviene que tu rango ahí sea polarizado: tus mejores manos y tus mejores faroles, no manos medias que ni cobran valor fino ni sirven de farol.",
@@ -12835,7 +12817,7 @@
     "por_que_importa": "Es la misma estructura que T288, pero desde el lado de quien responde, sumando el rango del rival (T256) a la ecuación.",
     "como_funciona": "Posición tuya y del que abrió → tu mano → rango de apertura del rival según su posición → tu rango de call/3-bet contra ese rango → la decisión.",
     "cuando_lo_uso": "Cada vez que alguien abre antes que vos.",
-    "ejemplo": "El CO abre, estás en el botón con A♠Q♠: el checklist confirma que esa mano entra en tu rango de 3-bet contra el rango de apertura del CO.",
+    "ejemplo": "El CO abre, estás en el botón con A♠K♠: el checklist confirma que esa mano entra en tu rango de 3-bet contra el rango de apertura del CO.",
     "error_comun": "Responder a un open mirando solo tu mano, sin construir el rango del rival según su posición.",
     "idea_clave": "El checklist aplicado a responder un open: tu mano contra SU rango, no en el aire."
    },
@@ -13168,7 +13150,7 @@
    "contenido": {
     "que_es": "Aplicar el checklist completo a una mano ya hecha en el flop: clasificarla (N4), estimar contra qué rango compite, y decidir entre c-bet por valor, check para pot control, u otra opción.",
     "por_que_importa": "Una mano hecha no siempre 'se apuesta sola': el checklist te hace revisar si de verdad conviene apostar por valor o si el pot control (N9) es mejor en esa situación puntual.",
-    "como_funciona": "Clasificás tu mano hecha (top pair, set, etc.) → estimás contra qué parte del rango del rival compite → ¿tenés manos peores reales que paguen? (N9, T209) → decidís.",
+    "como_funciona": "Clasificás tu mano hecha (top pair, set, etc.) → estimás contra qué parte del rango del rival compite → ¿tenés manos peores reales que paguen? (N8, T177) → decidís.",
     "cuando_lo_uso": "Cada vez que tenés una mano ya hecha en el flop.",
     "ejemplo": "Top pair con buen kicker contra un rango con varias manos peores: el checklist confirma una c-bet por valor. Top pair débil contra un rango fuerte: puede apuntar a pot control en vez de apostar grande.",
     "error_comun": "Apostar automáticamente cualquier 'mano hecha' sin revisar si el rango del rival realmente tiene manos peores dispuestas a pagar.",
@@ -13771,7 +13753,7 @@
     "por_que_importa": "Es fácil sostener la disciplina en la teoría; sostenerla en la práctica, mano 200 de una sesión larga, es lo que realmente separa el resultado a largo plazo.",
     "como_funciona": "Repetí los mismos rangos (N5, N7) sin importar cuántas manos llevás foldeadas seguidas ni cómo viene la sesión.",
     "cuando_lo_uso": "A lo largo de toda una sesión, como hábito constante.",
-    "ejemplo": "Después de foldear 20 manos seguidas, la mano 21 se evalúa exactamente con el mismo criterio que la primera — sin ablandar el rango por cansancio.",
+    "ejemplo": "En la hora tres de una sesión larga, con la concentración bajando, seguís abriendo con el mismo rango de UTG que aplicabas al principio — sin la excusa del cansancio.",
     "error_comun": "Aflojar la disciplina preflop después de una mala racha o muchas manos aburridas seguidas.",
     "idea_clave": "La disciplina preflop se sostiene igual en la mano 1 y en la mano 200."
    },
@@ -14167,7 +14149,7 @@
     "por_que_importa": "Una mano dominada pierde casi siempre contra la que la domina — jugarla como si fuera pareja, sin reconocer eso, cuesta fichas grandes.",
     "como_funciona": "Se corrige volviendo a T073: comparar tu mano contra el rango del rival, no solo contra la categoría general.",
     "cuando_lo_uso": "Cada vez que tenés una pareja o mano hecha y el rival muestra fuerza también.",
-    "ejemplo": "Pagar todo el stack con una pareja de reyes con kicker débil contra un rival que representa la misma pareja pero con mejor kicker.",
+    "ejemplo": "Pagar una apuesta grande en el turn con una pareja de reyes y kicker débil, sin notar que la línea del rival representa esa misma pareja pero con mejor kicker: la mano no es 'buena', está dominada.",
     "idea_clave": "Error 6: no ver que estás dominado. Se corrige comparando contra el rango, no solo contra la categoría."
    },
    "pasos_mesa": null,
@@ -14418,7 +14400,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "No leer la textura del board (N4, T257) antes de decidir: seco o coordinado, con o sin proyectos posibles.",
+    "que_es": "No leer la textura del board (N12, T257) antes de decidir: seco o coordinado, con o sin proyectos posibles.",
     "por_que_importa": "La misma mano vale distinto según el board — ignorarlo te hace tomar la misma decisión en situaciones muy distintas.",
     "como_funciona": "Se corrige volviendo al quinto paso del checklist (N12, T257): siempre clasificar el board antes de decidir.",
     "cuando_lo_uso": "Cada vez que llegás a una decisión postflop.",

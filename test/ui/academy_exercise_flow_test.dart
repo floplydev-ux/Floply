@@ -2,9 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/engine/pedagogy/curriculum.dart';
+import 'package:poker_trainer/engine/pedagogy/playable_exercise.dart';
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 import 'package:poker_trainer/screens/academy/academy_controller.dart';
 import 'package:poker_trainer/screens/academy/academy_screen.dart';
+
+/// Elige, para un ítem `.playable` (`AcademyPlayableScripts` — Fase 6, ver
+/// `docs/design/FLOPLY_PHASE_6_INTERACTIVE_TABLE.md` §37), la acción de
+/// mejor rating (tamaño y razonamiento también, si el ejercicio los pide)
+/// y confirma. Mismo criterio que la rama `.isInteractive` ya existente:
+/// no valida corrección, solo que el recorrido completo (acción → tamaño
+/// → razonamiento → devolución) no explote para ninguna de las 88
+/// instancias reales del currículo.
+void _answerPlayableBest(AcademyController c, PlayableTableExercise ex) {
+  var actionIdx = ex.actions.indexWhere((a) => a.rating.name == 'best');
+  if (actionIdx < 0) actionIdx = 0;
+  c.choosePlayableAction(actionIdx);
+  final action = ex.actions[actionIdx];
+  if (c.needsPlayableSizing) {
+    var sizeIdx = action.sizeOptions.indexWhere((s) => s.rating.name == 'best');
+    if (sizeIdx < 0) sizeIdx = 0;
+    c.choosePlayableSize(sizeIdx);
+  }
+  if (c.lastPlayableFeedback == null && action.reasoning.isNotEmpty) {
+    var reasonIdx = action.reasoning.indexWhere((r) => r.rating.name == 'best');
+    if (reasonIdx < 0) reasonIdx = 0;
+    c.confirmPlayableReasoning(reasonIdx);
+  }
+}
 
 void main() {
   // Anchos representativos de celulares (dp lógicos). El currículo completo
@@ -50,6 +75,15 @@ void main() {
               expect(tester.takeException(), isNull,
                   reason: 'interactivo $lessonId respuesta');
               controller.advanceInteractive();
+              await tester.pumpAndSettle();
+              continue;
+            }
+            if (item.isPlayable) {
+              _answerPlayableBest(controller, item.playable!);
+              await tester.pumpAndSettle();
+              expect(tester.takeException(), isNull,
+                  reason: 'playable $lessonId respuesta');
+              controller.advancePlayable();
               await tester.pumpAndSettle();
               continue;
             }
@@ -101,15 +135,27 @@ void main() {
       home: Scaffold(body: AcademyScreen(controller: controller)),
     ));
 
-    int bestOf(AcademyItem it) => it.isInteractive
-        ? it.interactive!.bestChoiceIndex
-        : it.check!.correctIndex;
-    void answer(int choice) {
+    // `wrong` fuerza una respuesta mala (para el checkpoint 1.4, más
+    // abajo) — no tiene sentido para `.playable` (no hay un solo "índice"
+    // que invertir entre acción/tamaño/razonamiento), así que ese caso
+    // sigue resolviéndose con la mejor respuesta incluso cuando `wrong`
+    // es true. Ninguna de 1.1-1.4 es `.playable` hoy (ver Hallazgo 1,
+    // Fase 5/6), pero si alguna vez lo fuera, este helper no debe volver
+    // a explotar como pasó con la rama `.engine`/`.check` original.
+    void answer({bool wrong = false}) {
       final it = controller.currentItem!;
       if (it.isInteractive) {
+        final best = it.interactive!.bestChoiceIndex;
+        final choice =
+            wrong ? (best + 1) % it.interactive!.choices.length : best;
         controller.answerInteractive(choice);
         controller.advanceInteractive();
+      } else if (it.isPlayable) {
+        _answerPlayableBest(controller, it.playable!);
+        controller.advancePlayable();
       } else {
+        final best = it.check!.correctIndex;
+        final choice = wrong ? (best + 1) % it.options.length : best;
         controller.toggleOption(choice);
         controller.confirm();
       }
@@ -117,14 +163,17 @@ void main() {
 
     for (final id in ['1.1', '1.2', '1.3']) {
       controller.openLesson(id);
+      // `advanceTheory()` ya sabe recorrer cualquier sub-fase de teoría
+      // (guion legado, ejemplo de cierre, clase de mentor, ficha escrita)
+      // y pasa a ejercicios en la última — 1.1/1.2 ya no tienen guion ni
+      // mentor, así que el ternario viejo (interactiva vs. saltar directo)
+      // se saltearía su teoría escrita y su ejemplo de cierre.
       while (controller.phase == AcademyPhase.theory) {
-        controller.isInteractiveTheory
-            ? controller.nextTableStep()
-            : controller.startExercises();
+        controller.advanceTheory();
       }
       while (controller.phase != AcademyPhase.result) {
         if (controller.phase == AcademyPhase.exercise) {
-          answer(bestOf(controller.currentItem!));
+          answer();
         } else {
           controller.nextItem();
         }
@@ -135,14 +184,11 @@ void main() {
     // Falla el checkpoint del Nivel 1 (1.4).
     controller.openLesson('1.4');
     while (controller.phase == AcademyPhase.theory) {
-      controller.isInteractiveTheory
-          ? controller.nextTableStep()
-          : controller.startExercises();
+      controller.advanceTheory();
     }
     while (controller.phase != AcademyPhase.result) {
       if (controller.phase == AcademyPhase.exercise) {
-        final it = controller.currentItem!;
-        answer((bestOf(it) + 1) % it.options.length);
+        answer(wrong: true);
       } else {
         controller.nextItem();
       }

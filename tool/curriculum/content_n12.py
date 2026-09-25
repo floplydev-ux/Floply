@@ -7,8 +7,9 @@ decisiones". 29 teorías, 4 subniveles. Banda AVANZADO, estadio EXPLICAR
 Fuente de verdad: curriculum_spec.json.
 
 Meta de N12: este nivel NO enseña conceptos nuevos de póker — organiza
-todo lo ya aprendido (N1-N11) en un checklist práctico de diez preguntas
-(12.1-12.2), y después lo aplica a doce situaciones concretas recurrentes
+todo lo ya aprendido (N1-N11) en un checklist práctico de diecisiete
+preguntas (siete para leer el spot, en 12.1; diez para tomar la decisión,
+en 12.2), y después lo aplica a doce situaciones concretas recurrentes
 (12.3-12.4). Por eso el contenido es deliberadamente más corto que en
 niveles anteriores: cada teoría es un paso de un proceso, no un concepto
 nuevo — "completo no significa largo" se aplica más que nunca acá.
@@ -400,7 +401,7 @@ N12 = {
         "contra ese rango → la decisión.",
  cuando_lo_uso="Cada vez que alguien abre antes que vos.",
  cuando_no=None,
- ejemplo="El CO abre, estás en el botón con A♠Q♠: el checklist "
+ ejemplo="El CO abre, estás en el botón con A♠K♠: el checklist "
         "confirma que esa mano entra en tu rango de 3-bet contra el "
         "rango de apertura del CO.",
  error_comun="Responder a un open mirando solo tu mano, sin construir "
@@ -570,7 +571,7 @@ N12 = {
         "puntual.",
  como_funciona="Clasificás tu mano hecha (top pair, set, etc.) → "
         "estimás contra qué parte del rango del rival compite → "
-        "¿tenés manos peores reales que paguen? (N9, T209) → decidís.",
+        "¿tenés manos peores reales que paguen? (N8, T177) → decidís.",
  cuando_lo_uso="Cada vez que tenés una mano ya hecha en el flop.",
  cuando_no=None,
  ejemplo="Top pair con buen kicker contra un rango con varias manos "

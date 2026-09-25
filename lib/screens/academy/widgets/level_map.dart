@@ -4,12 +4,24 @@ import '../../../engine/academy/academy_engine.dart';
 import '../../../engine/academy/academy_progress.dart';
 import '../../../engine/pedagogy/curriculum.dart';
 import '../../../l10n/app_strings.dart';
-import '../../../theme/app_colors.dart';
+import '../../../theme/sala_verde/sala_verde_tokens.dart';
 import '../../../widgets/pressable_scale.dart';
+import '../../../widgets/sala_verde/sala_verde_widgets.dart';
 import '../academy_controller.dart';
 
 /// Mapa de niveles de la Academia (fase `map`): encabezado + tira de
 /// progreso + una tarjeta por nivel con sus lecciones.
+///
+/// **Fase 3 — migración visual a "Sala Verde"** (ver
+/// `docs/design/FLOPLY_PHASE_3_ACADEMIA.md`): misma estructura, mismos
+/// datos (`AcademyController.levels`/`snapshot`), mismos callbacks
+/// (`onOpenLesson`), mismos labels de accesibilidad — solo cambia la capa
+/// visual (violeta → temperatura de Academia `feltGreen`, `GlassCard` →
+/// `SvSurfacePanel`/`SvTappableCard`, tipografía Fraunces/Public Sans/IBM
+/// Plex Mono). `GlassCard` (`lib/widgets/glass_card.dart`) no se tocó —
+/// era el único consumidor real fuera de su propia definición, así que
+/// simplemente se dejó de usar acá en vez de migrarlo (queda disponible
+/// para quien lo necesite después).
 class LevelMap extends StatelessWidget {
   const LevelMap({super.key, required this.controller});
 
@@ -50,44 +62,11 @@ class _AcademyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.violetPrimary.withValues(alpha: 0.18),
-          ),
-          child: const Icon(Icons.school_rounded,
-              color: AppColors.violetBright, size: 20),
-        ),
-        const SizedBox(width: 12),
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppStrings.academyTitle,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                AppStrings.academyHeaderSubtitle,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: AppColors.textSecondary,
-                  height: 1.3,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+    return const SvSectionHeader(
+      icon: Icons.school_outlined,
+      title: AppStrings.academyTitle,
+      subtitle: AppStrings.academyHeaderSubtitle,
+      variant: SvSectionHeaderVariant.academy,
     );
   }
 }
@@ -99,72 +78,33 @@ class _ProgressStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1B1140), Color(0xFF120C29)],
-        ),
-        border: Border.all(color: AppColors.violetPrimary.withValues(alpha: 0.3)),
-      ),
+    return SvSurfacePanel(
+      borderColor: SalaVerdeColors.feltGreenBright.withValues(alpha: 0.3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             AppStrings.academyLevelLabel(
                 snapshot.currentLevelNumber, snapshot.currentLevelTitle),
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
+            style: SalaVerdeType.bodyStrong(),
           ),
-          const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: SizedBox(
-              height: 8,
-              child: Stack(
-                children: [
-                  Container(color: AppColors.surfaceElevated),
-                  FractionallySizedBox(
-                    widthFactor: snapshot.percent.clamp(0.0, 1.0),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.violetBright,
-                            AppColors.violetPrimary
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          const SizedBox(height: SalaVerdeSpace.md),
+          SvProgressLinear(
+            value: snapshot.percent,
+            color: SalaVerdeColors.feltGreenBright,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: SalaVerdeSpace.sm),
           Text(
             AppStrings.academyLessonsDone(
                 snapshot.completedLessons, snapshot.totalLessons),
-            style: const TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textMuted,
-            ),
+            style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
           ),
           if (snapshot.masteredConcepts.isNotEmpty) ...[
-            const SizedBox(height: 6),
+            const SizedBox(height: SalaVerdeSpace.xs),
             Text(
               '${AppStrings.academyMasteredLabel}: '
               '${snapshot.masteredConcepts.join(", ")}',
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-                height: 1.3,
-              ),
+              style: SalaVerdeType.caption(color: SalaVerdeColors.textMuted),
             ),
           ],
         ],
@@ -172,6 +112,23 @@ class _ProgressStrip extends StatelessWidget {
     );
   }
 }
+
+/// Label de accesibilidad (Fase 1, Bloque 2, P1-3) para un [LevelState] —
+/// antes solo se comunicaba con color/ícono, invisible para un screen
+/// reader. Sin cambios en Fase 3.
+String _levelStateLabel(LevelState state) => switch (state) {
+      LevelState.locked => AppStrings.academyStateLocked,
+      LevelState.available => AppStrings.academyStateAvailable,
+      LevelState.inProgress => AppStrings.academyStateInProgress,
+      LevelState.completed => AppStrings.academyStateCompleted,
+    };
+
+/// Mismo propósito que [_levelStateLabel], para [LessonState].
+String _lessonStateLabel(LessonState state) => switch (state) {
+      LessonState.locked => AppStrings.academyStateLocked,
+      LessonState.available => AppStrings.academyStateAvailable,
+      LessonState.completed => AppStrings.academyStateCompleted,
+    };
 
 class _LevelCard extends StatelessWidget {
   const _LevelCard({required this.level, required this.onOpenLesson});
@@ -182,57 +139,77 @@ class _LevelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locked = level.state == LevelState.locked;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: AppColors.surface,
-        border: Border.all(
-          color: locked
-              ? AppColors.surfaceBorder
-              : AppColors.violetPrimary.withValues(alpha: 0.35),
-        ),
-      ),
+    final inProgress = level.state == LevelState.inProgress;
+
+    return SvSurfacePanel(
+      borderColor: locked
+          ? SalaVerdeColors.borderSubtle
+          : SalaVerdeColors.feltGreenBright.withValues(alpha: 0.35),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              _LevelBadge(number: level.level.number, state: level.state),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      level.level.title.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.4,
-                        color: locked
-                            ? AppColors.textMuted
-                            : AppColors.textPrimary,
+          // Fase 1, Bloque 2, P1-3: antes el estado del nivel (bloqueado/
+          // disponible/en curso/completado) solo se comunicaba con color +
+          // ícono — invisible para un screen reader. Un solo label
+          // controlado (excludeSemantics) evita que además se anuncien
+          // por separado los textos internos en un orden confuso. Sin
+          // cambios de comportamiento en Fase 3.
+          Semantics(
+            label:
+                '${AppStrings.academyLevelLabel(level.level.number, level.level.title)}. '
+                '${_levelStateLabel(level.state)}.',
+            excludeSemantics: true,
+            child: Row(
+              children: [
+                _LevelBadge(number: level.level.number, state: level.state),
+                const SizedBox(width: SalaVerdeSpace.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        level.level.title.toUpperCase(),
+                        style: SalaVerdeType.bodyStrong(
+                          color: locked
+                              ? SalaVerdeColors.textMuted
+                              : SalaVerdeColors.textPrimary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      level.level.theme,
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        color: AppColors.textSecondary,
-                        height: 1.25,
+                      const SizedBox(height: 2),
+                      Text(
+                        level.level.theme,
+                        style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
                       ),
-                    ),
-                  ],
+                      // available e inProgress se veían idénticos (Fase 1,
+                      // Bloque 2, P1-1) — el engine ya distinguía "nunca
+                      // empezado" de "algo completado, no todo". Fase 3:
+                      // el acento pasa de neonGreenBright (temperatura de
+                      // Laboratorio, un mismatch semántico preexistente) a
+                      // feltGreenBright (temperatura real de Academia).
+                      if (inProgress) ...[
+                        const SizedBox(height: SalaVerdeSpace.xs),
+                        Text(
+                          AppStrings.academyLevelInProgress(
+                            level.lessons
+                                .where(
+                                    (l) => l.state == LessonState.completed)
+                                .length,
+                            level.lessons.length,
+                          ),
+                          style: SalaVerdeType.label(color: SalaVerdeColors.feltGreenBright)
+                              .copyWith(fontSize: 10.5),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
-              if (level.state == LevelState.completed)
-                const Icon(Icons.verified_rounded,
-                    color: AppColors.violetBright, size: 20),
-            ],
+                if (level.state == LevelState.completed)
+                  const Icon(Icons.verified_rounded,
+                      color: SalaVerdeColors.success, size: 20),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: SalaVerdeSpace.md),
           for (final lesson in level.lessons)
             _LessonRow(
               lesson: lesson,
@@ -261,20 +238,17 @@ class _LevelBadge extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: active
-            ? const LinearGradient(colors: AppColors.violetGradient)
-            : null,
-        color: active ? null : AppColors.surfaceElevated,
+        // Relleno plano, no degradé — FLOPLY_ANTI_GENERIC.md regla 5. Como
+        // relleno de superficie, feltGreen base es correcto (no Bright,
+        // que es para texto/ícono — ver "Principio de contraste por
+        // contexto de uso").
+        color: active ? SalaVerdeColors.feltGreen : SalaVerdeColors.surfaceElevated,
       ),
       child: state == LevelState.locked
-          ? const Icon(Icons.lock_rounded, size: 16, color: AppColors.textMuted)
+          ? const Icon(Icons.lock_rounded, size: 16, color: SalaVerdeColors.textMuted)
           : Text(
               '$number',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
-              ),
+              style: SalaVerdeType.numeric(size: 16, color: SalaVerdeColors.textPrimary),
             ),
     );
   }
@@ -296,70 +270,82 @@ class _LessonRow extends StatelessWidget {
     final Color iconColor;
     if (completed) {
       icon = Icons.check_circle_rounded;
-      iconColor = AppColors.violetBright;
+      iconColor = SalaVerdeColors.success;
     } else if (locked) {
       icon = Icons.lock_outline_rounded;
-      iconColor = AppColors.textMuted;
+      iconColor = SalaVerdeColors.textMuted;
     } else {
       icon = _kindIcon(l.kind);
-      iconColor = AppColors.neonGreenBright;
+      iconColor = SalaVerdeColors.feltGreenBright;
     }
 
-    return PressableScale(
-      onTap: onTap ?? () {},
-      child: Opacity(
-        opacity: locked ? 0.5 : 1,
-        child: Container(
-          margin: const EdgeInsets.only(top: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: AppColors.surfaceElevated,
-            border: Border.all(
-              color: lesson.state == LessonState.available
-                  ? AppColors.neonGreen.withValues(alpha: 0.35)
-                  : AppColors.surfaceBorder,
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(icon, size: 17, color: iconColor),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${l.id}  ${l.title}',
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      l.kind.label,
-                      style: const TextStyle(
-                        fontSize: 10.5,
-                        color: AppColors.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
+    // Fase 1, Bloque 2, P1-3: el único diferenciador de estado hasta ahora
+    // era el ícono (candado/check/tipo de lección) — invisible para un
+    // screen reader. El label arma en palabras lo mismo que ya se ve. Sin
+    // cambios de comportamiento/contenido en Fase 3.
+    final scoreText = completed && lesson.progress.bestScore > 0
+        ? ' ${AppStrings.academyScore((lesson.progress.bestScore * 100).round())}.'
+        : '';
+    final lockedHint = locked ? ' ${AppStrings.academyLockedLessonHint}' : '';
+    final semanticLabel =
+        '${l.title}. ${l.kind.label}. ${_lessonStateLabel(lesson.state)}.'
+        '$scoreText$lockedHint';
+
+    return Semantics(
+      label: semanticLabel,
+      button: onTap != null,
+      excludeSemantics: true,
+      child: PressableScale(
+        onTap: onTap ?? () {},
+        child: Opacity(
+          opacity: locked ? 0.5 : 1,
+          child: Container(
+            margin: const EdgeInsets.only(top: SalaVerdeSpace.sm),
+            padding: const EdgeInsets.symmetric(horizontal: SalaVerdeSpace.md, vertical: 11),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+              color: SalaVerdeColors.surfaceElevated,
+              border: Border.all(
+                color: lesson.state == LessonState.available
+                    ? SalaVerdeColors.feltGreenBright.withValues(alpha: 0.35)
+                    : SalaVerdeColors.borderSubtle,
               ),
-              if (completed && lesson.progress.bestScore > 0)
-                Text(
-                  '${(lesson.progress.bestScore * 100).round()}%',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.violetSoft,
+            ),
+            child: Row(
+              children: [
+                Icon(icon, size: 17, color: iconColor),
+                const SizedBox(width: SalaVerdeSpace.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${l.id}  ${l.title}',
+                        style: SalaVerdeType.bodyStrong().copyWith(fontSize: 12.5),
+                      ),
+                      Text(
+                        l.kind.label,
+                        style: SalaVerdeType.caption(color: SalaVerdeColors.textMuted)
+                            .copyWith(fontSize: 10.5),
+                      ),
+                    ],
                   ),
                 ),
-              if (!completed && !locked)
-                const Icon(Icons.chevron_right_rounded,
-                    size: 18, color: AppColors.textMuted),
-            ],
+                // Cifra real de rendimiento — firma tipográfica obligatoria
+                // (FLOPLY_ANTI_GENERIC.md regla 12): antes era texto normal
+                // (violetSoft), ahora IBM Plex Mono, la única familia
+                // numérica del sistema.
+                if (completed && lesson.progress.bestScore > 0)
+                  Text(
+                    '${(lesson.progress.bestScore * 100).round()}%',
+                    style: SalaVerdeType.numeric(
+                        size: 11, color: SalaVerdeColors.feltGreenBright),
+                  ),
+                if (!completed && !locked)
+                  const Icon(Icons.chevron_right_rounded,
+                      size: 18, color: SalaVerdeColors.textMuted),
+              ],
+            ),
           ),
         ),
       ),

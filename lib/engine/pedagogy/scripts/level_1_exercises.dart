@@ -12,9 +12,7 @@ class Level1Exercises {
   Level1Exercises._();
 
   static final Map<String, InteractiveExerciseSet> byId = {
-    '1.1': InteractiveExerciseSet([_howYouWin()]),
     '1.2': InteractiveExerciseSet([_potAmount(), _maxLoss(), _blindsPurpose()]),
-    '1.3': InteractiveExerciseSet([_nextStreet(), _checkAction(), _callAction()]),
     '1.4': InteractiveExerciseSet([_handOpen(), _handFlop(), _handShowdown()]),
     '1.5': InteractiveExerciseSet([
       _evalPot(),
@@ -68,58 +66,6 @@ class Level1Exercises {
         potBb: pot,
         buttonSlot: 0,
       );
-
-  // ================================================================
-  // 1.1 — Cómo se gana
-  // ================================================================
-  static InteractiveTableExercise _howYouWin() {
-    final table = _flopTable(
-      board: const ['Ks', '7h', '2d', 'Qs', '3c'],
-      cards: const {0: ['Kd', 'Kc'], 4: ['Ad', 'Jc']},
-      pot: 5.5,
-    );
-    return InteractiveTableExercise(
-      situation: table,
-      concept: _rules,
-      questionAnchor: TableAnchor.pot,
-      situationHighlight: const [TableAnchor.pot],
-      question: 'La mano llegó al showdown. ¿Cómo se decide quién gana el '
-          'bote?',
-      choices: const [
-        ExerciseChoice(
-          label: 'MEJOR MANO DE 5',
-          rating: ExerciseRating.best,
-          feedback: 'Exacto: se comparan las manos y la mejor combinación '
-              'de 5 cartas se lleva el bote.',
-        ),
-        ExerciseChoice(
-          label: 'QUIEN APOSTÓ MÁS',
-          rating: ExerciseRating.poor,
-          feedback: 'No: apostar más no gana la mano. Gana la mejor '
-              'combinación de 5 cartas.',
-        ),
-        ExerciseChoice(
-          label: 'SE REPARTE',
-          rating: ExerciseRating.poor,
-          feedback: 'Solo se reparte si hay empate exacto. Tu trío de reyes '
-              'le gana a la carta alta de {BB}.',
-        ),
-      ],
-      explanation: const [
-        ExerciseExplainStep(
-          text: 'Tu trío de reyes vence a A♦J♣ (solo carta alta).',
-          anchor: TableAnchor.heroCards,
-          highlight: [TableAnchor.heroCards, TableAnchor.seat(4)],
-        ),
-        ExerciseExplainStep(
-          text: 'También se gana antes del showdown: si todos foldean, el '
-              'bote es tuyo sin mostrar cartas.',
-          anchor: TableAnchor.pot,
-          dimOthers: false,
-        ),
-      ],
-    );
-  }
 
   // ================================================================
   // 1.2 — Stack, ciegas y bote
@@ -235,139 +181,6 @@ class Level1Exercises {
           text: 'Las ciegas obligan a que siempre haya algo en juego, mano '
               'tras mano.',
           anchor: TableAnchor.pot,
-          dimOthers: false,
-        ),
-      ],
-    );
-  }
-
-  // ================================================================
-  // 1.3 — Calles y acciones
-  // ================================================================
-  static InteractiveTableExercise _nextStreet() {
-    return InteractiveTableExercise(
-      situation: _flopTable(board: const ['Qd', '8s', '3c']),
-      concept: _rules,
-      questionAnchor: TableAnchor.board,
-      situationHighlight: const [TableAnchor.board],
-      question: 'El flop ya salió (3 cartas). ¿Qué calle viene ahora?',
-      choices: const [
-        ExerciseChoice(
-          label: 'EL TURN',
-          rating: ExerciseRating.best,
-          feedback: 'Preflop → flop → turn → river. El turn es la 4ª carta '
-              'comunitaria.',
-        ),
-        ExerciseChoice(
-          label: 'EL RIVER',
-          rating: ExerciseRating.poor,
-          feedback: 'El river es la 5ª carta: viene después del turn, no '
-              'ahora.',
-        ),
-        ExerciseChoice(
-          label: 'EL PREFLOP',
-          rating: ExerciseRating.poor,
-          feedback: 'El preflop ya pasó: es antes del flop.',
-        ),
-      ],
-      explanation: const [
-        ExerciseExplainStep(
-          text: 'Orden fijo: preflop → flop → turn → river → showdown.',
-          anchor: TableAnchor.board,
-          dimOthers: false,
-        ),
-      ],
-    );
-  }
-
-  static InteractiveTableExercise _checkAction() {
-    final table = _flopTable(board: const ['Qd', '8s', '3c'], toAct: 0);
-    return InteractiveTableExercise(
-      situation: table,
-      afterDecision: _flopTable(
-        board: const ['Qd', '8s', '3c'],
-        actions: const {0: 'PASA'},
-      ),
-      concept: _rules,
-      questionAnchor: const TableAnchor.seat(0),
-      situationHighlight: const [TableAnchor.seat(0)],
-      question: 'Nadie apostó y vos no querés poner fichas. ¿Qué hacés?',
-      choices: const [
-        ExerciseChoice(
-          label: 'CHECK',
-          rating: ExerciseRating.best,
-          feedback: 'Check es pasar sin apostar cuando no hay apuesta '
-              'delante. Seguís en la mano gratis.',
-        ),
-        ExerciseChoice(
-          label: 'FOLD',
-          rating: ExerciseRating.poor,
-          feedback: 'Foldear acá sería tirar la mano gratis, sin necesidad: '
-              'nadie te está cobrando.',
-        ),
-        ExerciseChoice(
-          label: 'CALL',
-          rating: ExerciseRating.poor,
-          feedback: 'No hay ninguna apuesta que igualar: no se puede hacer '
-              'call.',
-        ),
-      ],
-      explanation: const [
-        ExerciseExplainStep(
-          text: 'Sin apuesta delante: check para pasar, o bet para apostar '
-              'vos.',
-          anchor: TableAnchor.seat(0),
-          dimOthers: false,
-        ),
-      ],
-    );
-  }
-
-  static InteractiveTableExercise _callAction() {
-    final table = _flopTable(
-      board: const ['Qd', '8s', '3c'],
-      bets: const {4: 3.0},
-      actions: const {4: 'APUESTA'},
-      pot: 9.0,
-      toAct: 0,
-    );
-    return InteractiveTableExercise(
-      situation: table,
-      afterDecision: _flopTable(
-        board: const ['Qd', '8s', '3c'],
-        bets: const {0: 3.0, 4: 3.0},
-        actions: const {0: 'PAGA', 4: 'APUESTA'},
-        pot: 12.0,
-      ),
-      concept: _rules,
-      questionAnchor: const TableAnchor.bet(4),
-      situationHighlight: const [TableAnchor.bet(4), TableAnchor.seat(0)],
-      question: '{BB} apostó 3 BB. Querés seguir en la mano SIN subir. '
-          '¿Qué hacés?',
-      choices: const [
-        ExerciseChoice(
-          label: 'CALL',
-          rating: ExerciseRating.best,
-          feedback: 'Call es igualar: pagás los 3 BB y seguís en la mano '
-              'sin subir.',
-        ),
-        ExerciseChoice(
-          label: 'FOLD',
-          rating: ExerciseRating.poor,
-          feedback: 'Foldear es abandonar la mano. Vos querías seguir.',
-        ),
-        ExerciseChoice(
-          label: 'RAISE',
-          rating: ExerciseRating.poor,
-          feedback: 'Raise es subir: pondrías MÁS que los 3 BB. Vos querías '
-              'seguir sin subir.',
-        ),
-      ],
-      explanation: const [
-        ExerciseExplainStep(
-          text: 'Con una apuesta delante: fold, call (igualar) o raise '
-              '(subir).',
-          anchor: TableAnchor.bet(0),
           dimOthers: false,
         ),
       ],

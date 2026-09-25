@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../../../engine/pedagogy/lesson_content.dart';
 import '../../../l10n/app_strings.dart';
-import '../../../theme/app_colors.dart';
+import '../../../theme/sala_verde/sala_verde_tokens.dart';
 import '../../../widgets/pressable_scale.dart';
+import '../../../widgets/sala_verde/sala_verde_widgets.dart';
 import '../../laboratory/widgets/exercise_card.dart';
 import '../academy_controller.dart';
-import 'lesson_widgets.dart';
 
 /// Fase ejercicio: un ítem del motor (`ExerciseCard`) o una pregunta
 /// autoral (`_CheckCard`) + CONFIRMAR.
+///
+/// **Fase 5** (`docs/design/FLOPLY_PHASE_5_ACADEMIA_EXERCISE_FEEDBACK_RESULT.md`):
+/// migrado a "Sala Verde" — `ExerciseCard` (de Laboratorio) NO se toca,
+/// se mantiene tal cual: es una superficie protegida igual que
+/// `PokerTableView`, compartida de verdad con `laboratory_screen.dart`.
+/// Solo migra lo que la rodea (progreso, `_CheckCard` local, botón).
 class ExerciseView extends StatelessWidget {
   const ExerciseView({super.key, required this.controller});
 
@@ -23,11 +29,11 @@ class ExerciseView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        LessonItemProgress(
+        SvItemProgress(
           current: controller.itemNumber,
           total: controller.itemTotal,
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: SalaVerdeSpace.lg),
         if (item.isEngine)
           ExerciseCard(
             exercise: item.exercise!,
@@ -48,8 +54,8 @@ class ExerciseView extends StatelessWidget {
                 : controller.selectedOptionIdx.first,
             onSelect: controller.toggleOption,
           ),
-        const SizedBox(height: 16),
-        LessonPrimaryButton(
+        const SizedBox(height: SalaVerdeSpace.lg),
+        SvButtonPrimary(
           label: AppStrings.academyConfirm,
           onTap: controller.canConfirm ? controller.confirm : null,
         ),
@@ -79,29 +85,16 @@ class _CheckCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.surfaceBorder),
-      ),
+    return SvSurfacePanel(
+      padding: const EdgeInsets.all(SalaVerdeSpace.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            check.prompt,
-            style: const TextStyle(
-              fontSize: 15,
-              height: 1.4,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 16),
+          Text(check.prompt, style: SalaVerdeType.bodyStrong()),
+          const SizedBox(height: SalaVerdeSpace.lg),
           for (var i = 0; i < check.options.length; i++)
             Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: SalaVerdeSpace.sm),
               child: _OptionTile(
                 label: check.options[i],
                 selected: selectedIndex == i,
@@ -130,15 +123,18 @@ class _OptionTile extends StatelessWidget {
     return PressableScale(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 140),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        duration: SalaVerdeMotion.fast,
+        padding: const EdgeInsets.symmetric(
+          horizontal: SalaVerdeSpace.lg,
+          vertical: SalaVerdeSpace.md,
+        ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
           color: selected
-              ? AppColors.violetPrimary.withValues(alpha: 0.18)
-              : AppColors.surfaceElevated,
+              ? SalaVerdeColors.feltGreen.withValues(alpha: 0.18)
+              : SalaVerdeColors.surfaceElevated,
           border: Border.all(
-            color: selected ? AppColors.violetBright : AppColors.surfaceBorder,
+            color: selected ? SalaVerdeColors.feltGreenBright : SalaVerdeColors.borderSubtle,
             width: selected ? 1.6 : 1,
           ),
         ),
@@ -149,17 +145,13 @@ class _OptionTile extends StatelessWidget {
                   ? Icons.radio_button_checked_rounded
                   : Icons.radio_button_unchecked_rounded,
               size: 18,
-              color: selected ? AppColors.violetBright : AppColors.textMuted,
+              color: selected ? SalaVerdeColors.feltGreenBright : SalaVerdeColors.textMuted,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: SalaVerdeSpace.md),
             Expanded(
               child: Text(
                 label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: selected ? SalaVerdeType.bodyStrong() : SalaVerdeType.body(),
               ),
             ),
           ],

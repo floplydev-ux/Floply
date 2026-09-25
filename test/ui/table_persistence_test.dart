@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/engine/academy/academy_progress.dart';
 import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/engine/pedagogy/curriculum.dart';
+import 'package:poker_trainer/engine/pedagogy/mentor_lesson.dart';
 import 'package:poker_trainer/engine/pedagogy/table_lesson.dart';
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 import 'package:poker_trainer/screens/academy/academy_controller.dart';
@@ -100,7 +101,12 @@ void main() {
         (tester) async {
       final c = await _mount(tester, size);
 
-      for (final id in ['1.1', '2.1', '3.1', '3.3', '5.1']) {
+      // N1.1, N1.2 y N1.3 ya no tienen guion de mesa legado (piloto de 3
+      // bloques: teoría escrita → ejemplo de mesa → ejercicios) — se prueban
+      // aparte en `academy_1_1_pilot_test.dart` / `academy_1_2_pilot_test.dart`
+      // / `academy_1_3_pilot_test.dart`. Acá usamos 1.4 en su lugar (sigue
+      // resolviendo al guion legado "1.1", igual que siempre).
+      for (final id in ['1.4', '2.1', '3.1', '3.3', '5.1']) {
         c.openLesson(id);
         await tester.pumpAndSettle();
         expect(c.isInteractiveTheory, isTrue, reason: '$name $id');
@@ -110,8 +116,8 @@ void main() {
         Set<TableAnchor>? prevHighlight;
 
         var guard = 0;
-        // Recorre el guion de mesa; N1.1 tiene fichas de teoría redactada
-        // después (sin mesa) que no interesan a este test.
+        // Recorre el guion de mesa; algunos subniveles tienen fichas de
+        // teoría redactada después (sin mesa) que no interesan a este test.
         while (c.isInteractiveTheory && guard++ < 25) {
           final why = '$name $id paso ${c.tableStep + 1}';
           expect(tester.takeException(), isNull, reason: why);
@@ -202,10 +208,19 @@ void main() {
         await tester.tap(find.text(last ? 'PRACTICAR' : 'CONTINUAR'));
         await tester.pumpAndSettle();
       }
-      // Fichas de teoría redactada de N2.1 (sin mesa): recorrer y salir.
-      while (c.isWrittenTheory) {
-        await tester.tap(
-            find.text(c.isLastWrittenTheory ? 'PRACTICAR' : 'CONTINUAR'));
+      // Clase de mentor de T051 (reemplaza su ficha) + fichas de teoría
+      // redactada del resto de N2.1 (sin mesa): recorrer y salir.
+      while (c.isMentorLesson || c.isWrittenTheory) {
+        if (c.isMentorLesson) {
+          final beat = c.currentMentorBeat;
+          final label = (beat is MentorCheckBeat && c.mentorCheckAnswer == null)
+              ? beat.check.options.first.label
+              : c.mentorContinueLabel;
+          await tester.tap(find.text(label));
+        } else {
+          await tester.tap(
+              find.text(c.isLastWrittenTheory ? 'PRACTICAR' : 'CONTINUAR'));
+        }
         await tester.pumpAndSettle();
       }
 
@@ -241,6 +256,15 @@ void main() {
       c.openLesson('3.3');
       await tester.pumpAndSettle();
       while (c.phase == AcademyPhase.theory) {
+        if (c.isMentorLesson) {
+          final beat = c.currentMentorBeat;
+          final label = (beat is MentorCheckBeat && c.mentorCheckAnswer == null)
+              ? beat.check.options.first.label
+              : c.mentorContinueLabel;
+          await tester.tap(find.text(label));
+          await tester.pumpAndSettle();
+          continue;
+        }
         final last = c.isInteractiveTheory
             ? (c.isLastTableStep && !c.hasWrittenTheory)
             : c.isLastWrittenTheory;

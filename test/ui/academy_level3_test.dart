@@ -4,6 +4,7 @@ import 'package:poker_trainer/engine/academy/academy_progress.dart';
 import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/engine/concepts/concept_ids.dart';
 import 'package:poker_trainer/engine/pedagogy/curriculum.dart';
+import 'package:poker_trainer/engine/pedagogy/mentor_lesson.dart';
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 import 'package:poker_trainer/screens/academy/academy_controller.dart';
 import 'package:poker_trainer/screens/academy/academy_screen.dart';
@@ -88,8 +89,20 @@ void main() {
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: 'abrir $id @ $width');
 
-        // Teoría: guion de mesa (3.1, 3.3, 3.4) → fichas de teoría redactada.
+        // Teoría: guion de mesa (3.1, 3.3, 3.4) → clase de mentor (si
+        // tiene, reemplaza la ficha) / fichas de teoría redactada.
         while (c.phase == AcademyPhase.theory) {
+          if (c.isMentorLesson) {
+            final beat = c.currentMentorBeat;
+            final label = (beat is MentorCheckBeat && c.mentorCheckAnswer == null)
+                ? beat.check.options.first.label
+                : c.mentorContinueLabel;
+            await tester.tap(find.text(label));
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull,
+                reason: 'teoría (mentor) $id @ $width');
+            continue;
+          }
           final last = c.isInteractiveTheory
               ? (c.isLastTableStep && !c.hasWrittenTheory)
               : c.isLastWrittenTheory;
@@ -159,8 +172,18 @@ void main() {
     expect(find.text('HERO'), findsNothing);
     expect(find.text('TÚ'), findsNothing);
 
-    // Pasar por el guion y las fichas de teoría redactada.
+    // Pasar por el guion, la clase de mentor (si tiene) y las fichas de
+    // teoría redactada.
     while (c.phase == AcademyPhase.theory) {
+      if (c.isMentorLesson) {
+        final beat = c.currentMentorBeat;
+        final label = (beat is MentorCheckBeat && c.mentorCheckAnswer == null)
+            ? beat.check.options.first.label
+            : c.mentorContinueLabel;
+        await tester.tap(find.text(label));
+        await tester.pumpAndSettle();
+        continue;
+      }
       final last = c.isInteractiveTheory
           ? (c.isLastTableStep && !c.hasWrittenTheory)
           : c.isLastWrittenTheory;

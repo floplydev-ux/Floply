@@ -6,11 +6,17 @@ import 'card.dart';
 /// *clase* de mano (`AKo`, `AKs`, `77`), que es lo que usan los rangos.
 class HoleCards {
   HoleCards(Card a, Card b)
-      : assert(a != b, 'Las dos cartas del héroe no pueden ser iguales'),
-        // Orden canónico: primero la carta de rango más alto; a igual
+      : // Orden canónico: primero la carta de rango más alto; a igual
         // rango, por palo, para que la representación sea estable.
         high = _higher(a, b),
-        low = _lower(a, b);
+        low = _lower(a, b) {
+    // Chequeo real, no un `assert` — las manos se arman con cartas que
+    // vienen de generación procedural (Deck/HandPicker), y esta
+    // invariante tiene que sostenerse también en release.
+    if (a == b) {
+      throw ArgumentError('Las dos cartas del héroe no pueden ser iguales: $a');
+    }
+  }
 
   final Card high;
   final Card low;

@@ -3,6 +3,7 @@ import '../../poker/hole_cards.dart';
 import '../../poker/position.dart';
 import '../../strategy/hand_strength.dart';
 import '../../strategy/opening_ranges.dart';
+import '../exercise_template.dart' show TemplateGenerationException;
 
 /// Cómo de "clara" queremos que sea la mano respecto del rango de
 /// apertura de una posición.
@@ -47,12 +48,19 @@ class HandPicker {
         break;
       }
     }
-    chosenNotation ??= _randomNotation(deck);
+    if (chosenNotation == null) {
+      throw TemplateGenerationException(
+          'HandPicker: no se encontró ninguna notación que cumpla bias='
+          '$bias para $position tras 40 intentos.');
+    }
 
     final hand = deck.dealHandOfClass(chosenNotation);
-    if (hand != null) return hand;
-    // Fallback: cualquier mano que quede.
-    return deck.dealHoleCards();
+    if (hand == null) {
+      throw TemplateGenerationException(
+          'HandPicker: la clase $chosenNotation ya no tiene combos '
+          'disponibles en el mazo (bloqueada por cartas ya repartidas).');
+    }
+    return hand;
   }
 
   /// Bias recomendado para una dificultad dada.

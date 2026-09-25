@@ -1,7 +1,8 @@
 name: poker_trainer
 description: >
   Aplicación móvil de entrenamiento de póker (Floply): motor pedagógico de
-  la Academia (326 teorías) con ejercicios interactivos, sin backend.
+  la Academia (326 teorías) con ejercicios interactivos, con cuenta global
+  (Google/Apple/email) y progreso sincronizado vía Firebase.
 publish_to: 'none'
 version: 0.2.0
 
@@ -13,13 +14,40 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   path_provider: ^2.1.4
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  cloud_firestore: ^6.10.0
+  google_sign_in: ^7.2.0
+  sign_in_with_apple: ^8.2.0
+  crypto: ^3.0.7
+  marionette_flutter: ^0.6.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^4.0.0
+  patrol: ^4.10.0
+  alchemist: ^0.14.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/curriculum/curriculum_spec.json
+    - assets/ranges/opening_ranges.json
+  # Tipografía de "Sala Verde" (docs/design/FLOPLY_DESIGN_DECISIONS.md #3),
+  # empaquetada como asset estático — sin el paquete `google_fonts` para no
+  # depender de una descarga de red en tiempo de ejecución. Usada por ahora
+  # solo por la Home migrada (Fase 2); el resto de la app sigue con
+  # `AppTheme`/fuente de sistema sin cambios.
+  fonts:
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces-Variable.ttf
+    - family: PublicSans
+      fonts:
+        - asset: assets/fonts/PublicSans-Variable.ttf
+    - family: IBMPlexMonoSemiBold
+      fonts:
+        - asset: assets/fonts/IBMPlexMono-SemiBold.ttf

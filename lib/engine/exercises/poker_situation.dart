@@ -4,6 +4,14 @@ import '../poker/poker_action.dart';
 import '../poker/position.dart';
 import '../poker/street.dart';
 
+/// NO es legacy exclusivo (Fase 8.8): además del camino viejo del
+/// Laboratorio, `PreflopStrategy` (motor nuevo,
+/// `exercises/preflop_strategy.dart`) construye un `PokerSituation` para
+/// reutilizar `StrategyEngine.openRaiseStrategy` en la rama "primero en
+/// entrar" — confirmado al auditar el archivo antes de marcar nada acá.
+/// Este tipo sigue siendo compartido por los dos sistemas; no se
+/// congela ni se documenta como candidato a eliminación.
+///
 /// Una situación concreta de póker: la "foto" sobre la que el usuario
 /// tiene que decidir. Es el output del generador y el input del motor
 /// estratégico y del evaluador.

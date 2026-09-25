@@ -50,3 +50,12 @@ app.*.map.json
 # Backups / scratch (no forman parte del proyecto)
 *.bak
 
+# Firebase — configuración real de un proyecto (ver AUTH_SETUP.md).
+# lib/firebase_options.dart NO está acá: hoy tiene solo valores
+# placeholder, versionados a propósito como referencia de formato. El día
+# que corras `flutterfire configure` con un proyecto real, sacalo de
+# control de versiones vos mismo si el repo es público (ver AUTH_SETUP.md,
+# "qué no sube a Git").
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+

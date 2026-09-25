@@ -69,7 +69,7 @@ N11 = {
         "miedo.",
  cuando_no=None,
  ejemplo="En un board con proyecto de color visible, el jugador que "
-        "3-beteó preflop suele tener más combos de esa color específico "
+        "3-beteó preflop suele tener más combos de ese color específico "
         "(por las manos que entran en un rango de 3-bet) que el que "
         "solo defendió — ventaja de nuts en ese board.",
  error_comun="Asumir que ventaja de rango y ventaja de nuts son lo "
@@ -84,21 +84,27 @@ N11 = {
         "cobra toda: la posición, las decisiones futuras y la habilidad "
         "influyen.",
  por_que_importa="Dos manos con la misma equity en el papel no ganan "
-        "siempre lo mismo en la práctica: la que juega en posición, con "
-        "más información en cada calle, suele cobrar una porción más "
-        "grande de esa equity.",
+        "siempre lo mismo en la práctica: una mano fácil de jugar en "
+        "cualquier calle suele cobrar casi toda su equity, mientras que "
+        "otra, con la misma equity cruda pero complicada de jugar "
+        "postflop, suele terminar cobrando bastante menos.",
  como_funciona="Tu equity cruda es un número fijo en el momento del "
-        "flop. Lo que pasa después — cómo jugás las calles siguientes, "
-        "si estás en posición o no — determina si terminás cobrando "
-        "toda esa equity, una parte, o incluso más (si además ganás "
-        "fichas extra con faroles bien elegidos).",
- cuando_lo_uso="Para entender por qué la posición (N3) vale tanto más "
-        "allá de la equity cruda de tu mano.",
+        "flop. Lo que pasa después — si estás en posición o no, qué tan "
+        "fácil es tomar buenas decisiones con esa mano en cada calle, y "
+        "tu propia habilidad para jugarla — determina si terminás "
+        "cobrando toda esa equity, una parte, o incluso más (si además "
+        "ganás fichas extra con faroles bien elegidos).",
+ cuando_lo_uso="Para entender por qué dos manos con la misma equity "
+        "cruda no valen exactamente lo mismo en la práctica: una se "
+        "juega fácil, la otra no.",
  cuando_no=None,
- ejemplo="Dos jugadores con la misma equity cruda en un flop: el que "
-        "juega en posición, viendo la reacción del rival en cada calle, "
-        "suele terminar cobrando una porción mayor de esa equity que el "
-        "que juega a ciegas.",
+ ejemplo="Un proyecto de escalera por las puntas y una pareja de ases "
+        "hecha pueden llegar al flop con la misma equity cruda. Pero la "
+        "pareja de ases es fácil de jugar en cualquier calle siguiente "
+        "— sabés dónde estás parado —, mientras que el proyecto, si no "
+        "completa, no te avisa hasta el final y es más difícil de jugar "
+        "bien contra una apuesta. La pareja de ases termina cobrando una "
+        "porción mayor de esa equity.",
  error_comun="Pensar que la equity cruda del flop ya define cuánto vas "
         "a ganar, sin considerar cuánto de esa equity realmente vas a "
         "poder cobrar.",
@@ -197,9 +203,9 @@ N11 = {
         "rango de apuesta (N9, T206): combinar valor muy fuerte y "
         "faroles, dejando afuera las manos medias.",
  por_que_importa="Ya sabés qué es un rango polarizado; acá lo elegís "
-        "como estrategia: es la forma correcta de apostar tamaños "
-        "grandes, porque combina 'gano mucho si me pagan' con 'gano por "
-        "fold equity si se retiran'.",
+        "como estrategia: con tamaños de apuesta grandes, polarizar es "
+        "lo que mejor sostiene esa apuesta, porque combina 'gano mucho "
+        "si me pagan' con 'gano por fold equity si se retiran'.",
  como_funciona="Con tamaños de apuesta grandes, conviene polarizar: "
         "metés tus mejores manos (que quieren pago) y tus mejores "
         "faroles (que quieren que se retiren), dejando las manos medias "

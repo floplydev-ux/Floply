@@ -14,10 +14,10 @@ all-in (13.4), y termina con la sÍntesis final: una sola decisión
 integrando pot odds, equity, rango y posición a la vez (13.5, capstone de
 las 326 teorías).
 
-Vocabulario nuevo de N13: NL2, rake, hero call. El resto es aplicación e
-integración de todo lo aprendido en N1-N12 — 13.3 en particular es
-deliberadamente corto por entrada: son 18 recordatorios, no 18 conceptos
-nuevos.
+Vocabulario nuevo de N13: NL2, rake, hero call, tilt. El resto es
+aplicación e integración de todo lo aprendido en N1-N12 — 13.3 en
+particular es deliberadamente corto por entrada: son 18 recordatorios,
+no 18 conceptos nuevos.
 
 NO hay niveles posteriores. Esta es la última tanda de contenido de la
 Academia (T308 cierra las 326 teorías).
@@ -295,9 +295,9 @@ N13 = {
         "manos llevás foldeadas seguidas ni cómo viene la sesión.",
  cuando_lo_uso="A lo largo de toda una sesión, como hábito constante.",
  cuando_no=None,
- ejemplo="Después de foldear 20 manos seguidas, la mano 21 se evalúa "
-        "exactamente con el mismo criterio que la primera — sin "
-        "ablandar el rango por cansancio.",
+ ejemplo="En la hora tres de una sesión larga, con la concentración "
+        "bajando, seguís abriendo con el mismo rango de UTG que "
+        "aplicabas al principio — sin la excusa del cansancio.",
  error_comun="Aflojar la disciplina preflop después de una mala racha "
         "o muchas manos aburridas seguidas.",
  idea_clave="La disciplina preflop se sostiene igual en la mano 1 y en "
@@ -462,9 +462,10 @@ N13 = {
  cuando_lo_uso="Cada vez que tenés una pareja o mano hecha y el rival "
         "muestra fuerza también.",
  cuando_no=None,
- ejemplo="Pagar todo el stack con una pareja de reyes con kicker "
-        "débil contra un rival que representa la misma pareja pero con "
-        "mejor kicker.",
+ ejemplo="Pagar una apuesta grande en el turn con una pareja de reyes y "
+        "kicker débil, sin notar que la línea del rival representa esa "
+        "misma pareja pero con mejor kicker: la mano no es 'buena', "
+        "está dominada.",
  error_comun=None,
  idea_clave="Error 6: no ver que estás dominado. Se corrige comparando "
         "contra el rango, no solo contra la categoría.",
@@ -545,7 +546,7 @@ N13 = {
 ),
 
 "T280": dict(  # Error: ignorar el board
- que_es="No leer la textura del board (N4, T257) antes de decidir: "
+ que_es="No leer la textura del board (N12, T257) antes de decidir: "
         "seco o coordinado, con o sin proyectos posibles.",
  por_que_importa="La misma mano vale distinto según el board — "
         "ignorarlo te hace tomar la misma decisión en situaciones muy "

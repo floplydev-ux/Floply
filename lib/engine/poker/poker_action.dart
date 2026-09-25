@@ -7,7 +7,8 @@ enum ActionType {
   call('Call'),
   bet('Bet'),
   raise('Raise'),
-  limp('Limp');
+  limp('Limp'),
+  allIn('All-in');
 
   const ActionType(this.label);
   final String label;

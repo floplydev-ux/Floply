@@ -2,6 +2,14 @@ import '../poker/street.dart';
 import 'exercise.dart';
 import 'generation_context.dart';
 
+export '../poker/generation_exception.dart' show TemplateGenerationException;
+
+/// LEGACY (Fase 8.8): usado únicamente por el camino viejo del
+/// Laboratorio (`ExerciseGenerator` → `LabSessionController._loadNext()`).
+/// La Academia no lo usa. Ver la nota completa en `exercise.dart`.
+/// (`TemplateGenerationException`, reexportada acá, sigue siendo
+/// compartida con el motor nuevo — esa excepción en sí no es legacy.)
+///
 /// Una plantilla de ejercicio: NO es una pregunta fija, sino una familia
 /// de situaciones con el mismo objetivo pedagógico.
 ///
@@ -51,13 +59,4 @@ abstract class ExerciseTemplate {
   /// si con las variables sorteadas no se puede armar una situación
   /// coherente (el generador reintentará).
   Exercise generate(GenerationContext ctx);
-}
-
-/// Señala que una generación puntual falló y hay que reintentar con otras
-/// variables (no es un error del sistema).
-class TemplateGenerationException implements Exception {
-  TemplateGenerationException(this.message);
-  final String message;
-  @override
-  String toString() => 'TemplateGenerationException: $message';
 }

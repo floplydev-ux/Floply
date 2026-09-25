@@ -1,4 +1,5 @@
 import '../poker/poker_action.dart';
+import 'preflop_authoring.dart';
 
 /// Qué tan buena es una acción, en una escala que NO es binaria.
 ///
@@ -40,11 +41,17 @@ class StrategyOption {
     required this.rating,
     this.justifyingConcepts = const [],
     this.rationaleKey,
+    this.role,
+    this.contextSensitivity = const ContextSensitivity.stable(),
   });
 
   final PokerAction action;
 
   /// Frecuencia con la que una estrategia mixta toma esta acción (0..1).
+  /// Puramente descriptiva desde "FLOPly — Fase 0.5": nunca determina
+  /// [rating] (ver el doc-comment de `preflopVerdict`,
+  /// `exercises/preflop_verdict.dart` — la calidad de una acción no se
+  /// deriva de qué tan seguido se juega).
   final double frequency;
 
   final StrategicRating rating;
@@ -56,15 +63,36 @@ class StrategyOption {
   /// Clave para buscar el texto de feedback correspondiente.
   final String? rationaleKey;
 
+  /// Por qué esta acción pertenece a la estrategia — ver
+  /// `strategy/preflop_authoring.dart`. `null` cuando el tipo de
+  /// ejercicio no tiene una noción de "rol" (comparar manos, ordenar
+  /// posiciones, etc.) — no todo `StrategyOption` representa una
+  /// decisión de value/bluff/defend.
+  final StrategyRole? role;
+
+  /// Si la calidad de esta acción depende de una variable que el
+  /// ejercicio no le muestra al alumno (ver
+  /// `strategy/preflop_authoring.dart`) — por defecto estable (no
+  /// depende de nada). Es lo que `preflopVerdict` usa, junto con
+  /// [rating], para decidir `AnswerVerdict.dependent`.
+  final ContextSensitivity contextSensitivity;
+
   bool get isPrimary => rating == StrategicRating.optimal;
 
-  StrategyOption copyWith({StrategicRating? rating, double? frequency}) {
+  StrategyOption copyWith({
+    StrategicRating? rating,
+    double? frequency,
+    StrategyRole? role,
+    ContextSensitivity? contextSensitivity,
+  }) {
     return StrategyOption(
       action: action,
       frequency: frequency ?? this.frequency,
       rating: rating ?? this.rating,
       justifyingConcepts: justifyingConcepts,
       rationaleKey: rationaleKey,
+      role: role ?? this.role,
+      contextSensitivity: contextSensitivity ?? this.contextSensitivity,
     );
   }
 
@@ -76,8 +104,12 @@ class StrategyOption {
 /// La estrategia completa para una situación: el conjunto de acciones
 /// posibles con su valoración. Es la "verdad" contra la que se evalúa.
 class Strategy {
-  Strategy(this.options, {this.summaryKey})
-      : assert(options.isNotEmpty, 'Una estrategia necesita al menos una opción');
+  Strategy(this.options, {this.summaryKey}) {
+    if (options.isEmpty) {
+      throw ArgumentError.value(
+          options, 'options', 'Una estrategia necesita al menos una opción');
+    }
+  }
 
   final List<StrategyOption> options;
 

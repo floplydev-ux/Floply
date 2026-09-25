@@ -18,7 +18,8 @@ void main() {
       store: InMemoryAcademyStore(),
     );
     await controller.load();
-    // N1.1 es teoría-sola; N1.2 tiene teoría interactiva + ejercicio.
+    // N1.1 y N1.2 son ambos: piloto de 3 bloques (teoría escrita → ejemplo
+    // de mesa → ejercicios), sin guion de mesa legado ni clase de mentor.
     controller.progress = AcademyProgress()..entry('1.1').completed = true;
 
     await tester.pumpWidget(MaterialApp(
@@ -29,41 +30,39 @@ void main() {
     expect(find.text('ACADEMIA'), findsOneWidget);
     expect(find.textContaining('Cómo funciona una mano'), findsWidgets);
 
-    // Abrir un subnivel con teoría interactiva sobre la mesa + ejercicio.
+    // Abrir un subnivel: ficha de teoría escrita primero (sin mesa).
     await tester.tap(find.textContaining('Ganar la mano').first);
     await tester.pumpAndSettle();
 
     expect(controller.phase, AcademyPhase.theory);
-    expect(controller.isInteractiveTheory, isTrue);
-    expect(find.text('1 / ${controller.tableStepCount}'), findsOneWidget);
+    expect(controller.isWrittenTheory, isTrue);
+    expect(controller.isInteractiveTheory, isFalse);
     expect(find.text('CONTINUAR'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     // Avanzar un paso y volver.
     await tester.tap(find.text('CONTINUAR'));
     await tester.pumpAndSettle();
-    expect(controller.tableStep, 1);
+    expect(controller.writtenTheoryStep, 1);
     expect(find.text('ATRÁS'), findsOneWidget);
 
     await tester.tap(find.text('ATRÁS'));
     await tester.pumpAndSettle();
-    expect(controller.tableStep, 0);
+    expect(controller.writtenTheoryStep, 0);
 
-    // Recorrer el resto de los pasos del guion.
-    while (!controller.isLastTableStep) {
-      controller.nextTableStep();
+    // Recorrer el resto de las fichas de teoría escrita.
+    while (controller.isWrittenTheory) {
+      controller.nextWrittenTheory();
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     }
-    // Tras el guion vienen las fichas de teoría redactada de N1.2.
-    expect(find.text('CONTINUAR'), findsOneWidget);
-    await tester.tap(find.text('CONTINUAR'));
-    await tester.pumpAndSettle();
-    expect(controller.isWrittenTheory, isTrue);
-    var wtGuard = 0;
-    while (controller.isWrittenTheory && wtGuard++ < 20) {
-      final label =
-          controller.isLastWrittenTheory ? 'PRACTICAR' : 'CONTINUAR';
+    // Tras la teoría viene el ejemplo de cierre (mesa + highlights, texto
+    // siempre en el panel debajo, nunca en burbuja).
+    expect(controller.isClosingExample, isTrue);
+    var exampleGuard = 0;
+    while (controller.isClosingExample && exampleGuard++ < 15) {
+      final label = controller.closingExampleButtonLabel;
+      expect(find.text(label), findsOneWidget);
       await tester.tap(find.text(label));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);

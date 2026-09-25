@@ -592,10 +592,10 @@ N5 = {
 "T148": dict(  # Rango de apertura del CO
  que_es="El rango de apertura del cutoff (CO) es ancho: entran bastantes "
         "más manos que desde el HJ.",
- por_que_importa="Desde el CO solo quedan dos jugadores por detrás antes "
-        "del botón (además de las ciegas): el riesgo de encontrarte con "
-        "algo mejor bajó bastante, y eso se refleja en un rango más "
-        "generoso.",
+ por_que_importa="Desde el CO ya casi no quedan jugadores por detrás: "
+        "solo el botón y las dos ciegas, tres en total. El riesgo de "
+        "encontrarte con algo mejor bajó bastante, y eso se refleja en un "
+        "rango más generoso.",
  como_funciona="Al rango del HJ le sumás manos conectadas, suited más "
         "bajas, y algunas broadways adicionales que todavía no entraban.",
  cuando_lo_uso="Cada vez que te toca actuar primero desde el CO y nadie "
@@ -605,18 +605,19 @@ N5 = {
         "desde el CO.",
  error_comun="Jugar el CO con la misma prudencia que UTG, dejando pasar "
         "aperturas rentables solo por costumbre.",
- idea_clave="CO = rango ancho. Solo dos jugadores por detrás antes del "
-        "botón.",
+ idea_clave="CO = rango ancho. Solo tres jugadores por detrás: el botón "
+        "y las dos ciegas.",
 ),
 
 "T149": dict(  # Rango de apertura del BTN
  que_es="El rango de apertura del botón (BTN) es el más ancho de toda la "
         "mesa: entra la mayor cantidad de manos distintas de las seis "
         "posiciones.",
- por_que_importa="El botón es la última posición en actuar preflop, y "
-        "además va a estar EN posición durante el resto de la mano (actúa "
-        "último en todas las rondas siguientes). Eso vale mucho: podés "
-        "abrir bastante más ancho y seguir bien parado.",
+ por_que_importa="El botón es la última posición 'de mesa' en actuar "
+        "preflop — después de él solo faltan hablar las dos ciegas — y "
+        "además va a estar EN posición durante el resto de la mano: actúa "
+        "último en todas las rondas siguientes (flop, turn, river). Eso "
+        "vale mucho: podés abrir bastante más ancho y seguir bien parado.",
  como_funciona="Al rango del CO le sumás bastante más: conectores más "
         "bajos, suited variadas, broadways sueltas. Solo quedan las "
         "ciegas por detrás, y jugás con la ventaja de la posición en "
@@ -636,9 +637,10 @@ N5 = {
 
 "T150": dict(  # Rango de apertura de la SB
  que_es="El rango de apertura de la ciega chica (SB) se juega distinto a "
-        "las demás posiciones, porque aunque actúa primero preflop, "
-        "también va a actuar primero en todas las rondas siguientes — "
-        "fuera de posición el resto de la mano.",
+        "las demás posiciones: para cuando le toca abrir, ya se retiraron "
+        "todos los de mesa y solo falta hablar la ciega grande — pero en "
+        "todas las rondas siguientes (flop, turn, river) la SB va a ser "
+        "la primera en actuar, fuera de posición el resto de la mano.",
  por_que_importa="Tener posición o no importa mucho más allá de "
         "preflop: la SB abre con menos manos que el botón, a pesar de "
         "tener casi la misma cantidad de rivales por detrás, porque paga "

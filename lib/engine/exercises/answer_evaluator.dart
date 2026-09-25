@@ -1,0 +1,103 @@
+import '../poker/poker_action.dart';
+import '../strategy/strategy.dart';
+import 'exercise_scenario.dart';
+import 'preflop_verdict.dart';
+import 'scenario_strategy.dart';
+
+/// El veredicto pedagógico de una respuesta — nunca binario.
+///
+/// No es el mismo tipo que `ExerciseRating` (`pedagogy/
+/// table_exercise.dart`): ese vive acoplado a los tipos de UI del
+/// sistema viejo (`PlayableTableExercise`/`ActionChoice`); este motor es
+/// nuevo y todavía no está cableado a ninguna UI — acoplarlo ahora sería
+/// prematuro. Comparte las 3 categorías centrales (`best`/`acceptable`/
+/// `poor`) más `dependent`, que sale de `Strategy.isMixed` (ya existe):
+/// cuando la situación admite más de una respuesta con frecuencia
+/// apreciable, no tiene sentido calificarla como un único "correcto".
+enum AnswerVerdict { best, acceptable, poor, dependent }
+
+/// El resultado de evaluar una decisión.
+class AnswerResult {
+  const AnswerResult({
+    required this.verdict,
+    required this.matchedOption,
+    required this.justifyingConcepts,
+    required this.chosenAction,
+    required this.recommendedAction,
+  });
+
+  final AnswerVerdict verdict;
+
+  /// La opción de la [Strategy] de referencia que corresponde a la
+  /// acción elegida (para poder mostrar `feedback`/`rationaleKey` más
+  /// adelante).
+  final StrategyOption matchedOption;
+
+  /// Conceptos que justifican el veredicto — ya intersecados con
+  /// `ExerciseScenario.evaluableConcepts`: nunca un concepto que el
+  /// escenario no declaró.
+  final List<String> justifyingConcepts;
+
+  /// La acción que el alumno eligió — el mismo parámetro que recibió
+  /// [AnswerEvaluator.evaluate], guardado acá para que un consumidor
+  /// (p. ej. `PreflopSessionSummary`) no necesite volver a pasarlo por
+  /// separado.
+  final PokerAction chosenAction;
+
+  /// La acción primaria de la estrategia de referencia
+  /// (`Strategy.primary.action`) — qué habría jugado la estrategia
+  /// óptima en esta situación exacta.
+  final PokerAction recommendedAction;
+}
+
+/// Evalúa la decisión del alumno contra la estrategia de referencia del
+/// escenario.
+///
+/// No implementa GTO ni un solver, no calcula EV: delega en
+/// [ScenarioStrategy] (que a su vez despacha a `PreflopStrategy` o
+/// `PostflopStrategy` según la calle — reemplazable sin que este
+/// evaluador cambie de forma) para la estrategia, y en [preflopVerdict]
+/// ("FLOPly — Fase 0.5") para traducir la calidad de la opción elegida
+/// a un veredicto. El nombre de [preflopVerdict] quedó de cuando solo
+/// existía preflop — la función en sí es street-agnóstica (solo mira
+/// `QualityTier`/`ContextSensitivity`), por eso `PostflopStrategy`
+/// también la reutiliza sin cambios.
+///
+/// **Cableado de la Fase 0.5** (antes de esto, el veredicto `dependent`
+/// se calculaba de la frecuencia: `strategy.isMixed && option.frequency
+/// >= 0.15`, mezclando "qué tan seguido se juega" con "es una decisión
+/// que depende del contexto" — dos preguntas distintas). Ahora el
+/// veredicto sale directo de [StrategyOption.rating] +
+/// [StrategyOption.contextSensitivity], que es lo que cada generador de
+/// estrategia ya declara por opción — este evaluador no vuelve a mirar
+/// `frequency` para decidir nada, solo el motor que arma la estrategia.
+class AnswerEvaluator {
+  const AnswerEvaluator._();
+
+  static AnswerResult evaluate(ExerciseScenario scenario, PokerAction chosenAction) {
+    final strategy =
+        ScenarioStrategy.forDecision(scenario.initialState, scenario.heroSlot);
+
+    final option = strategy.optionFor(chosenAction) ?? _worstOption(strategy);
+
+    return AnswerResult(
+      verdict: preflopVerdict(
+        quality: option.rating,
+        contextSensitivity: option.contextSensitivity,
+      ),
+      matchedOption: option,
+      justifyingConcepts: option.justifyingConcepts
+          .where(scenario.evaluableConcepts.contains)
+          .toList(),
+      chosenAction: chosenAction,
+      recommendedAction: strategy.primary.action,
+    );
+  }
+
+  /// Si la acción elegida no corresponde a ninguna opción contemplada
+  /// (p. ej. un tamaño de subida que la estrategia de referencia no
+  /// consideró), no explota: la trata como la peor opción conocida —
+  /// nunca deja al evaluador sin veredicto.
+  static StrategyOption _worstOption(Strategy strategy) =>
+      strategy.options.reduce((a, b) => a.rating.score <= b.rating.score ? a : b);
+}

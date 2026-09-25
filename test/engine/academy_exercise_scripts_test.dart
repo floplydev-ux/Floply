@@ -114,4 +114,20 @@ void main() {
     expect(threeBet.concept, isNull);
     expect(threeBet.strategyDependent, isTrue);
   });
+
+  test(
+      'checkpoint 4.6 tiene ejercicios reales (antes de la auditoría de '
+      'motores, no tenía ninguno y el checkpoint auto-aprobaba con 1.0 '
+      'sin que el alumno respondiera nada)', () {
+    expect(AcademyExerciseScripts.has('4.6'), isTrue);
+    final set = AcademyExerciseScripts.forLesson('4.6')!;
+    expect(set.exercises, isNotEmpty);
+    // Cubre lo que pide el objetivo del subnivel: al menos una mano
+    // ganadora de cada categoría grande (no solo comparaciones triviales).
+    final winningCats =
+        set.exercises.map((e) => e.choices.first.label).join(' ');
+    expect(winningCats, contains('escalera'));
+    expect(winningCats, contains('color'));
+    expect(winningCats, contains('full house'));
+  });
 }

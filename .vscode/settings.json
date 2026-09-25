@@ -1,0 +1,13 @@
+{
+  // Hot reload automático al guardar: aplica a una app corriendo con
+  // "flutter run" (F5/Ctrl+F5) en modo debug. "allIfDirty" recarga en
+  // cada guardado (manual o autosave) que tenga cambios reales — así no
+  // hace falta parar y volver a correr "flutter run" en cada edición.
+  "dart.flutterHotReloadOnSave": "allIfDirty",
+
+  // Widget Preview de Flutter (dentro del propio VS Code, sin terminal ni
+  // navegador aparte): "startLazily" ya viene por defecto — la primera
+  // vez que se abre tarda un poco más, después queda corriendo con hot
+  // reload. Ver lib/screens/academy/widgets/poker_table_view_preview.dart.
+  "dart.flutterWidgetPreview": "startLazily"
+}

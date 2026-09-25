@@ -1,11 +1,24 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 
 import '../../engine/concepts/user_knowledge.dart';
-import '../../engine/evaluation/evaluation_result.dart';
-import '../../engine/evaluation/user_answer.dart';
-import '../../engine/exercises/exercise.dart';
-import '../../engine/pedagogy/recovery_session.dart';
+import '../../engine/exercises/answer_evaluator.dart';
+import '../../engine/exercises/difficulty_level.dart';
+import '../../engine/exercises/exercise_scenario.dart';
+import '../../engine/exercises/exercise_scenario_adapter.dart';
+import '../../engine/exercises/exercise_scenario_builder.dart';
+import '../../engine/exercises/laboratory_difficulty.dart';
+import '../../engine/exercises/preflop_session_summary.dart';
+import '../../engine/exercises/student_turn_controller.dart';
+import '../../engine/exercises/templates/hand_picker.dart' show HandBias;
+import '../../engine/pedagogy/playable_exercise.dart';
+import '../../engine/pedagogy/playable_exercise_controller.dart';
+import '../../engine/poker/deck.dart';
+import '../../engine/poker/game/game_state.dart';
+import '../../engine/poker/game/opponent_policy.dart';
 import '../../engine/poker_trainer_engine.dart';
+import '../../models/app_user.dart';
 
 /// Fase actual de una sesión de práctica del Laboratorio.
 enum LabPhase { idle, question, feedback, summary }
@@ -14,112 +27,326 @@ enum LabPhase { idle, question, feedback, summary }
 ///
 /// No sabe nada de widgets: la pantalla solo escucha [notifyListeners] y
 /// pinta el estado. Así el flujo se puede testear sin UI.
-class LabSessionController extends ChangeNotifier {
+///
+/// **Fase 9**: eliminado el Modo Clásico (el camino que usaba
+/// `Exercise`/`ExerciseGenerator`/`TableExerciseAdaptation` directamente
+/// desde este controller vía `start()`/`_loadNext()`). El único motor que
+/// queda acá es el nuevo (`ExerciseScenarioBuilder` →
+/// `StudentTurnController` → [PlayableExerciseController], el mismo que
+/// usa la Academia para sus ejercicios de mesa). `Exercise`/
+/// `ExerciseGenerator` no se borraron del proyecto — Academia los sigue
+/// usando para recuperación y práctica sin script interactivo (ver
+/// `exercise.dart`) — solo dejaron de tener un llamador acá.
+class LabSessionController extends ChangeNotifier with PlayableExerciseController {
   LabSessionController({PokerTrainerEngine? engine, this.sessionLength = 8})
       : engine = engine ?? PokerTrainerEngine() {
     knowledge = this.engine.newUser();
   }
 
   final PokerTrainerEngine engine;
-  final int sessionLength;
+
+  /// Cuántos ejercicios tiene la sesión activa. Mutable desde la Fase 8
+  /// (antes `final`, siempre 8): Custom deja elegir la cantidad antes de
+  /// arrancar (`startNewEngineSession`), Fácil/Medio/Experto siguen sin
+  /// tocarlo — mismo default de siempre, cero cambio de comportamiento
+  /// para esos tres.
+  int sessionLength;
 
   late UserKnowledge knowledge;
 
   LabPhase phase = LabPhase.idle;
-  Exercise? current;
-  EvaluationResult? lastResult;
 
-  final Set<String> selectedOptionIds = {};
-  final Set<String> selectedReasoningIds = {};
-  bool showAdvanced = false;
+  ExerciseScenarioAdaptation? _newAdaptation;
+  StudentTurnController? _turnController;
 
-  int answered = 0;
-  final List<EvaluationResult> results = [];
+  /// Resultados reales del motor nuevo durante esta sesión — uno por
+  /// decisión resuelta en [onPlayableResolved], nunca por cada opción
+  /// de la vista previa. Base de [newEngineSummary] (Fase 8.5).
+  final List<(PreflopScenarioKind, AnswerResult)> newEngineResults = [];
 
-  double get sessionDecisionScore => results.isEmpty
-      ? 0
-      : results.map((r) => r.decisionScore).reduce((a, b) => a + b) /
-          results.length;
+  /// Perfil de rival y dificultad activos para la sesión del motor nuevo
+  /// en curso — se fijan una vez en [startNewEngineSession] y se
+  /// reutilizan para cada ejercicio de esa sesión (coherencia dentro de
+  /// la sesión). Defaults iguales al comportamiento previo a Fase 10
+  /// (`balanced`/`standard`, este último equivalente a `HandBias.any`):
+  /// arrancar sin argumentos no cambia nada de lo que ya funcionaba.
+  OpponentProfile activeOpponentProfile = OpponentProfile.balanced;
+  DifficultyLevel activeDifficulty = DifficultyLevel.standard;
 
-  Iterable<EvaluationResult> get reasoningResults =>
-      results.where((r) => r.reasoningScore != null);
+  /// Dificultad de Laboratorio (Fácil/Medio/Experto) activa para la
+  /// sesión en curso — `null` significa "sin restricción de familia"
+  /// (nunca expuesto hoy por ningún botón real desde que la Fase 9
+  /// eliminó el atajo de desarrollo que lo dejaba en `null` a propósito).
+  /// Determina qué subconjunto de [PreflopScenarioKind] puede salir en
+  /// [loadNewEnginePreflopExercise] — el eje real de la dificultad, ver
+  /// `LaboratoryDifficulty`.
+  LaboratoryDifficulty? activeLabDifficulty;
 
-  double? get sessionReasoningScore {
-    final scored = reasoningResults.toList();
-    if (scored.isEmpty) return null;
-    return scored.map((r) => r.reasoningScore!).reduce((a, b) => a + b) /
-        scored.length;
-  }
+  /// Selección explícita del usuario (Fase 8, modo Custom) — mutuamente
+  /// excluyente con [activeLabDifficulty] (`startNewEngineSession` limpia
+  /// el que no corresponda). Cuando no es `null`, tiene prioridad sobre
+  /// [activeLabDifficulty] en [loadNewEnginePreflopExercise]: el usuario
+  /// eligió explícitamente qué practicar, no una dificultad preconfigurada.
+  /// Nunca vacía en la práctica — `LaboratoryScreen` no deja arrancar
+  /// Custom sin al menos una familia elegida (ver `_CustomSelector`); acá
+  /// no se re-valida por las dudas porque `Deck.pick` de una lista vacía
+  /// repetiría exactamente el `RangeError` ya documentado en la Fase 7,
+  /// así que la garantía tiene que vivir en la UI, antes de esta llamada.
+  List<PreflopScenarioKind>? activeCustomScenarioKinds;
 
-  RecoverySession? get recovery => engine.suggestedRecovery(knowledge);
+  /// Resumen armado bajo demanda a partir de [newEngineResults] — la
+  /// única fuente de verdad que consume `PreflopSessionSummaryView` al
+  /// llegar a [LabPhase.summary] (Fase 9: ya no coexiste con un resumen
+  /// del motor viejo).
+  PreflopSessionSummary get newEngineSummary =>
+      PreflopSessionSummary.fromResults(newEngineResults);
 
-  bool get canConfirm => selectedOptionIds.isNotEmpty;
+  /// El escenario del motor nuevo actualmente en juego, o `null`. Mínimo
+  /// necesario para que el estado sea inspeccionable (tests, debug) sin
+  /// exponer `_turnController` entero.
+  ExerciseScenario? get newEngineScenario => _turnController?.scenario;
 
-  void start() {
-    answered = 0;
-    results.clear();
-    _loadNext();
-  }
+  /// El `GameState` real y actual del escenario del motor nuevo, o
+  /// `null` — refleja las acciones ya aplicadas vía
+  /// `StudentTurnController.applyHeroAction`.
+  GameState? get newEngineGameState => _turnController?.state;
 
-  void _loadNext() {
-    selectedOptionIds.clear();
-    selectedReasoningIds.clear();
-    showAdvanced = false;
-    lastResult = null;
-    current = engine.nextExercise(knowledge);
+  /// `true` mientras el ejercicio actual se muestra como mesa jugable.
+  /// Puede ser `false` en el caso límite (deliberadamente forzado en
+  /// tests, no alcanzable con el usuario real de Laboratorio, que arranca
+  /// con todo enseñado) donde `ExerciseScenarioAdapter.adapt` no
+  /// encuentra ningún concepto evaluable.
+  bool get isTableExercise => _newAdaptation != null;
+
+  @override
+  PlayableTableExercise? get currentPlayable => _newAdaptation?.tableExercise;
+
+  /// Carga un ejercicio preflop generado por el motor nuevo
+  /// (`ExerciseScenarioBuilder` → `ExerciseScenario` →
+  /// `ExerciseScenarioAdapter`). `null` (sin cambiar de fase) si, tras
+  /// filtrar los conceptos del escenario contra [knowledge], no queda
+  /// ninguno evaluable para este usuario (ver
+  /// `ExerciseScenarioAdapter.adapt`).
+  ///
+  /// [kind] elige la familia a generar; sin especificar, rota
+  /// aleatoriamente entre las familias permitidas vía `Deck.pick` — mismo
+  /// `Deck` que ya se crea acá, nunca una segunda fuente de `Random`
+  /// (Fase 8.1). Esas familias permitidas salen de
+  /// [activeCustomScenarioKinds] si el usuario eligió Custom (Fase 8), si
+  /// no de [activeLabDifficulty] (Fácil/Medio/Experto), si no todas.
+  void loadNewEnginePreflopExercise({Deck? deck, PreflopScenarioKind? kind}) {
+    playableActionIndex = null;
+    playableSizeIndex = null;
+    lastPlayableFeedback = null;
+
+    final d = deck ?? Deck(Random());
+    final allowedKinds = activeCustomScenarioKinds ??
+        activeLabDifficulty?.allowedScenarioKinds ??
+        PreflopScenarioKind.values;
+    final scenario = _buildScenario(kind ?? d.pick(allowedKinds), d);
+    _turnController = StudentTurnController(scenario);
+    _newAdaptation = ExerciseScenarioAdapter.adapt(
+      scenario,
+      knowledge,
+      engine.concepts,
+      heroName: AppUser.current.firstName,
+    );
     phase = LabPhase.question;
     notifyListeners();
   }
 
-  void toggleOption(String optionId, {required bool single}) {
-    if (phase != LabPhase.question) return;
-    if (single) {
-      selectedOptionIds
-        ..clear()
-        ..add(optionId);
-    } else if (!selectedOptionIds.add(optionId)) {
-      selectedOptionIds.remove(optionId);
-    }
+  /// Despacha al método de `ExerciseScenarioBuilder` correspondiente a
+  /// cada una de las 5 familias — las 5 ya existen (Fase 5), este método
+  /// solo las conecta (Fase 8.1). Desde Fase 10 también pasa
+  /// [activeOpponentProfile]/[activeDifficulty] tal cual están fijados
+  /// para la sesión — ningún cambio de motor acá, solo wiring.
+  ///
+  /// [_biasAppliesTo] limita a qué familias se les aplica el sesgo de
+  /// dificultad — hallazgo real al implementar esta fase, no una
+  /// decisión previa: `HandBias` (`clearlyInRange`/`clearlyOutOfRange`/
+  /// `borderline`) se define en términos de
+  /// `OpeningRanges.forPosition(heroPosition)`, y esa tabla no tiene
+  /// datos reales para la BB (nunca "abre") — pedirle un sesgo distinto
+  /// de `any` ahí nunca se puede satisfacer y `HandPicker.forBias`
+  /// termina lanzando `TemplateGenerationException`.
+  /// `defenseVsOpen`/`shortStackFacingOpen` usan `heroPosition == bb`
+  /// por defecto, así que la dificultad no les cambia el sesgo de mano
+  /// todavía (quedan en `HandBias.any`, el mismo comportamiento actual)
+  /// — documentado como deuda en el informe final, no silenciado.
+  ExerciseScenario _buildScenario(PreflopScenarioKind kind, Deck deck) {
+    final bias = _biasAppliesTo(kind) ? activeDifficulty.heroHandBias(deck) : HandBias.any;
+    return switch (kind) {
+      PreflopScenarioKind.openRaise => ExerciseScenarioBuilder.openRaise(
+          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
+      PreflopScenarioKind.defenseVsOpen => ExerciseScenarioBuilder.defenseVsOpen(
+          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
+      PreflopScenarioKind.threeBet => ExerciseScenarioBuilder.threeBet(
+          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
+      PreflopScenarioKind.facingThreeBet => ExerciseScenarioBuilder.facingThreeBet(
+          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
+      PreflopScenarioKind.shortStack => ExerciseScenarioBuilder.shortStackFacingOpen(
+          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
+      // Sin `opponentProfile`: a diferencia de las 5 familias preflop,
+      // el villano de esta familia nunca consulta `OpponentPolicy` —
+      // paga preflop y checkea el flop de guion (ver el doc-comment de
+      // `ExerciseScenarioBuilder.cbetDecision`), así que no hay ningún
+      // perfil de rival que pasarle.
+      PreflopScenarioKind.cbetDecision =>
+        ExerciseScenarioBuilder.cbetDecision(deck: deck, heroHandBias: bias),
+    };
+  }
+
+  /// [kind] no aplica el sesgo de dificultad: `defenseVsOpen`/
+  /// `shortStack` por la limitación de `OpeningRanges` en la BB ya
+  /// documentada arriba; `cbetDecision` porque la fuerza de la mano del
+  /// héroe no cambia la respuesta correcta de esta familia (la lección
+  /// es "hay que c-apostar", no "con esta mano en particular").
+  static bool _biasAppliesTo(PreflopScenarioKind kind) =>
+      kind != PreflopScenarioKind.defenseVsOpen &&
+      kind != PreflopScenarioKind.shortStack &&
+      kind != PreflopScenarioKind.cbetDecision;
+
+  @override
+  int get itemNumber => answered + 1;
+
+  @override
+  int get itemTotal => sessionLength;
+
+  @override
+  String conceptName(String conceptId) =>
+      engine.concepts.tryById(conceptId)?.name ?? conceptId;
+
+  int answered = 0;
+
+  /// `true` mientras la sesión en curso (o la que llegó a
+  /// [LabPhase.summary]) es del motor nuevo — decide qué resumen mostrar
+  /// (Fase 9.9). Explícito en vez de inferido de `_newAdaptation != null`
+  /// porque ese campo queda "viejo" (última mesa resuelta) al llegar a
+  /// `summary`, y no se limpia entre caminos dentro de la misma instancia
+  /// de controller.
+  bool _newEngineSession = false;
+  bool get isNewEngineSession => _newEngineSession;
+
+  /// Arranca una sesión nueva (Fase 9.9/9.10). Resetea
+  /// [answered]/[newEngineResults] para que la sesión anterior no
+  /// contamine la nueva.
+  ///
+  /// [opponentProfile]/[difficulty] (Fase 10) fijan el rival y la
+  /// dificultad para TODA la sesión (se reutilizan en cada ejercicio
+  /// hasta el próximo `startNewEngineSession`) — sin argumentos, el
+  /// comportamiento es exactamente el de antes de Fase 10. Ninguna
+  /// selección adaptativa automática todavía: quien decide el perfil/
+  /// dificultad es siempre el caller (Fase 10.11, arquitectura
+  /// preparada, no un sistema adaptativo).
+  ///
+  /// [labDifficulty] (selector Fácil/Medio/Experto) es la forma normal en
+  /// que la pantalla arranca una sesión: cuando se pasa, fija qué
+  /// familias puede generar [loadNewEnginePreflopExercise]
+  /// (`labDifficulty.allowedScenarioKinds`) y también el sesgo de mano
+  /// (`labDifficulty.handBias`), pisando cualquier [difficulty] que se
+  /// haya pasado junto con él.
+  ///
+  /// [customScenarioKinds] (Fase 8, modo Custom) es la selección real del
+  /// usuario — mutuamente excluyente con [labDifficulty] (si se pasan los
+  /// dos, gana Custom, ver [activeCustomScenarioKinds]). No debe llegar
+  /// vacía: quien llama (`_CustomSelector`) ya garantiza al menos una
+  /// familia elegida antes de habilitar el botón de arrancar.
+  /// [customSessionLength], si se pasa, reemplaza [sessionLength] para
+  /// esta sesión (Custom deja elegir cantidad; Fácil/Medio/Experto no
+  /// pasan esto y siguen con el default de siempre).
+  void startNewEngineSession({
+    OpponentProfile opponentProfile = OpponentProfile.balanced,
+    DifficultyLevel difficulty = DifficultyLevel.standard,
+    LaboratoryDifficulty? labDifficulty,
+    List<PreflopScenarioKind>? customScenarioKinds,
+    int? customSessionLength,
+  }) {
+    assert(customScenarioKinds == null || customScenarioKinds.isNotEmpty,
+        'customScenarioKinds no puede ser una lista vacía — Deck.pick '
+        'repetiría el RangeError de la Fase 7 (exercise_generator.dart).');
+    _newEngineSession = true;
+    activeOpponentProfile = opponentProfile;
+    activeDifficulty = labDifficulty?.handBias ?? difficulty;
+    activeLabDifficulty = customScenarioKinds == null ? labDifficulty : null;
+    activeCustomScenarioKinds = customScenarioKinds;
+    if (customSessionLength != null) sessionLength = customSessionLength;
+    answered = 0;
+    newEngineResults.clear();
+    loadNewEnginePreflopExercise();
+  }
+
+  /// Abandona la sesión en curso (en pregunta o en feedback) y vuelve a
+  /// [LabPhase.idle] — el botón "Salir" de [_LabHeader]. Ningún dato que
+  /// deshacer: `knowledge`/`newEngineResults` solo se escriben al
+  /// confirmar una respuesta ([onPlayableResolved]), nunca antes, así que
+  /// el ejercicio a medio resolver (o ya resuelto, si se sale desde el
+  /// feedback) simplemente deja de mostrarse — mismo criterio que ya usa
+  /// [returnToIdle] para el resumen.
+  void exitSession() {
+    _newAdaptation = null;
+    _turnController = null;
+    phase = LabPhase.idle;
     notifyListeners();
   }
 
-  void toggleReasoning(String conceptId) {
-    if (phase != LabPhase.question) return;
-    if (!selectedReasoningIds.add(conceptId)) {
-      selectedReasoningIds.remove(conceptId);
-    }
+  /// Vuelve a [LabPhase.idle] desde el resumen del motor nuevo (Fase 9.9)
+  /// — no toca ningún dato de la sesión que acaba de terminar, solo
+  /// navega.
+  void returnToIdle() {
+    phase = LabPhase.idle;
     notifyListeners();
   }
 
-  void confirm() {
-    final exercise = current;
-    if (exercise == null || !canConfirm) return;
+  /// Registra la decisión tomada en la mesa: la acción real se aplica vía
+  /// [StudentTurnController] (`LegalActionEngine`/`ActionResolver` de
+  /// verdad, nunca reinterpretados acá) y escribe en [knowledge] (ver
+  /// [_recordKnowledge]).
+  @override
+  void onPlayableResolved(
+      PlayableTableExercise exercise, PlayableFeedback feedback) {
+    final newAdaptation = _newAdaptation!;
+    final scenario = _turnController!.scenario;
+    final action = newAdaptation.actionFor(feedback.action, feedback.size);
+    _turnController!.applyHeroAction(action);
 
-    final answer = UserAnswer(
-      exerciseId: exercise.id,
-      selectedOptionId: selectedOptionIds.first,
-      selectedOptionIds: selectedOptionIds.toList(),
-      reasoningConceptIds: selectedReasoningIds.toList(),
-    );
+    final result = AnswerEvaluator.evaluate(scenario, action);
+    newEngineResults.add((scenario.objective, result));
+    _recordKnowledge(scenario, result);
 
-    lastResult = engine.submit(exercise, answer, knowledge);
-    results.add(lastResult!);
     answered++;
     phase = LabPhase.feedback;
-    notifyListeners();
   }
 
-  void next() {
+  /// Escribe en [knowledge] con la misma convención que
+  /// `PokerTrainerEngine.submit()` usa para el sistema viejo (reducir el
+  /// veredicto a un booleano y llamar `recordAttempt` por cada concepto
+  /// declarado del ejercicio, no solo los que justificaron la opción
+  /// elegida). `best`/`acceptable`/`dependent` cuentan como acierto:
+  /// ninguna de las tres es una mala elección (`dependent` significa que
+  /// no hay una única respuesta correcta, no que esté mal) — solo `poor`
+  /// cuenta como error. `recordAttempt` ya es un no-op si el concepto no
+  /// está enseñado; el filtro explícito acá es una defensa adicional, no
+  /// la única.
+  void _recordKnowledge(ExerciseScenario scenario, AnswerResult result) {
+    final decisionCorrect = result.verdict != AnswerVerdict.poor;
+    for (final conceptId in scenario.evaluableConcepts) {
+      if (!knowledge.taughtConcepts.contains(conceptId)) continue;
+      knowledge.recordAttempt(conceptId, decisionCorrect: decisionCorrect);
+    }
+  }
+
+  /// Terminada la explicación de un ejercicio de mesa, arma otro
+  /// ejercicio real (nueva semilla, nueva instancia de
+  /// `ExerciseScenario`) hasta completar [sessionLength] (Fase
+  /// 9.9/9.10: misma unidad pedagógica, sin inventar energía/fichas), y
+  /// ahí enruta a [LabPhase.summary].
+  @override
+  void advancePlayable() {
     if (answered >= sessionLength) {
       phase = LabPhase.summary;
       notifyListeners();
       return;
     }
-    _loadNext();
-  }
-
-  void toggleAdvanced() {
-    showAdvanced = !showAdvanced;
-    notifyListeners();
+    loadNewEnginePreflopExercise();
   }
 }

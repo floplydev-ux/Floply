@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../engine/bankroll/bankroll_topic.dart';
 import '../../l10n/app_strings.dart';
-import '../../theme/app_colors.dart';
-// Reutiliza los controles de navegación y la barra de progreso del
-// recorrido de la Academia: son genéricos (current/total, callbacks), sin
-// ningún acoplamiento a currículo — el mismo criterio que ya se usó para
-// unificar ATRÁS/CONTINUAR entre las fases de la Academia.
+import '../../theme/sala_verde/sala_verde_tokens.dart';
+import '../../widgets/sala_verde/sala_verde_widgets.dart';
 import '../academy/widgets/lesson_widgets.dart';
 
 /// Módulo complementario de Bankroll: una ficha por tema, con navegación
@@ -14,6 +11,16 @@ import '../academy/widgets/lesson_widgets.dart';
 /// Academia, pero **fuera** del currículo de 326 teorías: sin ID, sin
 /// prerrequisitos, sin `orden_global`, sin ejercicios. Se llega acá desde
 /// Home, no desde el mapa de niveles.
+///
+/// **Fase 4** (`docs/design/FLOPLY_PHASE_4_LESSON_FLOW_HEADER.md`): migrado
+/// a "Sala Verde" junto con `LessonFlowHeader` — dejar el header nuevo
+/// sobre un cuerpo con el patrón viejo (7 secciones color/ícono propio +
+/// "IDEA CLAVE" en gradiente dorado-violeta, idéntico al anti-patrón ya
+/// corregido en `written_theory_view.dart` en la Fase 3) habría creado una
+/// costura visual peor que la que esta fase busca cerrar. Reutiliza
+/// componentes ya existentes (`SvReadingCard`, `SvCalloutAccent`,
+/// `SvProgressLinear`, `SvLessonNavControls`) — cero componentes nuevos de
+/// superficie, sin convertirse en un rediseño de Bankroll.
 class BankrollScreen extends StatefulWidget {
   const BankrollScreen({super.key});
 
@@ -32,7 +39,7 @@ class _BankrollScreenState extends State<BankrollScreen> {
     final done = _step >= total;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: SalaVerdeColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
@@ -43,8 +50,9 @@ class _BankrollScreenState extends State<BankrollScreen> {
                 title: AppStrings.bankrollTitle,
                 subtitle: AppStrings.bankrollScreenSubtitle,
                 onBack: () => Navigator.of(context).maybePop(),
+                variant: LessonFlowHeaderVariant.bankroll,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: SalaVerdeSpace.lg),
               Expanded(
                 child: done ? const _BankrollDone() : _buildStep(),
               ),
@@ -57,25 +65,64 @@ class _BankrollScreenState extends State<BankrollScreen> {
 
   Widget _buildStep() {
     final topic = _topics[_step];
+    final current = _step + 1;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        LessonItemProgress(current: _step + 1, total: _topics.length),
-        const SizedBox(height: 14),
+        _Progress(current: current, total: _topics.length),
+        const SizedBox(height: SalaVerdeSpace.md),
         Expanded(
           child: SingleChildScrollView(
             key: ValueKey('bankroll$_step'),
             child: _TopicCard(topic: topic),
           ),
         ),
-        const SizedBox(height: 10),
-        LessonNavControls(
+        const SizedBox(height: SalaVerdeSpace.sm),
+        SvLessonNavControls(
           canGoBack: _step > 0,
           buttonLabel: _step == _topics.length - 1
               ? AppStrings.academySeeResult
               : AppStrings.academyContinue,
           onBack: () => setState(() => _step = (_step - 1).clamp(0, _topics.length - 1)),
           onNext: () => setState(() => _step++),
+        ),
+      ],
+    );
+  }
+}
+
+/// Misma forma que `_Progress` de `written_theory_view.dart` (barra +
+/// etiqueta + contador tabular; acá la etiqueta dice "TEMA" en vez de
+/// "TEORÍA" — decir "BANKROLL" habría repetido el título del header
+/// arriba). El temperamento de Bankroll es `brass`,
+/// pero se usa `brassDeep` acá (relleno silencioso, fuera de la card de
+/// lectura, sobre `background` oscuro) para no competir con el único
+/// relleno brillante de la pantalla: el botón CONTINUAR/VER RESULTADO
+/// (`FLOPLY_ANTI_GENERIC.md` 0.2 — brass como máximo una vez como acento
+/// protagonista por pantalla).
+class _Progress extends StatelessWidget {
+  const _Progress({required this.current, required this.total});
+
+  final int current;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final ratio = total == 0 ? 0.0 : (current / total).clamp(0.0, 1.0);
+    return Row(
+      children: [
+        Expanded(
+          child: SvProgressLinear(
+            value: ratio.toDouble(),
+            color: SalaVerdeColors.brassDeep,
+          ),
+        ),
+        const SizedBox(width: SalaVerdeSpace.md),
+        Text('TEMA', style: SalaVerdeType.label(color: SalaVerdeColors.textMuted)),
+        const SizedBox(width: SalaVerdeSpace.xs),
+        Text(
+          '$current / $total',
+          style: SalaVerdeType.numeric(size: 12, color: SalaVerdeColors.textMuted),
         ),
       ],
     );
@@ -92,189 +139,75 @@ class _TopicCard extends StatelessWidget {
     final content = topic.contenido;
     final sections = <Widget>[];
 
-    void add(String label, IconData icon, Color color, String? body) {
+    void add(String eyebrow, String? body) {
       if (body == null || body.trim().isEmpty) return;
-      sections.add(_Section(label: label, icon: icon, color: color, body: body));
-      sections.add(const SizedBox(height: 10));
+      sections.add(_SectionView(eyebrow: eyebrow, body: body));
     }
 
-    add('QUÉ ES', Icons.savings_rounded, AppColors.gold, content.queEs);
-    add('POR QUÉ IMPORTA', Icons.trending_up_rounded, AppColors.violetBright,
-        content.porQueImporta);
-    add('CÓMO FUNCIONA', Icons.settings_rounded, AppColors.textSecondary,
-        content.comoFunciona);
-    add('CUÁNDO LO USÁS', Icons.check_circle_rounded, AppColors.neonGreen,
-        content.cuandoLoUso);
-    add('CUÁNDO NO', Icons.block_rounded, AppColors.warning, content.cuandoNo);
-    add('EJEMPLO', Icons.casino_rounded, AppColors.neonGreenBright, content.ejemplo);
-    add('ERROR COMÚN', Icons.warning_amber_rounded, AppColors.danger,
-        content.errorComun);
-    if (sections.isNotEmpty) sections.removeLast();
+    add('QUÉ ES', content.queEs);
+    add('POR QUÉ IMPORTA', content.porQueImporta);
+    add('CÓMO FUNCIONA', content.comoFunciona);
+    add('CUÁNDO LO USÁS', content.cuandoLoUso);
+    add('CUÁNDO NO', content.cuandoNo);
+    add('EJEMPLO', content.ejemplo);
+    add('ERROR COMÚN', content.errorComun);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          topic.titulo,
-          style: const TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.w800,
-            height: 1.25,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 10),
-        _ObjectivePill(text: topic.objetivo),
-        const SizedBox(height: 16),
-        ...sections,
-        if (content.ideaClave != null && content.ideaClave!.trim().isNotEmpty) ...[
-          const SizedBox(height: 14),
-          _KeyIdea(text: content.ideaClave!),
-        ],
-        const SizedBox(height: 8),
-      ],
-    );
-  }
-}
-
-class _ObjectivePill extends StatelessWidget {
-  const _ObjectivePill({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: AppColors.gold.withValues(alpha: 0.1),
-        border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
-      ),
-      child: Row(
+    return SvReadingCard(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.flag_rounded, size: 15, color: AppColors.gold),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w700,
-                height: 1.35,
-                color: AppColors.textPrimary,
-              ),
-            ),
+          Text(topic.titulo, style: SalaVerdeType.onReading(SalaVerdeType.headline())),
+          const SizedBox(height: SalaVerdeSpace.md),
+          SvCalloutAccent(
+            eyebrow: 'OBJETIVO',
+            body: topic.objetivo,
+            // brass puro mide 2.17:1 sobre surfaceReading (falla WCAG AA) —
+            // brassDeep mide 5.39:1. Mismo hallazgo que
+            // FLOPLY_DESIGN_DECISIONS.md #7, aplicado acá.
+            color: SalaVerdeColors.brassDeep,
+            icon: Icons.flag_outlined,
+            onReading: true,
           ),
+          const SizedBox(height: SalaVerdeSpace.xl),
+          ...sections,
+          if (content.ideaClave != null && content.ideaClave!.trim().isNotEmpty) ...[
+            const SizedBox(height: SalaVerdeSpace.sm),
+            SvCalloutAccent(
+              eyebrow: 'IDEA CLAVE',
+              body: content.ideaClave!,
+              color: SalaVerdeColors.brassDeep,
+              icon: Icons.push_pin_outlined,
+              onReading: true,
+            ),
+          ],
         ],
       ),
     );
   }
 }
 
-class _Section extends StatelessWidget {
-  const _Section({
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.body,
-  });
+/// Misma regla anti-fragmentación que `written_theory_view.dart`: sin
+/// ícono ni color por sección, jerarquía puramente tipográfica.
+class _SectionView extends StatelessWidget {
+  const _SectionView({required this.eyebrow, required this.body});
 
-  final String label;
-  final IconData icon;
-  final Color color;
+  final String eyebrow;
   final String body;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.surfaceBorder),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: SalaVerdeSpace.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, size: 14, color: color),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.8,
-                  color: color,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
           Text(
-            body,
-            style: const TextStyle(
-              fontSize: 13,
-              height: 1.5,
-              color: AppColors.textPrimary,
-            ),
+            eyebrow,
+            style: SalaVerdeType.onReading(SalaVerdeType.label(), secondary: true)
+                .copyWith(fontSize: 10.5),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _KeyIdea extends StatelessWidget {
-  const _KeyIdea({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: LinearGradient(
-          colors: [
-            AppColors.gold.withValues(alpha: 0.22),
-            AppColors.violetDeep.withValues(alpha: 0.22),
-          ],
-        ),
-        border: Border.all(color: AppColors.gold.withValues(alpha: 0.45)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.push_pin_rounded, size: 14, color: AppColors.gold),
-              SizedBox(width: 6),
-              Text(
-                'IDEA CLAVE',
-                style: TextStyle(
-                  fontSize: 9.5,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.8,
-                  color: AppColors.gold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 13.5,
-              height: 1.45,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          const SizedBox(height: 6),
+          Text(body, style: SalaVerdeType.onReading(SalaVerdeType.body())),
         ],
       ),
     );
@@ -289,32 +222,24 @@ class _BankrollDone extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.savings_rounded, size: 56, color: AppColors.gold),
-        const SizedBox(height: 16),
-        const Text(
+        const Icon(Icons.savings_rounded, size: 56, color: SalaVerdeColors.brassBright),
+        const SizedBox(height: SalaVerdeSpace.lg),
+        Text(
           AppStrings.bankrollDone,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-          ),
+          style: SalaVerdeType.title(),
         ),
-        const SizedBox(height: 8),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
+        const SizedBox(height: SalaVerdeSpace.sm),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: SalaVerdeSpace.xl),
           child: Text(
             AppStrings.bankrollDoneBody,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 13.5,
-              height: 1.45,
-              color: AppColors.textSecondary,
-            ),
+            style: SalaVerdeType.body(color: SalaVerdeColors.textSecondary),
           ),
         ),
-        const SizedBox(height: 24),
-        LessonSecondaryButton(
+        const SizedBox(height: SalaVerdeSpace.xxl),
+        SvButtonSecondary(
           label: AppStrings.academyBackToMap,
           onTap: () => Navigator.of(context).maybePop(),
         ),

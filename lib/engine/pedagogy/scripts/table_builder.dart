@@ -6,9 +6,13 @@ import '../table_lesson.dart';
 /// esta lógica por archivo.
 ///
 /// Convención de asientos (portrait, 6 slots fijos):
-///   slot 0 = héroe (abajo, centro)   · 1 = abajo-izq · 2 = arriba-izq
-///   slot 3 = arriba, centro          · 4 = arriba-der · 5 = abajo-der
-/// El orden de acción preflop recorre los slots 0 → 5 → 4 → 3 → 2 → 1.
+///   slot 0 = héroe (abajo, centro)   · 1 = abajo-der · 2 = arriba-der
+///   slot 3 = arriba, centro          · 4 = arriba-izq · 5 = abajo-izq
+/// El orden de acción preflop recorre los slots 0 → 5 → 4 → 3 → 2 → 1 — y,
+/// con esta distribución, ese recorrido es horario en pantalla (ver
+/// [TablePositions] en `table_position.dart` para el modelo de posiciones
+/// explícito: BTN→SB→BB→UTG→HJ→CO es exactamente ese mismo orden de slot
+/// decreciente, para cualquier `buttonSlot`, no solo estos dos presets).
 class TableBuilder {
   TableBuilder._();
 
@@ -50,9 +54,7 @@ class TableBuilder {
           label: labels[i] ?? '',
           isHero: i == heroSlot,
           cards: cards[i] ??
-              (labels.containsKey(i)
-                  ? const ['?', '?']
-                  : const <String>[]),
+              (labels.containsKey(i) ? const ['?', '?'] : const <String>[]),
           betBb: bets[i] ?? 0,
           stackBb: stacks[i] ?? 100,
           action: actions[i],

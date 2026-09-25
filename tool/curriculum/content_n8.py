@@ -84,8 +84,9 @@ N8 = {
         "sigue funcionando y cuándo no, en vez de c-betear en piloto "
         "automático.",
  como_funciona="Tu rango de apertura (N5) incluye manos fuertes y "
-        "también manos que fallaron el flop. Lo mismo el rango de "
-        "defensa del rival. Pero como el rango del que abrió suele "
+        "también manos que, la mayoría de las veces, terminan sin "
+        "conectar el flop. Lo mismo el rango de defensa del rival. Pero "
+        "como el rango del que abrió suele "
         "estar, en conjunto, un poco mejor parado en la mayoría de los "
         "boards, apostar ahí de entrada tiene sentido más seguido de lo "
         "que parece.",

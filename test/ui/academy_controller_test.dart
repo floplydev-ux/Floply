@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/engine/academy/academy_progress.dart';
 import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/engine/pedagogy/curriculum.dart';
+import 'package:poker_trainer/engine/pedagogy/table_exercise.dart'
+    show ExerciseRating;
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 import 'package:poker_trainer/screens/academy/academy_controller.dart';
 
@@ -12,7 +14,11 @@ void main() {
       );
 
   /// Índice de la opción "correcta" de un ítem (motor, check o interactivo).
+  /// Los ítems jugables no entran acá: [answer] los resuelve aparte porque
+  /// son 2-3 decisiones encadenadas (acción → tamaño → razón), no una sola
+  /// — devuelve 0 sin mirar el ítem, [answer] lo ignora en ese caso.
   int bestChoice(AcademyItem item) {
+    if (item.isPlayable) return 0;
     if (item.isInteractive) return item.interactive!.bestChoiceIndex;
     if (item.isEngine) {
       final ex = item.exercise!;
@@ -27,10 +33,35 @@ void main() {
     return item.check!.correctIndex;
   }
 
-  /// Resuelve el ítem actual (cualquier modalidad) eligiendo [choice].
+  /// Índice de la mejor opción de una lista rateada (acción/tamaño/razón),
+  /// o 0 si por algún motivo ninguna es `best` (no debería pasar en
+  /// contenido bien formado, pero no hace explotar el test).
+  int bestRatedIndex<T>(List<T> options, ExerciseRating Function(T) rating) {
+    final i = options.indexWhere((o) => rating(o) == ExerciseRating.best);
+    return i < 0 ? 0 : i;
+  }
+
+  /// Resuelve un ejercicio jugable eligiendo siempre la mejor acción, el
+  /// mejor tamaño (si la acción lo pide) y la mejor razón.
+  void answerPlayable(AcademyController c) {
+    final ex = c.currentPlayable!;
+    c.choosePlayableAction(bestRatedIndex(ex.actions, (a) => a.rating));
+    final action = ex.actions[c.playableActionIndex!];
+    if (action.needsSizing) {
+      c.choosePlayableSize(bestRatedIndex(action.sizeOptions, (s) => s.rating));
+    }
+    c.confirmPlayableReasoning(
+        bestRatedIndex(action.reasoning, (r) => r.rating));
+    c.advancePlayable();
+  }
+
+  /// Resuelve el ítem actual (cualquier modalidad) eligiendo [choice] (para
+  /// los jugables, [choice] se ignora: [answerPlayable] decide por sí solo).
   void answer(AcademyController c, int choice) {
     final item = c.currentItem!;
-    if (item.isInteractive) {
+    if (item.isPlayable) {
+      answerPlayable(c);
+    } else if (item.isInteractive) {
       c.answerInteractive(choice);
       c.advanceInteractive();
     } else {
@@ -45,8 +76,8 @@ void main() {
     while (c.phase == AcademyPhase.theory) {
       c.advanceTheory();
     }
-    while (c.phase == AcademyPhase.exercise ||
-        c.phase == AcademyPhase.feedback) {
+    while (
+        c.phase == AcademyPhase.exercise || c.phase == AcademyPhase.feedback) {
       if (c.phase == AcademyPhase.exercise) {
         answer(c, bestChoice(c.currentItem!));
       } else {
@@ -70,18 +101,16 @@ void main() {
     final c = make(InMemoryAcademyStore());
     await c.load();
 
-    // N1.1 es teoría-solo; N1.2 tiene teoría interactiva + un ejercicio.
+    // N1.1 y N1.2 son ambos: fichas de teoría escrita → ejemplo de mesa →
+    // ejercicios (piloto de 3 bloques) — ninguno tiene ya guion de mesa
+    // legado ni clase de mentor.
     await completeLesson(c, '1.1');
     c.exitLesson();
 
     c.openLesson('1.2');
     expect(c.phase, AcademyPhase.theory);
-    expect(c.isInteractiveTheory, isTrue);
-    // N1.2: guion de mesa → fichas de teoría redactada → ejercicios.
-    while (c.isInteractiveTheory) {
-      c.nextTableStep();
-    }
     expect(c.isWrittenTheory, isTrue);
+    expect(c.isInteractiveTheory, isFalse);
     while (c.phase == AcademyPhase.theory) {
       c.advanceTheory();
     }
@@ -99,15 +128,16 @@ void main() {
   });
 
   test(
-      'un subnivel con guion interactivo autorado (PASO 4) lo usa por '
-      'encima de la PracticeSpec heredada del motor', () async {
+      'un subnivel con ejercicio jugable autorado lo usa por encima de la '
+      'PracticeSpec heredada del motor (y del set interactivo viejo)',
+      () async {
     final c = make(InMemoryAcademyStore());
     await c.load();
 
     // N5.3 (decisión de abrir / RFI) hereda una PracticeSpec del motor
-    // (legacy), pero PASO 4 le agregó un ejercicio interactivo propio
-    // sobre la mesa — ese es el que debe usarse: más rico que una
-    // pregunta genérica del motor, para la misma decisión (RFI).
+    // (legacy) y tiene un set interactivo viejo (N5Exercises), pero el
+    // piloto jugable lo tapa a los dos — ese es el que debe usarse: se
+    // decide la acción real sobre la mesa, para la misma decisión (RFI).
     for (final id in Curriculum.lessonOrder) {
       if (id == '5.3') break;
       await completeLesson(c, id);
@@ -119,7 +149,7 @@ void main() {
       c.advanceTheory();
     }
     expect(c.currentItem, isNotNull);
-    expect(c.currentItem!.isInteractive, isTrue);
+    expect(c.currentItem!.isPlayable, isTrue);
 
     await completeLesson(c, '5.3');
     c.exitLesson();
@@ -140,8 +170,8 @@ void main() {
     while (c.phase == AcademyPhase.theory) {
       c.advanceTheory();
     }
-    while (c.phase == AcademyPhase.exercise ||
-        c.phase == AcademyPhase.feedback) {
+    while (
+        c.phase == AcademyPhase.exercise || c.phase == AcademyPhase.feedback) {
       if (c.phase == AcademyPhase.exercise) {
         final wrong =
             (bestChoice(c.currentItem!) + 1) % c.currentItem!.options.length;
@@ -175,10 +205,10 @@ void main() {
 
     final second = make(store);
     await second.load();
-    expect(second.academy.stateOf('1.1', second.progress),
-        LessonState.completed);
-    expect(second.academy.stateOf('1.2', second.progress),
-        LessonState.available);
+    expect(
+        second.academy.stateOf('1.1', second.progress), LessonState.completed);
+    expect(
+        second.academy.stateOf('1.2', second.progress), LessonState.available);
     expect(second.currentLessonId, '1.2');
   });
 

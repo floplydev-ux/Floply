@@ -75,6 +75,29 @@ class Deck {
     return null;
   }
 
+  /// Reintenta hasta [maxAttempts] veces: baraja una copia de lo que
+  /// queda en el mazo y prueba los primeros [count]. Si [predicate] los
+  /// acepta, recién ahí los saca de verdad del mazo — un intento fallido
+  /// no consume cartas. `null` si se agotan los intentos; no hay
+  /// fallback silencioso a "lo que sea", decide el caller.
+  List<Card>? tryDealMatching(
+    int count,
+    bool Function(List<Card> candidate) predicate, {
+    int maxAttempts = 200,
+  }) {
+    if (_cards.length < count) return null;
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      final candidate = List<Card>.of(_cards)..shuffle(_rng);
+      final picked = candidate.sublist(0, count);
+      if (predicate(picked)) {
+        final pickedSet = picked.toSet();
+        _cards.removeWhere(pickedSet.contains);
+        return picked;
+      }
+    }
+    return null;
+  }
+
   /// Elige un elemento al azar de [items] usando la semilla de la baraja.
   T pick<T>(List<T> items) => items[_rng.nextInt(items.length)];
 

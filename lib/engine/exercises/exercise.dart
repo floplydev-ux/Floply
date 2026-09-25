@@ -2,6 +2,25 @@ import '../poker/poker_action.dart';
 import '../strategy/strategy.dart';
 import 'poker_situation.dart';
 
+/// **Fase 9 (auditoría)**: el comentario anterior de este bloque decía
+/// "la Academia no usa nada de este archivo" — era falso, y la Fase 9
+/// (eliminación del Modo Clásico del Laboratorio) lo encontró al
+/// auditar consumidores antes de borrar nada. `AcademyController` SÍ
+/// depende de este archivo hoy, en dos caminos reales: `startRecovery()`
+/// (sesiones de recuperación del concepto más flojo) y la práctica de
+/// cualquier lesson cuyo contenido use `content.practice` en vez de un
+/// script interactivo (`AcademyExerciseScripts.forLesson(id) == null`) —
+/// ambos llaman `PokerTrainerEngine.nextExercise`/`.submit` con
+/// `concept`/`difficulty` explícitos. El Laboratorio (`start()`/
+/// `_loadNext()`, camino "Modo Clásico") SÍ se eliminó en Fase 9 — era
+/// el único llamador que pedía `nextExercise` sin `concept`/`difficulty`
+/// (dejando que `PedagogicalEngine.nextGoal` eligiera ambos
+/// automáticamente), y ese patrón específico es el que originaba el
+/// `RangeError` documentado en Fase 7 (nunca reproducido con los
+/// llamados explícitos de Academia). Este archivo sigue siendo
+/// necesario — no es legacy de Laboratorio, es el motor de ejercicios
+/// de Academia para esos dos caminos.
+///
 /// Tipos de ejercicio que el motor puede representar. No todos están
 /// implementados todavía: la base es extensible.
 enum ExerciseType {

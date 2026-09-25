@@ -3,11 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../engine/exercises/exercise.dart';
 import '../../../engine/exercises/poker_situation.dart';
 import '../../../l10n/app_strings.dart';
-import '../../../theme/app_colors.dart';
+import '../../../theme/sala_verde/sala_verde_tokens.dart';
 import '../../../widgets/pressable_scale.dart';
+import '../../../widgets/sala_verde/sala_verde_widgets.dart';
 import 'poker_bits.dart';
 
 /// La tarjeta con el enunciado del ejercicio, la situación y las opciones.
+///
+/// **Fase 7** (`docs/design/FLOPLY_PHASE_7_LABORATORIO.md`): migrado a
+/// "Sala Verde" — compartido con `exercise_view.dart` de Academia (Fase
+/// 5, camino `.engine`, sin contenido real hoy pero sí alcanzable acá en
+/// Laboratorio vía el motor clásico). Migrar acá cierra también la
+/// costura que la Fase 5 había documentado como límite conocido.
 class ExerciseCard extends StatelessWidget {
   const ExerciseCard({
     super.key,
@@ -29,53 +36,35 @@ class ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final situation = exercise.situation;
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.surfaceBorder),
-      ),
+    return SvSurfacePanel(
+      padding: const EdgeInsets.all(SalaVerdeSpace.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
               _DifficultyDots(difficulty: exercise.difficulty),
-              const SizedBox(width: 10),
+              const SizedBox(width: SalaVerdeSpace.sm),
               Expanded(
                 child: Text(
                   exercise.type.label.toUpperCase(),
                   textAlign: TextAlign.right,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.neonGreenBright,
-                    letterSpacing: 0.6,
-                  ),
+                  style: SalaVerdeType.label(color: SalaVerdeColors.steelBlueBright),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            exercise.prompt,
-            style: const TextStyle(
-              fontSize: 15,
-              height: 1.4,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          const SizedBox(height: SalaVerdeSpace.md),
+          Text(exercise.prompt, style: SalaVerdeType.bodyStrong()),
           if (situation != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: SalaVerdeSpace.lg),
             _SituationView(situation: situation),
           ],
-          const SizedBox(height: 18),
+          const SizedBox(height: SalaVerdeSpace.xl - 2),
           ...exercise.options.map((option) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(bottom: SalaVerdeSpace.sm),
                 child: _OptionTile(
                   label: option.label,
                   selected: selectedOptionIds.contains(option.id),
@@ -83,20 +72,15 @@ class ExerciseCard extends StatelessWidget {
                 ),
               )),
           if (exercise.reasoningConcepts.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            const Text(
+            const SizedBox(height: SalaVerdeSpace.xs),
+            Text(
               AppStrings.labYourReasoning,
-              style: TextStyle(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w800,
-                color: AppColors.textMuted,
-                letterSpacing: 0.8,
-              ),
+              style: SalaVerdeType.label(color: SalaVerdeColors.textMuted),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: SalaVerdeSpace.sm),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: SalaVerdeSpace.sm,
+              runSpacing: SalaVerdeSpace.sm,
               children: exercise.reasoningConcepts
                   .map((id) => _ReasoningChip(
                         label: conceptName(id),
@@ -120,39 +104,37 @@ class _SituationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(SalaVerdeSpace.md),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.25),
-        borderRadius: BorderRadius.circular(14),
+        color: SalaVerdeColors.background,
+        borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           HeroHandView(hand: situation.heroCards),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              InfoChip(
-                label: 'POS',
-                value: situation.heroPosition.abbreviation,
-              ),
-              InfoChip(
-                label: 'STACK',
-                value: '${situation.effectiveStackBb.toStringAsFixed(0)}bb',
-              ),
-              InfoChip(label: 'CALLE', value: situation.street.label),
-            ],
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: SalaVerdeSpace.md),
+          SvChipNumericGroup(chips: [
+            SvChipNumeric(
+              label: 'POS',
+              value: situation.heroPosition.abbreviation,
+              accent: SalaVerdeColors.steelBlueBright,
+            ),
+            SvChipNumeric(
+              label: 'STACK',
+              value: '${situation.effectiveStackBb.toStringAsFixed(0)}bb',
+              accent: SalaVerdeColors.steelBlueBright,
+            ),
+            SvChipNumeric(
+              label: 'CALLE',
+              value: situation.street.label,
+              accent: SalaVerdeColors.steelBlueBright,
+            ),
+          ]),
+          const SizedBox(height: SalaVerdeSpace.sm),
           Text(
             situation.actionHistoryDescription,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-              height: 1.3,
-            ),
+            style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
           ),
         ],
       ),
@@ -176,17 +158,18 @@ class _OptionTile extends StatelessWidget {
     return PressableScale(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 140),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        duration: SalaVerdeMotion.fast,
+        padding: const EdgeInsets.symmetric(
+          horizontal: SalaVerdeSpace.lg,
+          vertical: SalaVerdeSpace.md,
+        ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
           color: selected
-              ? AppColors.neonGreen.withValues(alpha: 0.16)
-              : AppColors.surfaceElevated,
+              ? SalaVerdeColors.steelBlueBright.withValues(alpha: 0.16)
+              : SalaVerdeColors.surfaceElevated,
           border: Border.all(
-            color: selected
-                ? AppColors.neonGreenBright
-                : AppColors.surfaceBorder,
+            color: selected ? SalaVerdeColors.steelBlueBright : SalaVerdeColors.borderSubtle,
             width: selected ? 1.6 : 1,
           ),
         ),
@@ -197,19 +180,13 @@ class _OptionTile extends StatelessWidget {
                   ? Icons.radio_button_checked_rounded
                   : Icons.radio_button_unchecked_rounded,
               size: 18,
-              color: selected
-                  ? AppColors.neonGreenBright
-                  : AppColors.textMuted,
+              color: selected ? SalaVerdeColors.steelBlueBright : SalaVerdeColors.textMuted,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: SalaVerdeSpace.md),
             Expanded(
               child: Text(
                 label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: selected ? SalaVerdeType.bodyStrong() : SalaVerdeType.body(),
               ),
             ),
           ],
@@ -235,22 +212,23 @@ class _ReasoningChip extends StatelessWidget {
     return PressableScale(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: SalaVerdeSpace.md,
+          vertical: SalaVerdeSpace.xs + 4,
+        ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(SalaVerdeRadius.pill),
           color: selected
-              ? AppColors.violetPrimary.withValues(alpha: 0.22)
-              : AppColors.surfaceElevated,
+              ? SalaVerdeColors.steelBlueBright.withValues(alpha: 0.18)
+              : SalaVerdeColors.surfaceElevated,
           border: Border.all(
-            color: selected ? AppColors.violetBright : AppColors.surfaceBorder,
+            color: selected ? SalaVerdeColors.steelBlueBright : SalaVerdeColors.borderSubtle,
           ),
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: selected ? AppColors.violetSoft : AppColors.textSecondary,
+          style: SalaVerdeType.bodyStrong(
+            color: selected ? SalaVerdeColors.steelBlueBright : SalaVerdeColors.textSecondary,
           ),
         ),
       ),
@@ -277,8 +255,8 @@ class _DifficultyDots extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: i <= difficulty
-                    ? AppColors.neonGreen
-                    : AppColors.surfaceBorder,
+                    ? SalaVerdeColors.steelBlueBright
+                    : SalaVerdeColors.borderSubtle,
               ),
             ),
           ),

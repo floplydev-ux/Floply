@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 import '../../../engine/evaluation/evaluation_result.dart';
 import '../../../engine/strategy/strategy.dart';
 import '../../../l10n/app_strings.dart';
-import '../../../theme/app_colors.dart';
+import '../../../theme/sala_verde/sala_verde_tokens.dart';
+import '../../../widgets/sala_verde/sala_verde_widgets.dart';
 
 /// Muestra el resultado de la evaluación: valoración, feedback progresivo
 /// y el desglose de la estrategia (todas las acciones con su frecuencia).
+///
+/// **Fase 7**: migrado a "Sala Verde". [_accent] agrupa las 5
+/// [StrategicRating] en 3 bandas semánticas (`success`/`warning`/
+/// `errorBright`) — no hay 5 tokens semánticos distintos en el sistema, y
+/// las etiquetas/emojis (sin tocar) siguen comunicando las 5 categorías
+/// reales; el color solo comunica la banda general.
 class FeedbackPanel extends StatelessWidget {
   const FeedbackPanel({
     super.key,
@@ -27,31 +34,28 @@ class FeedbackPanel extends StatelessWidget {
     switch (result.strategicRating) {
       case StrategicRating.optimal:
       case StrategicRating.veryGood:
-        return AppColors.neonGreen;
+        return SalaVerdeColors.success;
       case StrategicRating.viable:
-        return AppColors.gold;
+        return SalaVerdeColors.warning;
       case StrategicRating.dubious:
-        return AppColors.warning;
+        return SalaVerdeColors.warning;
       case StrategicRating.bad:
-        return AppColors.danger;
+        return SalaVerdeColors.errorBright;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: AppColors.surface,
-        border: Border.all(color: _accent.withValues(alpha: 0.5)),
-      ),
+    final accent = _accent;
+    return SvSurfacePanel(
+      borderColor: accent.withValues(alpha: 0.5),
+      padding: const EdgeInsets.all(SalaVerdeSpace.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: SalaVerdeSpace.sm,
+            runSpacing: SalaVerdeSpace.sm,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Row(
@@ -61,58 +65,40 @@ class FeedbackPanel extends StatelessWidget {
                     result.strategicRating.emoji,
                     style: const TextStyle(fontSize: 18),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: SalaVerdeSpace.sm),
                   Text(
                     result.strategicRating.label.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.6,
-                      color: _accent,
-                    ),
+                    style: SalaVerdeType.label(color: accent),
                   ),
                 ],
               ),
-              _ScorePill(
-                label: AppStrings.labDecision,
-                value: result.decisionScore,
-              ),
+              _ScorePill(label: AppStrings.labDecision, value: result.decisionScore),
               if (result.reasoningScore != null)
-                _ScorePill(
-                  label: AppStrings.labReasoning,
-                  value: result.reasoningScore!,
-                ),
+                _ScorePill(label: AppStrings.labReasoning, value: result.reasoningScore!),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            result.feedback,
-            style: const TextStyle(
-              fontSize: 13.5,
-              height: 1.45,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 14),
+          const SizedBox(height: SalaVerdeSpace.md),
+          Text(result.feedback, style: SalaVerdeType.body()),
+          const SizedBox(height: SalaVerdeSpace.md + 2),
           _StrategyBreakdown(strategy: strategy, chosen: result.chosenOption),
           if (result.missingConcepts.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: SalaVerdeSpace.md),
             _ConceptLine(
               label: 'Te faltó considerar',
               concepts: result.missingConcepts.map(conceptName).toList(),
-              color: AppColors.warning,
+              color: SalaVerdeColors.warning,
             ),
           ],
           if (result.matchedConcepts.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: SalaVerdeSpace.sm),
             _ConceptLine(
               label: 'Bien identificado',
               concepts: result.matchedConcepts.map(conceptName).toList(),
-              color: AppColors.neonGreen,
+              color: SalaVerdeColors.success,
             ),
           ],
           if (result.advancedFeedback != null) ...[
-            const SizedBox(height: 14),
+            const SizedBox(height: SalaVerdeSpace.md + 2),
             GestureDetector(
               onTap: onToggleAdvanced,
               child: Row(
@@ -122,35 +108,27 @@ class FeedbackPanel extends StatelessWidget {
                         ? Icons.expand_less_rounded
                         : Icons.expand_more_rounded,
                     size: 18,
-                    color: AppColors.violetSoft,
+                    color: SalaVerdeColors.steelBlueBright,
                   ),
-                  const SizedBox(width: 4),
-                  const Text(
+                  const SizedBox(width: SalaVerdeSpace.xs),
+                  Text(
                     AppStrings.labShowAdvanced,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.violetSoft,
-                    ),
+                    style: SalaVerdeType.bodyStrong(color: SalaVerdeColors.steelBlueBright),
                   ),
                 ],
               ),
             ),
             if (showAdvanced) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: SalaVerdeSpace.sm),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(SalaVerdeSpace.md),
                 decoration: BoxDecoration(
-                  color: AppColors.violetPrimary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  color: SalaVerdeColors.steelBlueBright.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
                 ),
                 child: Text(
                   result.advancedFeedback!,
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    height: 1.45,
-                    color: AppColors.violetSoft,
-                  ),
+                  style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
                 ),
               ),
             ],
@@ -175,33 +153,24 @@ class _StrategyBreakdown extends StatelessWidget {
       children: [
         for (final option in options)
           Padding(
-            padding: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.only(bottom: SalaVerdeSpace.xs + 2),
             child: Row(
               children: [
                 SizedBox(
                   width: 18,
-                  child: Text(option.rating.emoji,
-                      style: const TextStyle(fontSize: 12)),
+                  child: Text(option.rating.emoji, style: const TextStyle(fontSize: 12)),
                 ),
                 Expanded(
                   child: Text(
                     option.action.label,
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: chosen?.action == option.action
-                          ? FontWeight.w900
-                          : FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: chosen?.action == option.action
+                        ? SalaVerdeType.bodyStrong()
+                        : SalaVerdeType.body(),
                   ),
                 ),
                 Text(
                   '${(option.frequency * 100).round()}%',
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textMuted,
-                  ),
+                  style: SalaVerdeType.numeric(size: 12.5, color: SalaVerdeColors.textMuted),
                 ),
               ],
             ),
@@ -220,18 +189,14 @@ class _ScorePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: SalaVerdeSpace.sm, vertical: SalaVerdeSpace.xs),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(8),
+        color: SalaVerdeColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(SalaVerdeRadius.sharp + 6),
       ),
       child: Text(
         '$label ${(value * 100).round()}',
-        style: const TextStyle(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w800,
-          color: AppColors.textSecondary,
-        ),
+        style: SalaVerdeType.label(color: SalaVerdeColors.textSecondary),
       ),
     );
   }
@@ -253,21 +218,11 @@ class _ConceptLine extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '$label: ',
-          style: TextStyle(
-            fontSize: 11.5,
-            fontWeight: FontWeight.w800,
-            color: color,
-          ),
-        ),
+        Text('$label: ', style: SalaVerdeType.label(color: color).copyWith(fontSize: 11.5)),
         Expanded(
           child: Text(
             concepts.join(', '),
-            style: const TextStyle(
-              fontSize: 11.5,
-              color: AppColors.textSecondary,
-            ),
+            style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
           ),
         ),
       ],

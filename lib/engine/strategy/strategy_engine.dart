@@ -6,6 +6,7 @@ import '../poker/street.dart';
 import 'hand_range.dart';
 import 'hand_strength.dart';
 import 'opening_ranges.dart';
+import 'preflop_authoring.dart';
 import 'strategy.dart';
 
 /// Conoce la estrategia razonable para una situación concreta.
@@ -20,8 +21,14 @@ class StrategyEngine {
 
   /// Estrategia para la decisión de abrir o no (situación "first in").
   Strategy openRaiseStrategy(PokerSituation situation) {
-    assert(situation.street == Street.preflop);
-    assert(situation.isFirstIn, 'openRaiseStrategy espera una situación first-in');
+    if (situation.street != Street.preflop) {
+      throw ArgumentError.value(situation.street, 'situation.street',
+          'openRaiseStrategy solo evalúa situaciones preflop');
+    }
+    if (!situation.isFirstIn) {
+      throw ArgumentError.value(situation, 'situation',
+          'openRaiseStrategy espera una situación first-in');
+    }
 
     final position = situation.heroPosition;
     final notation = situation.heroCards.notation;
@@ -59,24 +66,28 @@ class StrategyEngine {
       );
     }
 
-    // Mano en la frontera: estrategia mixta.
+    // Mano en la frontera: estrategia mixta real (ambas acciones tienen
+    // frecuencia > 0 en el rango de referencia). Desde "FLOPly — Fase
+    // 0.5": las dos son igual de defendibles ('viable') — la calidad NO
+    // se deriva de la frecuencia exacta dentro de la frontera (antes acá
+    // había un umbral freq >= 0.4 que subía una a 'veryGood', el error de
+    // diseño que esa fase corrigió). [frequency] sigue guardando el dato
+    // real para el texto informativo ("esto pasa ~X% de las veces");
+    // simplemente deja de decidir la calidad.
     if (freq > 0.0) {
       return Strategy(
         [
           StrategyOption(
             action: raiseAction,
             frequency: freq,
-            rating:
-                freq >= 0.4 ? StrategicRating.veryGood : StrategicRating.viable,
+            rating: StrategicRating.viable,
             justifyingConcepts: [...concepts, ConceptIds.mixedStrategies],
             rationaleKey: 'open.raise.frontier',
           ),
           StrategyOption(
             action: PokerAction.fold,
             frequency: 1 - freq,
-            rating: freq >= 0.4
-                ? StrategicRating.viable
-                : StrategicRating.veryGood,
+            rating: StrategicRating.viable,
             justifyingConcepts: [ConceptIds.openingRange],
             rationaleKey: 'open.fold.frontier',
           ),
@@ -87,8 +98,9 @@ class StrategyEngine {
 
     // Mano fuera de rango: ¿qué tan lejos?
     final distance = _distanceOutsideRange(position, notation);
+    final borderline = distance <= 1.6;
     final raiseRating =
-        distance <= 1.6 ? StrategicRating.dubious : StrategicRating.bad;
+        borderline ? StrategicRating.dubious : StrategicRating.bad;
 
     return Strategy(
       [
@@ -107,9 +119,17 @@ class StrategyEngine {
             ConceptIds.openingRange,
             ConceptIds.positionAdvantage,
           ],
-          rationaleKey: raiseRating == StrategicRating.dubious
+          rationaleKey: borderline
               ? 'open.raise.borderline_out'
               : 'open.raise.out_of_range',
+          // Justo por fuera del rango de referencia ("forzar un poco la
+          // situación", ver el rationale) es defendible o no según qué
+          // tan pasiva/explotable sea la mesa — una variable que el
+          // ejercicio no le muestra al alumno. Bien fuera de rango es
+          // simplemente un error, sin ese matiz.
+          contextSensitivity: borderline
+              ? ContextSensitivity.dependent([ContextFactor.opponentProfile])
+              : const ContextSensitivity.stable(),
         ),
       ],
       summaryKey: 'open.summary.out_of_range',

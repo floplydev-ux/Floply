@@ -120,4 +120,49 @@ void main() {
     final gen = makeGenerator();
     expect(() => gen.next(UserKnowledge(registry)), throwsStateError);
   });
+
+  test(
+      'determinismo end-to-end: la misma semilla da exactamente la misma '
+      'secuencia de ejercicios (no solo a nivel Deck)', () {
+    String fingerprint(dynamic exercise) {
+      final s = exercise.situation;
+      final situationPart = s == null
+          ? 'no-situation'
+          : '${s.heroPosition}|${s.heroCards.notation}|${s.board.join(",")}|'
+              '${s.potBb}|${s.effectiveStackBb}';
+      final optionsPart = exercise.options
+          .map((o) => '${o.id}:${o.label}:${o.action}:${o.sizingBb}')
+          .join(';');
+      return '${exercise.templateId}#${exercise.difficulty}#'
+          '${exercise.prompt}#$situationPart#$optionsPart';
+    }
+
+    final user = sliceUser();
+    final genA = makeGenerator(seed: 42);
+    final genB = makeGenerator(seed: 42);
+    final historyA = ExerciseHistory();
+    final historyB = ExerciseHistory();
+
+    final fingerprintsA = [
+      for (var i = 0; i < 20; i++)
+        fingerprint(genA.next(user, history: historyA).exercise),
+    ];
+    final fingerprintsB = [
+      for (var i = 0; i < 20; i++)
+        fingerprint(genB.next(user, history: historyB).exercise),
+    ];
+
+    expect(fingerprintsA, fingerprintsB);
+  });
+
+  test('semillas distintas producen secuencias distintas', () {
+    final user = sliceUser();
+    final genA = makeGenerator(seed: 42);
+    final genB = makeGenerator(seed: 43);
+
+    final promptsA = [for (var i = 0; i < 20; i++) genA.next(user).exercise.prompt];
+    final promptsB = [for (var i = 0; i < 20; i++) genB.next(user).exercise.prompt];
+
+    expect(promptsA, isNot(equals(promptsB)));
+  });
 }

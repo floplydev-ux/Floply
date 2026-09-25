@@ -1,16 +1,20 @@
 /// Identidad del usuario de la aplicación.
 ///
-/// Fuente única del **nombre que se muestra en la mesa de la Academia** (y,
-/// a futuro, en cualquier otra pantalla). Hoy no hay pantalla de perfil ni
-/// persistencia: se usa un valor por defecto que coincide con el de la
-/// Home (`UserProgress.mock().name`). Cuando exista un perfil real, basta
-/// con asignar [AppUser.current] al cargar la sesión; los scripts de la
-/// mesa no se tocan.
+/// Fuente única del nombre del usuario: lo usa tanto la mesa de la Academia
+/// como el saludo de la Home. Hoy no hay pantalla de perfil ni persistencia
+/// propia: se usa un valor por defecto. Cuando exista un perfil real, basta
+/// con asignar [AppUser.current] al cargar la sesión; nada de lo que lo lee
+/// se tiene que tocar.
 class AppUser {
-  const AppUser({required this.displayName});
+  const AppUser({required this.displayName, this.photoUrl});
 
   /// Nombre configurado por el usuario (p. ej. "Juan G." o "Juan").
   final String displayName;
+
+  /// Avatar ya resuelto (custom de Floply si existe, si no el del
+  /// proveedor — ver `FloplyUser.avatarUrl`) o `null` si no hay ninguno.
+  /// Nadie que lea esto necesita saber de dónde salió.
+  final String? photoUrl;
 
   /// Primer nombre, que es lo que se muestra en el asiento de la mesa.
   String get firstName {

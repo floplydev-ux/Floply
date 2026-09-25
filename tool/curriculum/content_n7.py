@@ -80,7 +80,7 @@ N7 = {
         "abrir, acá pasa lo mismo respondiendo: la mayoría de las manos, "
         "la mayoría de las veces, no alcanzan para seguir.",
  como_funciona="Si tu mano no entra ni en tu rango de call ni en tu "
-        "rango de 3-bet para esa situación puntual, foldeás.",
+        "rango de 3-bet (T161) para esa situación puntual, foldeás.",
  cuando_lo_uso="Cada vez que tu mano no entra en tu rango de defensa "
         "contra ese open concreto.",
  cuando_no=None,
@@ -343,8 +343,9 @@ N7 = {
         "antes de cualquier decisión.",
  cuando_no=None,
  ejemplo="Open a 2.5 BB, 3-bet a 9 BB, call de 9 BB: el bote que llega "
-        "al flop es de aproximadamente 19 BB (9+9+1 de la ciega grande "
-        "ya cubierta).",
+        "al flop es de aproximadamente 19,5 BB (9 BB del 3-bettor + 9 BB "
+        "de quien pagó + 1,5 BB de las dos ciegas que ya estaban "
+        "perdidas en el medio).",
  error_comun="Llegar al flop de un bote 3-bet sin haber sumado cuánto "
         "hay realmente en el medio.",
  idea_clave="El tamaño del bote 3-bet es el primer dato concreto para "
@@ -353,19 +354,24 @@ N7 = {
 
 "T166": dict(  # El SPR
  que_es="El SPR (stack-to-pot ratio, 'relación stack-bote') es cuántas "
-        "veces entra el bote en el stack que te queda: stack ÷ bote.",
+        "veces entra el bote en el stack EFECTIVO — el más chico entre "
+        "tu stack y el del rival, porque eso es lo máximo que realmente "
+        "puede terminar en el medio —: stack efectivo ÷ bote.",
  por_que_importa="Un SPR bajo (poco stack en relación al bote) te acerca "
         "rápido a jugarte todo el stack; un SPR alto te deja más margen "
         "para decisiones más finas en varias calles.",
- como_funciona="Dividís tu stack restante por el tamaño del bote. Los "
-        "botes 3-bet, al ser más grandes de entrada con los mismos "
-        "stacks, dejan un SPR más bajo que un bote normal.",
+ como_funciona="Dividís el stack efectivo (el más chico entre el tuyo y "
+        "el del rival) por el tamaño del bote. Si ambos tienen el mismo "
+        "stack, listo, ese número alcanza; si son distintos, siempre se "
+        "usa el más chico. Los botes 3-bet, al ser más grandes de entrada "
+        "con los mismos stacks, dejan un SPR más bajo que un bote normal.",
  cuando_lo_uso="Al llegar al flop, para entender qué tan 'comprometido' "
         "vas a estar con el resto de tu stack en esa mano.",
  cuando_no=None,
- ejemplo="Con un stack de 100 BB y un bote de 19 BB (T165), el SPR es "
-        "aproximadamente 5 (100÷19 ≈ 5,3) — bastante más bajo que en un "
-        "bote normal de 6 BB con el mismo stack (SPR ≈ 16,6).",
+ ejemplo="Los dos jugadores tienen 100 BB de stack efectivo y el bote es "
+        "de aproximadamente 19,5 BB (T165): el SPR es aproximadamente 5 "
+        "(100÷19,5 ≈ 5,1) — bastante más bajo que en un bote normal de "
+        "6 BB con el mismo stack (SPR ≈ 16,6).",
  error_comun="Ignorar el SPR y jugar un bote 3-bet (SPR bajo) con la "
         "misma cautela que un bote de SPR alto, donde hay mucho más "
         "margen para maniobrar.",
@@ -386,7 +392,8 @@ N7 = {
  cuando_no=None,
  ejemplo="Un rival 3-betea desde el botón contra tu open del CO: su "
         "rango probablemente combina manos fuertes con algunos faroles "
-        "— más amplio que si hubiera 3-beteado desde UTG.",
+        "— más amplio que si el mismo 3-bet viniera de la ciega grande, "
+        "fuera de posición.",
  error_comun="Asumir que cualquier 3-bet significa automáticamente una "
         "mano premium, ignorando que los rangos de 3-bet incluyen "
         "faroles.",
@@ -419,8 +426,9 @@ N7 = {
 ),
 
 "T169": dict(  # La posición en el bote 3-bet
- que_es="En un bote 3-bet, con SPR más bajo (T166) y menos calles por "
-        "delante, la posición pesa todavía más que en un bote normal.",
+ que_es="En un bote 3-bet, con SPR más bajo (T166) y menos margen para "
+        "maniobrar en las calles que faltan, la posición pesa todavía "
+        "más que en un bote normal.",
  por_que_importa="Con menos margen de maniobra (SPR bajo), cada decisión "
         "vale más: tener información extra por estar en posición se "
         "vuelve más valioso, no menos.",
@@ -520,8 +528,9 @@ N7 = {
         "rango de apertura) y subís de nuevo.",
  cuando_lo_uso="Con tus manos más fuertes, frente a una 3-bet.",
  cuando_no=None,
- ejemplo="Abrís y te 3-betean. Con A♠A♦, 4-betear por valor: le ganás "
-        "cómodo a la inmensa mayoría del rango de 3-bet del rival.",
+ ejemplo="Abrís y te 3-betean. Con K♠K♦, 4-betear por valor: le ganás "
+        "cómodo a la inmensa mayoría del rango de 3-bet del rival — solo "
+        "un As-As lo supera de entrada.",
  error_comun="Solo pagar con tus manos más fuertes por miedo a que el "
         "rival se retire, dejando de construir el bote más grande "
         "posible cuando estás claramente adelante.",

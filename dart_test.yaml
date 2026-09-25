@@ -1,0 +1,6 @@
+# Declara el tag `golden` que Alchemist aplica automáticamente a cada
+# `goldenTest(...)` (test/golden/) — sin esto, `flutter test` imprime un
+# warning "A tag was used that wasn't specified in dart_test.yaml" en cada
+# corrida. No cambia qué tests corren; documenta el tag que ya existe.
+tags:
+  golden: {}

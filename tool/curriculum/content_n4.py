@@ -271,9 +271,9 @@ N4 = {
  por_que_importa="Es el tipo de board más simple de leer: casi nadie tiene un "
         "proyecto porque no hay dos cartas seguidas ni dos del mismo palo. Lo "
         "que ves es, en general, lo que hay.",
- como_funciona="Mirá las 3 cartas del flop: si están lejos en valor y no hay dos "
-        "del mismo palo, es seco. En un board así, las manos hechas valen más "
-        "tranquilas, porque hay pocas cartas por venir que cambien mucho la "
+ como_funciona="Las 3 cartas del flop lo definen: si están lejos en valor y no "
+        "hay dos del mismo palo, es seco. En un board así, las manos hechas valen "
+        "más tranquilas, porque hay pocas cartas por venir que cambien mucho la "
         "situación.",
  cuando_lo_uso="Apenas se abre el flop: '¿hay cartas seguidas o del mismo palo? "
         "Si no, es un board seco.'",
@@ -293,11 +293,11 @@ N4 = {
  por_que_importa="En un board así hay muchas más manos posibles: escaleras "
         "hechas, proyectos abiertos, incluso trío. Hay que jugar con más "
         "cuidado: lo que parecía una buena mano puede estar perdiendo.",
- como_funciona="Mirá si las 3 cartas del flop están cerca en valor, aunque no "
-        "sean seguidas exactas. Cuanto más cerca, más 'coordinado' y más "
-        "proyectos hay dando vueltas.",
- cuando_lo_uso="Apenas ves el flop: '¿estas cartas están cerca en valor? Si sí, "
-        "mucha gente puede tener algo.'",
+ como_funciona="Preguntate si las 3 cartas del flop están cerca en valor, "
+        "aunque no sean seguidas exactas. Cuanto más cerca, más 'coordinado' y "
+        "más proyectos hay dando vueltas.",
+ cuando_lo_uso="En cuanto se abre el flop: '¿estas cartas están cerca en "
+        "valor? Si sí, mucha gente puede tener algo.'",
  cuando_no=None,
  ejemplo="Flop 9♠8♦7♣: cualquier mano con 10-6, 6-5, o un 9, un 8 o un 7 ya "
         "tiene algo hecho o un proyecto fuerte.",
@@ -312,11 +312,12 @@ N4 = {
         "ejemplo Q♠9♠4♠).",
  por_que_importa="Cualquiera con dos cartas de ese palo ya tiene color hecho. Es "
         "el board donde más hay que respetar la posibilidad de color.",
- como_funciona="Mirá los palos del flop: si los 3 son iguales, es monótono. A "
-        "partir de ahí, cualquier apuesta fuerte puede significar color; y si "
-        "vos no tenés cartas de ese palo, tu mano hecha vale menos de lo "
-        "normal.",
- cuando_lo_uso="Apenas ves el flop: '¿las 3 cartas son del mismo palo?'",
+ como_funciona="Los palos del flop lo dicen todo: si los 3 son iguales, es "
+        "monótono. A partir de ahí, cualquier apuesta fuerte puede significar "
+        "color; y si vos no tenés cartas de ese palo, tu mano hecha vale menos "
+        "de lo normal.",
+ cuando_lo_uso="Al ver el flop, primero los palos: '¿las 3 cartas son del "
+        "mismo palo?'",
  cuando_no=None,
  ejemplo="Flop Q♠9♠4♠. Cualquiera con dos picas ya tiene color. Un trío de "
         "nueves ahí es fuerte, pero puede estar perdiendo contra un color.",
@@ -333,11 +334,11 @@ N4 = {
         "ejemplo K♠9♥4♣): ningún proyecto de color es posible todavía.",
  por_que_importa="Es una preocupación menos: nadie puede tener color hecho ni "
         "proyecto de color con solo 3 cartas de palos distintos en la mesa.",
- como_funciona="Mirá los palos: si los 3 son diferentes, es rainbow. Ojo: el "
-        "turn o el river pueden repetir un palo y abrir una posibilidad de "
+ como_funciona="Contá los palos: si los 3 son diferentes, es rainbow. Eso sí, "
+        "el turn o el river pueden repetir un palo y abrir una posibilidad de "
         "color que antes no existía.",
- cuando_lo_uso="Apenas ves el flop: '¿los 3 palos son distintos? Entonces, por "
-        "ahora, no hay color en juego.'",
+ cuando_lo_uso="Con el flop recién servido: '¿los 3 palos son distintos? "
+        "Entonces, por ahora, no hay color en juego.'",
  cuando_no=None,
  ejemplo="Flop K♠9♥4♣: rainbow. Si el turn trae otra pica (por ejemplo 7♠), el "
         "board deja de ser rainbow y ahí sí puede haber proyecto de color.",
@@ -354,10 +355,10 @@ N4 = {
  por_que_importa="Habilita el full house y el póker para cualquiera que tenga "
         "la tercera de ese valor. También hace que una doble pareja 'de las "
         "tuyas' sea menos segura.",
- como_funciona="Mirá si dos de las cartas del board repiten valor. A partir de "
-        "ahí, cualquier carta de ese mismo valor en la mano de un rival le da "
-        "trío usando la pareja del board, y si tenés vos la tercera, tenés "
-        "póker.",
+ como_funciona="Preguntate si dos de las cartas del board repiten valor. A "
+        "partir de ahí, cualquier carta de ese mismo valor en la mano de un "
+        "rival le da trío usando la pareja del board, y si tenés vos la "
+        "tercera, tenés póker.",
  cuando_lo_uso="Apenas ves el flop, turn o river: '¿hay dos cartas iguales en la "
         "mesa?'",
  cuando_no=None,
@@ -379,9 +380,9 @@ N4 = {
         "que salieron.",
  por_que_importa="Te dice qué tan peligroso es el board para vos y qué tenés "
         "que vigilar en las próximas cartas.",
- como_funciona="Fijate qué tan cerca están los valores del board. Con 3 cartas "
-        "seguidas o casi seguidas, hay varias escaleras posibles; con cartas "
-        "muy separadas, casi ninguna.",
+ como_funciona="Esto depende de qué tan cerca están los valores del board: con "
+        "3 cartas seguidas o casi seguidas, hay varias escaleras posibles; con "
+        "cartas muy separadas, casi ninguna.",
  cuando_lo_uso="En cada flop, turn y river nuevo: '¿qué escalera se podría estar "
         "armando acá?'",
  cuando_no=None,
@@ -391,8 +392,8 @@ N4 = {
         "posibilidad, no una mano hecha.",
  error_comun="Mirar solo si VOS tenés escalera, sin pensar qué escaleras podría "
         "tener el rival con ese board.",
- idea_clave="Mirá el board y preguntate qué escaleras son posibles, las tuyas y "
-        "las del rival.",
+ idea_clave="Preguntate siempre, ante cada board, qué escaleras son posibles: "
+        "las tuyas y las del rival.",
 ),
 
 "T081": dict(  # Posibilidades de color
@@ -411,7 +412,7 @@ N4 = {
  error_comun="Confundir 'hay 2 cartas de un palo' con 'ya hay color'. Con 2 en "
         "el board hace falta 3 en tu mano, o esperar una carta más para "
         "completarlo.",
- idea_clave="Mirá cuántas cartas de un mismo palo hay en el board: 3 es color "
+ idea_clave="Contá cuántas cartas de un mismo palo hay en el board: 3 es color "
         "hecho posible, 2 es proyecto posible.",
 ),
 
@@ -494,7 +495,7 @@ N4 = {
         "específicamente a vos.",
  por_que_importa="Es la otra cara de la carta peligrosa: saber qué te conviene "
         "te ayuda a decidir si seguís pagando por ver la próxima carta.",
- como_funciona="Mirá tu proyecto o tu mano y preguntate: '¿qué carta la "
+ como_funciona="Repasá tu proyecto o tu mano y preguntate: '¿qué carta la "
         "mejora?'. Puede ser una que completa tu color o escalera, o una que te "
         "da una pareja más fuerte.",
  cuando_lo_uso="Antes de pagar para ver una carta más: '¿qué necesito que "
@@ -515,9 +516,9 @@ N4 = {
  por_que_importa="Completa el cuadro: no alcanza con mirar tu propia mano y tus "
         "propias cartas buenas; el rival también tiene cartas que lo mejoran, y "
         "a veces coinciden con las tuyas.",
- como_funciona="Mirá el board y preguntate qué proyectos son posibles ahí y qué "
-        "manos hechas caben. Esas son las cartas que, si aparecen, probablemente "
-        "lo ayudan a él.",
+ como_funciona="Pensá el board desde el otro lado de la mesa: qué proyectos son "
+        "posibles ahí y qué manos hechas caben. Esas son las cartas que, si "
+        "aparecen, probablemente lo ayudan a él.",
  cuando_lo_uso="Junto con leer tus propias cartas buenas, cada vez que sale una "
         "carta nueva: pensás las dos caras, la tuya y la de él.",
  cuando_no=None,
@@ -562,8 +563,8 @@ N4 = {
  por_que_importa="Es, en general, la mejor pareja posible en ese flop — aunque "
         "no es automáticamente una mano invencible: hay que seguir mirando el "
         "kicker y el resto del board.",
- como_funciona="Mirá la carta más alta del board y fijate si una de tus cartas "
-        "privadas coincide con ella.",
+ como_funciona="Identificá la carta más alta del board y comprobá si una de "
+        "tus cartas privadas coincide con ella.",
  cuando_lo_uso="Al leer tu mano en el flop: '¿emparejé la carta más alta de la "
         "mesa?'",
  cuando_no=None,
@@ -580,7 +581,7 @@ N4 = {
         "board (ni la más alta, ni la más baja).",
  por_que_importa="Es una mano incómoda: le gana a manos peores, pero un top "
         "pair del rival —muy posible— la deja atrás.",
- como_funciona="Ordená las 3 cartas del flop de mayor a menor y fijate cuál "
+ como_funciona="Ordená las 3 cartas del flop de mayor a menor y comprobá cuál "
         "emparejaste. Si es la del medio, tenés middle pair.",
  cuando_lo_uso="Al leer tu mano en el flop: '¿emparejé la carta del medio?'",
  cuando_no=None,
@@ -588,8 +589,8 @@ N4 = {
         "Middle pair.",
  error_comun="Jugar un middle pair con la misma confianza que un top pair. "
         "Contra apuestas grandes, un middle pair necesita mucho más cuidado.",
- idea_clave="Middle pair = pareja con la carta del medio del board. Ojo con lo "
-        "que apuesta el rival.",
+ idea_clave="Middle pair = pareja con la carta del medio del board. Prestale "
+        "atención a lo que apuesta el rival.",
 ),
 
 "T090": dict(  # Bottom pair
@@ -597,7 +598,8 @@ N4 = {
         "board.",
  por_que_importa="Es la pareja más floja posible en ese flop: casi cualquier "
         "otra pareja del rival ya le gana.",
- como_funciona="Mirá la carta más baja del board y fijate si la emparejaste.",
+ como_funciona="Identificá la carta más baja del board y comprobá si la "
+        "emparejaste.",
  cuando_lo_uso="Al leer tu mano: '¿emparejé la carta más baja de la mesa?'",
  cuando_no=None,
  ejemplo="Board K♠7♦2♣. Tenés 2♥9♠: emparejaste el 2, la carta más baja. "
@@ -634,8 +636,8 @@ N4 = {
  por_que_importa="Es un salto fuerte de categoría respecto de una sola pareja. "
         "Pero conviene distinguir una doble pareja 'de las tuyas' de una que ya "
         "viene armada en el board — esa última la comparte cualquiera.",
- como_funciona="Mirá si cada una de tus cartas privadas coincide con una carta "
-        "distinta del board.",
+ como_funciona="Comprobá si cada una de tus cartas privadas coincide con una "
+        "carta distinta del board.",
  cuando_lo_uso="Al leer tu mano en el flop, turn o river.",
  cuando_no=None,
  ejemplo="Tenés K♠7♦. Board: K♥7♠2♣. Emparejaste el rey Y el 7 del board: doble "
@@ -644,7 +646,7 @@ N4 = {
         "K♥7♠7♦) y que, en ese caso, cualquier rival la tiene también — no es "
         "tuya en particular.",
  idea_clave="Doble pareja hecha = tus dos cartas privadas emparejaron dos del "
-        "board. Fijate si es realmente tuya o ya está en la mesa.",
+        "board. Distinguí si es realmente tuya o ya está armada en la mesa.",
 ),
 
 "T093": dict(  # Set
@@ -696,7 +698,7 @@ N4 = {
         "privadas y el board.",
  por_que_importa="Es una categoría muy por encima de cualquier pareja o trío. "
         "Muchos principiantes no la ven venir en boards conectados.",
- como_funciona="Sumá tus 2 cartas privadas a las del board y fijate si hay 5 "
+ como_funciona="Sumá tus 2 cartas privadas a las del board y comprobá si hay 5 "
         "valores seguidos entre las 7.",
  cuando_lo_uso="En cualquier board donde haya cartas cercanas en valor: revisá "
         "siempre si armaste escalera.",
@@ -724,8 +726,8 @@ N4 = {
  error_comun="Suponer que 'tengo color' ya es sinónimo de ganar. Si tu carta "
         "más alta de ese palo no es la más alta posible, alguien puede tener un "
         "color mejor.",
- idea_clave="Color hecho = 5 del mismo palo entre tus 7 cartas. Fijate si es el "
-        "más alto posible, no des por sentado que ganás.",
+ idea_clave="Color hecho = 5 del mismo palo entre tus 7 cartas. Confirmá si es "
+        "el más alto posible: no des por sentado que ganás.",
 ),
 
 "T097": dict(  # Full (hecho)
@@ -753,8 +755,8 @@ N4 = {
         "específico, en ese momento de la mano.",
  por_que_importa="Tener los nuts significa que nadie te puede ganar en el "
         "showdown. Es el techo de fuerza para ese board.",
- como_funciona="Mirá las cartas del board y preguntate: '¿cuál sería la mejor "
-        "mano de 5 cartas que alguien podría armar con estas cartas "
+ como_funciona="Analizá las cartas del board y preguntate: '¿cuál sería la "
+        "mejor mano de 5 cartas que alguien podría armar con estas cartas "
         "comunitarias?'. Esa es 'los nuts' en ese momento; puede cambiar con "
         "cada carta nueva.",
  cuando_lo_uso="En botes grandes, antes de comprometer muchas fichas: '¿tengo "

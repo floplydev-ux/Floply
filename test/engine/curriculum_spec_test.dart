@@ -167,7 +167,13 @@ void main() {
     final sets = <String>{
       for (final s in spec.allSublevels) ...?s.legacy?.exerciseSets,
     };
-    expect(sets, containsAll(['1.1', '1.3', '1.4', '1.5', '2.1', '2.2', '2.3',
+    // Los viejos '1.1' (ejercicio de showdown, heredado por 1.2) y '1.3'
+    // (calles y acciones, heredado por 1.3) se borraron: 1.1, 1.2 y 1.3
+    // migraron al piloto de 3 bloques con ejercicios propios en Dart puro
+    // (`N1PilotExercises`, sin legacy), y dejarlos sin re-anclar rompía el
+    // test de cobertura de `academy_content_test.dart` (todo guion/set
+    // histórico debe usarse).
+    expect(sets, containsAll(['1.4', '1.5', '2.1', '2.2', '2.3',
       '2.4', '2.5', '3.1', '3.2', '3.3', '3.4', '3.5', '5.4']));
   });
 

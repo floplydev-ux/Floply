@@ -16,6 +16,11 @@ enum Position {
   final String abbreviation;
   final String fullName;
 
+  /// Alias de [abbreviation] — mismo nombre que usan los guiones de mesa
+  /// (`SeatState.label`), para que este `Position` sea directamente
+  /// intercambiable con el que antes vivía en `pedagogy/table_position.dart`.
+  String get label => abbreviation;
+
   bool get isBlind => this == Position.sb || this == Position.bb;
 
   /// Si esta posición actúa después del flop con posición (última en

@@ -126,17 +126,17 @@ N10 = {
 
 "T217": dict(  # El rango después de un check
  que_es="El rango del rival después de pasar no es 'nada': puede "
-        "incluir manos medias, proyectos, e incluso alguna mano fuerte "
-        "jugando pot control (N9). Pero SÍ suele quedar sin sus manos "
-        "MÁS fuertes, porque esas suelen preferir apostar.",
+        "incluir manos medias (algunas de ellas jugando pot control, "
+        "N9: pasan a propósito para no inflar el bote) y proyectos. "
+        "Pero SÍ suele quedar sin sus manos MÁS fuertes, porque esas "
+        "suelen preferir apostar.",
  por_que_importa="Leer bien un check evita dos errores opuestos: "
         "pensar que 'pasó, seguro no tiene nada' (falso: puede tener "
         "pot control) o 'pasó, puede tener cualquier cosa' (tampoco: "
         "sus manos más fuertes suelen apostar).",
  como_funciona="Un check saca del rango, sobre todo, las manos que casi "
         "siempre apostarían solas (los value bets más claros). Deja "
-        "manos medias, proyectos, y a veces manos fuertes jugando con "
-        "cautela.",
+        "manos medias -algunas jugando pot control (N9)- y proyectos.",
  cuando_lo_uso="Cada vez que el rival pasa en vez de apostar, en "
         "cualquier calle.",
  cuando_no=None,
@@ -145,7 +145,7 @@ N10 = {
         "descartarlas del todo) que tenga esas manos más fuertes.",
  error_comun="Interpretar cualquier check como 'debilidad total', "
         "olvidando que el pot control (N9) también usa el check con "
-        "manos buenas.",
+        "manos medias que le ganan a parte del rango del rival.",
  idea_clave="Un check suele sacar del rango las manos MÁS fuertes (que "
         "casi siempre apuestan solas), no todas las manos buenas.",
 ),
@@ -217,8 +217,9 @@ N10 = {
  cuando_no=None,
  ejemplo="El rival abre (rango amplio) → paga tu 3-bet (se recorta: "
         "salen sus manos más flojas y sus manos más fuertes que "
-        "hubieran 4-beteado) → c-betea el flop (se recorta más, según "
-        "el board) → apuesta el turn de nuevo (se recorta todavía más).",
+        "hubieran 4-beteado) → paga tu c-bet en el flop (se recorta "
+        "más, según el board) → paga tu apuesta en el turn de nuevo "
+        "(se recorta todavía más).",
  error_comun="Reiniciar la lectura en cada calle, en vez de seguir "
         "recortando el mismo rango que ya venías construyendo.",
  idea_clave="Estrechar el rango = recortarlo acción por acción, no "
