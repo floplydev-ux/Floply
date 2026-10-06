@@ -18,6 +18,18 @@
       ]
     }
   ],
+  "hosting": {
+    "public": "docs",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "design/**",
+      "DATOS_PENDIENTES.md"
+    ],
+    "cleanUrls": false,
+    "trailingSlash": false
+  },
   "flutter": {
     "platforms": {
       "android": {
