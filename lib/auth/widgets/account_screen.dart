@@ -12,10 +12,11 @@ import 'account_conflict_sheet.dart';
 import 'auth_screen.dart';
 import 'email_link_screen.dart';
 
-/// Perfil → Cuenta (Fase 8/16/17/18): métodos de acceso vinculados,
-/// cerrar sesión, eliminar cuenta. Reemplaza al `ComingSoonScreen` del
-/// tab Perfil — ese placeholder está documentado para intercambiarse así
-/// apenas exista la pantalla real.
+/// Perfil → Configuración → Cuenta (Fase 8/16/17/18, re-anclada en el
+/// Grupo 1 de navegación/perfil/configuración): métodos de acceso
+/// vinculados, cerrar sesión, eliminar cuenta. Ya no es el contenido del
+/// tab Perfil (eso es `ProfileScreen` ahora) — se llega acá desde
+/// `SettingsScreen`.
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key, required this.controller});
 
@@ -268,7 +269,14 @@ class _AuthenticatedBody extends StatelessWidget {
             style: TextStyle(fontSize: 12, color: AppColors.textMuted),
           ),
           const SizedBox(height: 12),
-          for (final type in AuthProviderType.values) ...[
+          // phone solo se usa como verificación inicial — no se gestiona acá.
+          // Google solo aparece como opción de vinculación cuando la cuenta
+          // NO fue creada con Google (si ya está vinculado, no hay nada que hacer).
+          for (final type in AuthProviderType.values
+              .where((t) => t != AuthProviderType.phone)
+              .where((t) =>
+                  t != AuthProviderType.google ||
+                  !user.hasProvider(AuthProviderType.google))) ...[
             _MethodRow(
               type: type,
               linked: user.hasProvider(type),
@@ -284,6 +292,7 @@ class _AuthenticatedBody extends StatelessWidget {
                           ),
                         ))
                         .then((_) => true),
+                    AuthProviderType.phone => Future.value(false),
                   }),
               onUnlink: () => controller.unlink(type),
             ),
@@ -327,6 +336,7 @@ class _MethodRow extends StatelessWidget {
         AuthProviderType.google => 'Google',
         AuthProviderType.apple => 'Apple',
         AuthProviderType.email => 'Email',
+        AuthProviderType.phone => 'Teléfono',
       };
 
   @override

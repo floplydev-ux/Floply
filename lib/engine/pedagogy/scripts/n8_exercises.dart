@@ -13,7 +13,18 @@ class N8Exercises {
     '8.3': InteractiveExerciseSet([_boardSecoVsCoordinado()]),
     '8.4': InteractiveExerciseSet([_fueraDePosicion()]),
     '8.5': InteractiveExerciseSet([_tamanoCbet()]),
-    '8.6': InteractiveExerciseSet([_enfrentarCbet()]),
+    // 8.6 es el checkpoint del nivel: la evaluación del módulo repasa
+    // iniciativa, c-bet con proyecto, board seco/coordinado, posición y
+    // tamaño, antes de cerrar con su propio contenido (enfrentar una
+    // c-bet, del otro lado de la mesa).
+    '8.6': InteractiveExerciseSet([
+      _iniciativa(),
+      _cbetProyecto(),
+      _boardSecoVsCoordinado(),
+      _fueraDePosicion(),
+      _tamanoCbet(),
+      _enfrentarCbet(),
+    ]),
   };
 
   static TableSnapshot _heroOpenedTable({

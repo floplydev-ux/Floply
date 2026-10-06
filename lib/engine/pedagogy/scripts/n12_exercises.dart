@@ -14,7 +14,15 @@ class N12Exercises {
     '12.1': InteractiveExerciseSet([_leerElSpot()]),
     '12.2': InteractiveExerciseSet([_tomarLaDecision()]),
     '12.3': InteractiveExerciseSet([_integrarPreflop()]),
-    '12.4': InteractiveExerciseSet([_integrarPostflop()]),
+    // 12.4 es el checkpoint del nivel: la evaluación del módulo repasa
+    // leer el spot, tomar la decisión e integrar el preflop, antes de
+    // cerrar con su propio contenido (integrar el postflop).
+    '12.4': InteractiveExerciseSet([
+      _leerElSpot(),
+      _tomarLaDecision(),
+      _integrarPreflop(),
+      _integrarPostflop(),
+    ]),
   };
 
   // ================================================================

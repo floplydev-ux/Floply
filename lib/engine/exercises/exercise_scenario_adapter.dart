@@ -9,6 +9,7 @@ import '../poker/sizing/bet_sizing_engine.dart';
 import 'answer_evaluator.dart';
 import 'decision_context.dart';
 import 'exercise_scenario.dart';
+import 'lab_feedback_builder.dart';
 import 'preflop_rationale_bank.dart';
 import 'scenario_strategy.dart';
 
@@ -124,6 +125,7 @@ class ExerciseScenarioAdapter {
             rating: toRating(result.verdict),
             feedback: feedbackFor(result),
             afterDecision: afterAction(action),
+            richFeedback: LabFeedbackBuilder.build(scenario, result, knowledge, registry),
           );
           actionByChoice[betSize] = action;
           sizeOptions.add(betSize);
@@ -135,6 +137,7 @@ class ExerciseScenarioAdapter {
           rating: toRating(firstResult!.verdict),
           feedback: feedbackFor(firstResult),
           sizeOptions: sizeOptions,
+          richFeedback: LabFeedbackBuilder.build(scenario, firstResult, knowledge, registry),
         );
         actionByChoice[choice] = actionByChoice[sizeOptions.first]!;
         actions.add(choice);
@@ -149,6 +152,7 @@ class ExerciseScenarioAdapter {
           rating: toRating(result.verdict),
           feedback: feedbackFor(result),
           afterDecision: afterAction(action),
+          richFeedback: LabFeedbackBuilder.build(scenario, result, knowledge, registry),
         );
         actionByChoice[choice] = action;
         actions.add(choice);
@@ -180,40 +184,64 @@ class ExerciseScenarioAdapter {
   static String _formatBb(double bb) =>
       bb == bb.roundToDouble() ? bb.toStringAsFixed(0) : bb.toStringAsFixed(1);
 
-  /// Los tamaños ofrecidos para RAISE/BET: el mínimo legal y, si difiere,
-  /// el que recomienda la estrategia de referencia (cuando su opción
-  /// primaria es de ese tipo) — ambos clampeados a
-  /// `[minRaiseToBb, maxRaiseToBb]` y dedupeados si coinciden (Fase 8.4:
-  /// 2 tamaños en vez de 1; el selector visual de más opciones
-  /// intermedias queda fuera de esta fase). `_SizeButtons` en la mesa ya
+  /// Los tamaños ofrecidos para RAISE/BET — clampeados a
+  /// `[minRaiseToBb, maxRaiseToBb]`. `_SizeButtons` en la mesa ya
   /// renderiza cualquier cantidad de `BetSizeOption` — no hace falta
   /// ningún cambio de UI para esto.
   ///
-  /// [StrategyOption.action.sizeBb] puede ser `null` (p. ej.
-  /// `PostflopStrategy`: la lección es "hay que apostar", no un tamaño
-  /// exacto — cualquier tamaño matchea esa opción, ver su doc-comment).
-  /// En ese caso, en vez de fallar, se sugiere medio bote como segundo
-  /// botón — un número sensato para mostrar, nunca usado para decidir
-  /// si la apuesta del alumno es correcta (eso lo sigue haciendo
-  /// [AnswerEvaluator] contra la opción real, que acepta cualquier
-  /// tamaño).
+  /// **BET** (sin cambios de comportamiento — Fase 8.4): el mínimo legal
+  /// y, si difiere, el que recomienda la estrategia de referencia (o
+  /// medio bote si [StrategyOption.action.sizeBb] es `null`, p. ej.
+  /// `PostflopStrategy`: la lección ahí es "hay que apostar", no un
+  /// tamaño exacto — cualquier tamaño matchea esa opción, ver su
+  /// doc-comment; el tamaño sugerido nunca decide si la apuesta del
+  /// alumno es correcta, eso lo sigue haciendo [AnswerEvaluator] contra
+  /// la opción real).
+  ///
+  /// **RAISE** (Campo de Entrenamiento — corrección de Open Raise):
+  /// siempre 3 tamaños reales y distintos cuando el rango legal lo
+  /// permite, nunca un número fijo tipo "2.5/3/3.5" — arrancan de los
+  /// tamaños que la propia estrategia ya calificó distinto (hoy: Open
+  /// Raise, vía `StrategyEngine.openSizingStrategy` sobre la banda real
+  /// de `OpeningRanges`) y se completan con el mínimo legal y pasos
+  /// reales dentro de `[min, max]` hasta llegar a 3 — o hasta donde el
+  /// rango legal realmente lo permita (un spot de stack corto con
+  /// `min ≈ max` puede dar legítimamente menos de 3: forzar 3 botones
+  /// idénticos sería peor que mostrar los que de verdad son distintos).
   static List<double> _recommendedSizes(
       ExerciseScenario scenario, DecisionContext context) {
     final strategy =
         ScenarioStrategy.forDecision(scenario.initialState, scenario.heroSlot);
-    final primary = strategy.primary;
     final min = context.minRaiseToBb!;
     final max = context.maxRaiseToBb!;
     double clamp(double size) => size < min ? min : (size > max ? max : size);
 
-    final isBetOrRaise =
-        primary.action.type == ActionType.raise || primary.action.type == ActionType.bet;
-    final desired = !isBetOrRaise
-        ? null
-        : clamp(primary.action.sizeBb ??
-            BetSizingEngine.potSizedBet(context.potBb, fraction: 0.5));
+    final type =
+        context.legalActions.contains(ActionType.raise) ? ActionType.raise : ActionType.bet;
 
-    return desired == null || desired == min ? [min] : [min, desired];
+    if (type == ActionType.bet) {
+      final primary = strategy.primary;
+      final desired = clamp(primary.action.type == ActionType.bet
+          ? (primary.action.sizeBb ?? BetSizingEngine.potSizedBet(context.potBb, fraction: 0.5))
+          : BetSizingEngine.potSizedBet(context.potBb, fraction: 0.5));
+      return desired == min ? [min] : [min, desired];
+    }
+
+    final strategySizes = strategy.options
+        .where((o) => o.action.type == ActionType.raise && o.action.sizeBb != null)
+        .map((o) => clamp(o.action.sizeBb!));
+
+    final sizes = {...strategySizes, min}.toList()..sort();
+    const step = 0.5;
+    var guard = 0;
+    while (sizes.length < 3 && guard < 20) {
+      guard++;
+      final candidate = clamp(sizes.last + step);
+      if (sizes.contains(candidate)) break; // tope del rango legal: no se puede crecer más.
+      sizes.add(candidate);
+      sizes.sort();
+    }
+    return sizes.take(3).toList();
   }
 
   static TableSnapshot _toTableSnapshot(GameState state, int heroSlot) => TableSnapshot(

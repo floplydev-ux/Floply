@@ -1,1 +1,42 @@
-{"firestore":[{"database":"default","rules":"firestore.rules"}],"flutter":{"platforms":{"android":{"default":{"projectId":"floply-e5b45","appId":"1:699061332318:android:363d7a9917848fae51c7cf","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"floply-e5b45","configurations":{"android":"1:699061332318:android:363d7a9917848fae51c7cf","ios":"1:699061332318:ios:6bff9a39d88ec4db51c7cf","web":"1:699061332318:web:5994d191df38d18351c7cf"}}}}}}
+{
+  "firestore": [
+    {
+      "database": "default",
+      "rules": "firestore.rules"
+    }
+  ],
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local.js"
+      ]
+    }
+  ],
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "floply-e5b45",
+          "appId": "1:699061332318:android:363d7a9917848fae51c7cf",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "floply-e5b45",
+          "configurations": {
+            "android": "1:699061332318:android:363d7a9917848fae51c7cf",
+            "ios": "1:699061332318:ios:6bff9a39d88ec4db51c7cf",
+            "web": "1:699061332318:web:5994d191df38d18351c7cf"
+          }
+        }
+      }
+    }
+  }
+}

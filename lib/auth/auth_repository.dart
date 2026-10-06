@@ -45,6 +45,13 @@ enum AuthFailureReason {
   expiredCode,
   reauthenticationRequired,
   tooManyAttempts,
+  // Nuevos — flujo email+contraseña y verificación telefónica
+  wrongPassword,
+  emailNotFound,
+  invalidPhone,
+  phoneAlreadyRegistered,
+  weakPassword,
+  emailAlreadyInUse,
   unknown,
 }
 
@@ -74,6 +81,27 @@ abstract class AuthRepository {
     required String link,
   });
 
+  /// Inicia sesión con email y contraseña (flujo clásico).
+  Future<AuthAttemptResult> signInWithEmailPassword(
+    String email,
+    String password,
+  );
+
+  /// Envía un código SMS al [phoneNumber] y devuelve el `verificationId`
+  /// (opaco, necesario para confirmar el código después). `null` si falla.
+  Future<String?> sendSmsVerificationCode(String phoneNumber);
+
+  /// Crea una cuenta completa: verifica el teléfono con el código SMS y
+  /// vincula email+contraseña en un solo paso atómico (con rollback si
+  /// algo falla).
+  Future<AuthAttemptResult> createAccountWithPhone({
+    required String name,
+    required String email,
+    required String password,
+    required String phoneVerificationId,
+    required String smsCode,
+  });
+
   Future<AuthAttemptResult> linkGoogle();
   Future<AuthAttemptResult> linkApple();
   Future<AuthAttemptResult> sendEmailLinkForLinking(String email);
@@ -95,4 +123,10 @@ abstract class AuthRepository {
   /// `AuthController`/`UserRepository` — esta capa solo borra la
   /// identidad.
   Future<void> deleteAuthAccount();
+
+  /// Devuelve `true` si el usuario autenticado tiene el Firebase Custom
+  /// Claim `reviewerPremium: true` — asignado exclusivamente vía Admin SDK
+  /// a la cuenta de Google Play Reviewer. El cliente nunca puede establecer
+  /// este claim por sí solo.
+  Future<bool> isReviewerAccount();
 }

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/l10n/app_strings.dart';
+import 'package:poker_trainer/persistence/tool_explainer_store.dart';
 import 'package:poker_trainer/screens/tools/ev_calculator_screen.dart';
 
 Widget _harness() => const MaterialApp(home: EvCalculatorScreen());
 
 void main() {
+  // Ver el mismo comentario en blocker_explorer_screen_test.dart: evita
+  // la carrera del sistema de explicación contextual (Grupo 3).
+  setUpAll(() async {
+    await defaultToolExplainerStore.setDismissed('ev_calculator', true);
+  });
+
   testWidgets('muestra un resultado real con los valores por defecto',
       (tester) async {
     await tester.pumpWidget(_harness());
@@ -69,6 +76,23 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text(AppStrings.evInvalidInput), findsOneWidget);
+  });
+
+  testWidgets('precarga desde otra herramienta (Pot Odds / Equity)',
+      (tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: EvCalculatorScreen(
+        initialPotBb: 20,
+        initialCallBb: 10,
+        initialEquityPercent: 50,
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    // finalPot=30, requiredEquity=33.3%; EV = 0.5*30 - 10 = +5 BB.
+    expect(find.text('+5 BB'), findsOneWidget);
+    expect(find.text('33.3%'), findsOneWidget);
   });
 
   testWidgets('el botón de volver hace pop', (tester) async {

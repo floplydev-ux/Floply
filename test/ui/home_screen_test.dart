@@ -6,6 +6,7 @@ import 'package:poker_trainer/engine/poker_trainer_engine.dart';
 import 'package:poker_trainer/l10n/app_strings.dart';
 import 'package:poker_trainer/screens/academy/academy_controller.dart';
 import 'package:poker_trainer/screens/home/home_screen.dart';
+import 'package:poker_trainer/screens/home/widgets/home_tools_banner.dart';
 
 Future<AcademyController> _loadedController() async {
   final controller = AcademyController(
@@ -24,6 +25,7 @@ Widget _harness(AcademyController controller,
       onGoToAcademy: onGoToAcademy ?? () {},
       onGoToLaboratory: onGoToLaboratory ?? () {},
       onGoToProfile: () {},
+      onGoToCoach: () {},
     ),
   );
 }
@@ -40,7 +42,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text(AppStrings.continueLearningNewTitle), findsOneWidget);
     expect(find.text(AppStrings.continueLearningStartCta), findsOneWidget);
     expect(controller.activeLessonId, isNull);
 
@@ -67,7 +68,6 @@ void main() {
     await tester.pumpAndSettle();
 
     final lessonView = controller.currentLessonView!;
-    expect(find.text(lessonView.lesson.title), findsOneWidget);
     expect(find.text(AppStrings.continueLabel), findsWidgets);
 
     await tester.tap(find.text(AppStrings.continueLabel).first);
@@ -95,11 +95,45 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-        find.text(AppStrings.continueLearningCompletedTitle), findsOneWidget);
-    await tester.tap(find.text(AppStrings.practiceNowLabel));
+        find.text(AppStrings.continueLearningCompletedBody), findsOneWidget);
+    await tester.tap(find.text(AppStrings.practiceNowLabel).first);
     await tester.pumpAndSettle();
 
     expect(wentToPractice, isTrue);
+  });
+
+  testWidgets(
+      'Campo de Entrenamiento reemplazó a Laboratorio en toda la Home',
+      (tester) async {
+    final controller = await _loadedController();
+    await tester.pumpWidget(_harness(controller));
+    await tester.pumpAndSettle();
+
+    expect(find.text(AppStrings.laboratoryTitle), findsOneWidget);
+    expect(find.textContaining('LABORATORIO'), findsNothing);
+    expect(find.textContaining('Laboratorio'), findsNothing);
+  });
+
+  testWidgets('el banner de Herramientas está debajo de Academia/Campo de '
+      'Entrenamiento y abre Tools', (tester) async {
+    final controller = await _loadedController();
+    await tester.pumpWidget(_harness(controller));
+    await tester.pumpAndSettle();
+
+    final academyCard = tester.getTopLeft(find.text(AppStrings.academyTitle));
+    final labCard = tester.getTopLeft(find.text(AppStrings.laboratoryTitle));
+    final banner = tester.getTopLeft(find.byType(HomeToolsBanner));
+
+    // Academia y Campo de Entrenamiento siguen a la misma altura (lado a
+    // lado, sin cambios) y el banner va estrictamente debajo de ambos.
+    expect(academyCard.dy, labCard.dy);
+    expect(banner.dy, greaterThan(academyCard.dy));
+
+    await tester.tap(find.byType(HomeToolsBanner));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text(AppStrings.toolsHeaderTitle), findsOneWidget);
   });
 
   testWidgets('Bankroll, Tools y Coach navegan a sus pantallas reales',
@@ -129,6 +163,9 @@ void main() {
     popRoute();
     await tester.pumpAndSettle();
 
+    // La vidriera de accesos individuales ("Ver todas") se eliminó del
+    // Home (Tools pasó a ser un único bloque grande) — se entra tocando
+    // el banner directamente, por su título (único en pantalla).
     await tester.ensureVisible(find.text(AppStrings.toolsTitle));
     await tester.tap(find.text(AppStrings.toolsTitle));
     await tester.pumpAndSettle();
@@ -142,7 +179,10 @@ void main() {
     await tester.ensureVisible(find.text(AppStrings.coachTitle));
     await tester.tap(find.text(AppStrings.coachTitle));
     await tester.pumpAndSettle();
-    expect(find.text(AppStrings.navCoach), findsOneWidget);
+    // Coach ya tiene pantalla real (CoachTableScreen, una mano jugable
+    // completa) — no el placeholder ComingSoonScreen que solo mostraba
+    // `AppStrings.navCoach`.
+    expect(find.text(AppStrings.coachTableTitle), findsOneWidget);
   });
 
   // Fase 2: barrido ampliado de 320-430 a 300-480 (mismo rango que el

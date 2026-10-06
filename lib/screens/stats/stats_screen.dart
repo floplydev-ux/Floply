@@ -4,23 +4,11 @@ import '../../engine/academy/academy_engine.dart';
 import '../../engine/academy/academy_progress.dart';
 import '../../engine/concepts/mastery_bucket.dart';
 import '../../l10n/app_strings.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/sala_verde/sala_verde_tokens.dart';
 import '../../widgets/concept_mastery_bar.dart';
+import '../../widgets/sala_verde/floply_loading_indicator.dart';
 import '../academy/academy_controller.dart';
 
-/// Pantalla de Estadísticas — reemplaza el `ComingSoonScreen` del tab.
-///
-/// Puramente de lectura: no calcula nada que no exista ya. Lee
-/// [AcademyController.snapshot]/`.levels`/`.knowledge` (mismos datos que
-/// ya muestran `ContinueLearningCard`/`LevelMap`/`SessionSummary`, acá
-/// reunidos en un solo lugar) — nunca un segundo cálculo de progreso.
-///
-/// Laboratorio queda con un estado vacío honesto a propósito: hoy
-/// `LabSessionController.results`/`newEngineResults` viven solo en
-/// memoria de la sesión en curso (se pierden al volver a
-/// [LabPhase.idle] o al cerrar la app) — no hay historial persistido
-/// que mostrar todavía. Inventar números acá sería peor que no
-/// mostrar nada.
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key, required this.controller});
 
@@ -28,23 +16,14 @@ class StatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: AppColors.backgroundGradient,
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
+    return Scaffold(
+      backgroundColor: SalaVerdeColors.background,
+      body: SafeArea(
         child: AnimatedBuilder(
           animation: controller,
           builder: (context, _) {
             if (controller.loading) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.violetSoft),
-              );
+              return const Center(child: FloplyLoadingIndicator(size: 64));
             }
             return LayoutBuilder(builder: (context, constraints) {
               final pad = constraints.maxWidth >= 480 ? 24.0 : 18.0;
@@ -85,32 +64,25 @@ class _StatsHeader extends StatelessWidget {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.violetPrimary.withValues(alpha: 0.18),
+            color: SalaVerdeColors.violet.withValues(alpha: 0.18),
           ),
           child: const Icon(Icons.bar_chart_rounded,
-              color: AppColors.violetBright, size: 20),
+              color: SalaVerdeColors.violetBright, size: 20),
         ),
         const SizedBox(width: 12),
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 AppStrings.statsHeaderTitle,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5,
-                ),
+                style: SalaVerdeType.title(),
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               Text(
                 AppStrings.statsHeaderSubtitle,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: AppColors.textSecondary,
-                  height: 1.3,
-                ),
+                style: SalaVerdeType.caption(
+                    color: SalaVerdeColors.textSecondary),
               ),
             ],
           ),
@@ -131,21 +103,16 @@ class _SectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.surfaceBorder),
+        borderRadius: BorderRadius.circular(SalaVerdeRadius.panel),
+        color: SalaVerdeColors.surface,
+        border: Border.all(color: SalaVerdeColors.borderSubtle),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textMuted,
-              letterSpacing: 0.8,
-            ),
+            style: SalaVerdeType.label(color: SalaVerdeColors.textMuted),
           ),
           const SizedBox(height: 12),
           child,
@@ -171,11 +138,7 @@ class _AcademySummaryCard extends StatelessWidget {
           Text(
             AppStrings.academyLevelLabel(
                 snapshot.currentLevelNumber, snapshot.currentLevelTitle),
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
+            style: SalaVerdeType.bodyStrong(),
           ),
           const SizedBox(height: 10),
           ClipRRect(
@@ -184,15 +147,15 @@ class _AcademySummaryCard extends StatelessWidget {
               height: 8,
               child: Stack(
                 children: [
-                  Container(color: AppColors.surfaceElevated),
+                  Container(color: SalaVerdeColors.surfaceElevated),
                   FractionallySizedBox(
                     widthFactor: snapshot.percent.clamp(0.0, 1.0),
                     child: Container(
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            AppColors.violetBright,
-                            AppColors.violetPrimary,
+                            SalaVerdeColors.violetBright,
+                            SalaVerdeColors.violet,
                           ],
                         ),
                       ),
@@ -206,11 +169,7 @@ class _AcademySummaryCard extends StatelessWidget {
           Text(
             '${AppStrings.academyLessonsDone(snapshot.completedLessons, snapshot.totalLessons)} '
             '· ${(snapshot.percent * 100).round()}%',
-            style: const TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textMuted,
-            ),
+            style: SalaVerdeType.caption(color: SalaVerdeColors.textMuted),
           ),
         ],
       ),
@@ -259,18 +218,16 @@ class _LevelRow extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: locked
-                ? AppColors.surfaceElevated
-                : AppColors.violetPrimary.withValues(alpha: 0.18),
+                ? SalaVerdeColors.surfaceElevated
+                : SalaVerdeColors.violet.withValues(alpha: 0.18),
           ),
           child: locked
-              ? const Icon(Icons.lock_rounded, size: 12, color: AppColors.textMuted)
+              ? const Icon(Icons.lock_rounded,
+                  size: 12, color: SalaVerdeColors.textMuted)
               : Text(
                   '${level.level.number}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.violetBright,
-                  ),
+                  style: SalaVerdeType.label(
+                      color: SalaVerdeColors.violetBright),
                 ),
         ),
         const SizedBox(width: 10),
@@ -279,10 +236,10 @@ class _LevelRow extends StatelessWidget {
             level.level.title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: locked ? AppColors.textMuted : AppColors.textPrimary,
+            style: SalaVerdeType.caption(
+              color: locked
+                  ? SalaVerdeColors.textMuted
+                  : SalaVerdeColors.textPrimary,
             ),
           ),
         ),
@@ -295,13 +252,13 @@ class _LevelRow extends StatelessWidget {
               height: 6,
               child: Stack(
                 children: [
-                  Container(color: AppColors.surfaceElevated),
+                  Container(color: SalaVerdeColors.surfaceElevated),
                   FractionallySizedBox(
                     widthFactor: level.progress.clamp(0.0, 1.0),
                     child: Container(
                       color: completed
-                          ? AppColors.violetBright
-                          : AppColors.violetPrimary,
+                          ? SalaVerdeColors.violetBright
+                          : SalaVerdeColors.violet,
                     ),
                   ),
                 ],
@@ -315,11 +272,7 @@ class _LevelRow extends StatelessWidget {
           child: Text(
             '${(level.progress * 100).round()}%',
             textAlign: TextAlign.right,
-            style: const TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textMuted,
-            ),
+            style: SalaVerdeType.label(color: SalaVerdeColors.textMuted),
           ),
         ),
       ],
@@ -341,13 +294,10 @@ class _ConceptMasteryCard extends StatelessWidget {
     return _SectionCard(
       title: AppStrings.statsConceptMasterySection,
       child: buckets.isEmpty
-          ? const Text(
+          ? Text(
               AppStrings.statsConceptMasteryEmpty,
-              style: TextStyle(
-                fontSize: 12.5,
-                color: AppColors.textSecondary,
-                height: 1.4,
-              ),
+              style: SalaVerdeType.caption(
+                  color: SalaVerdeColors.textSecondary),
             )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -368,33 +318,26 @@ class _LaboratoryEmptyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _SectionCard(
+    return _SectionCard(
       title: AppStrings.statsLabSection,
       child: Row(
         children: [
-          Icon(Icons.hourglass_empty_rounded,
-              color: AppColors.textMuted, size: 22),
-          SizedBox(width: 12),
+          const Icon(Icons.hourglass_empty_rounded,
+              color: SalaVerdeColors.textMuted, size: 22),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   AppStrings.statsLabEmptyTitle,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: SalaVerdeType.bodyStrong(),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   AppStrings.statsLabEmptyBody,
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    color: AppColors.textSecondary,
-                    height: 1.35,
-                  ),
+                  style: SalaVerdeType.caption(
+                      color: SalaVerdeColors.textSecondary),
                 ),
               ],
             ),

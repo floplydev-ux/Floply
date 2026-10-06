@@ -101,12 +101,14 @@ void main() {
         (tester) async {
       final c = await _mount(tester, size);
 
-      // N1.1, N1.2 y N1.3 ya no tienen guion de mesa legado (piloto de 3
-      // bloques: teoría escrita → ejemplo de mesa → ejercicios) — se prueban
-      // aparte en `academy_1_1_pilot_test.dart` / `academy_1_2_pilot_test.dart`
-      // / `academy_1_3_pilot_test.dart`. Acá usamos 1.4 en su lugar (sigue
-      // resolviendo al guion legado "1.1", igual que siempre).
-      for (final id in ['1.4', '2.1', '3.1', '3.3', '5.1']) {
+      // N1.1, N1.2, N1.3 y N1.4 ya no tienen guion de mesa legado (piloto
+      // de 3 bloques: teoría escrita → ejemplo de mesa → ejercicios) — se
+      // prueban aparte en `academy_1_1_pilot_test.dart` /
+      // `academy_1_2_pilot_test.dart` / `academy_1_3_pilot_test.dart` (1.4
+      // todavía no tiene su propio test dedicado — pendiente, no bloquea
+      // esta prueba). Acá usamos 2.1/3.1/3.3/5.1, que sí siguen resolviendo
+      // a un guion legado real.
+      for (final id in ['2.1', '3.1', '3.3', '5.1']) {
         c.openLesson(id);
         await tester.pumpAndSettle();
         expect(c.isInteractiveTheory, isTrue, reason: '$name $id');

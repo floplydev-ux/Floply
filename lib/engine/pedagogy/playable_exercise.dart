@@ -13,8 +13,11 @@
 library;
 
 import '../poker/poker_action.dart' show ActionType;
+import 'lab_feedback.dart';
 import 'table_exercise.dart' show ExerciseRating, ExerciseExplainStep;
 import 'table_lesson.dart';
+
+export 'lab_feedback.dart' show LabFeedback;
 
 export '../poker/poker_action.dart' show ActionType;
 export 'table_exercise.dart' show ExerciseRating, ExerciseExplainStep;
@@ -36,6 +39,7 @@ class BetSizeOption {
     required this.rating,
     required this.feedback,
     this.afterDecision,
+    this.richFeedback,
   });
 
   /// `"1/2 pot"`, `"2.5 BB"`, `"Pot"`… lo que el concepto necesite enseñar.
@@ -51,6 +55,12 @@ class BetSizeOption {
   /// Si es `null`, se usa el `afterDecision` de la [ActionChoice] elegida
   /// o, en su defecto, el de [PlayableTableExercise].
   final TableSnapshot? afterDecision;
+
+  /// Devolución estructurada de Laboratorio para este tamaño puntual —
+  /// `null` en Academia (nunca lo puebla) y también `null` en Laboratorio
+  /// cuando el tamaño no corresponde a la opción evaluada (ver
+  /// `ExerciseScenarioAdapter`).
+  final LabFeedback? richFeedback;
 }
 
 /// Una opción de "¿por qué elegiste esta acción?" — el segundo eje de
@@ -87,6 +97,7 @@ class ActionChoice {
     this.reasoning = const [],
     this.sizeOptions = const [],
     this.afterDecision,
+    this.richFeedback,
   });
 
   final PokerAction action;
@@ -113,6 +124,12 @@ class ActionChoice {
   /// Mesa tras confirmar esta acción (sin tamaño elegido, o como fallback
   /// si el tamaño elegido no trae el suyo propio).
   final TableSnapshot? afterDecision;
+
+  /// Devolución estructurada post-respuesta de Laboratorio (Decisión →
+  /// Por qué → Números → Concepto → Repasá en Academia) — `null` en
+  /// Academia (que sigue con su texto plano de siempre en [feedback]) y
+  /// en cualquier ejercicio de Laboratorio anterior a este campo.
+  final LabFeedback? richFeedback;
 
   bool get needsSizing => sizeOptions.isNotEmpty;
 }

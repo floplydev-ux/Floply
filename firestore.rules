@@ -1,11 +1,50 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ── Perfil de usuario ────────────────────────────────────────────────────
+    // Solo el propio usuario puede leer/escribir su perfil y progreso de
+    // Academia. El campo promoExpiresAt lo escribe únicamente la Cloud
+    // Function (Admin SDK), por eso se impide que el cliente lo cambie.
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      // Crear perfil: el cliente no puede incluir promoExpiresAt.
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && !request.resource.data.keys().hasAny(['promoExpiresAt']);
+
+      // Actualizar perfil: si promoExpiresAt existe en el resultado, debe ser
+      // igual al que ya estaba (= el cliente no lo modificó).
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && (
+          !request.resource.data.keys().hasAny(['promoExpiresAt'])
+          || request.resource.data.promoExpiresAt == resource.data.promoExpiresAt
+        );
+
+      allow delete: if request.auth != null && request.auth.uid == uid;
+
       match /academy/{docId} {
         allow read, write: if request.auth != null && request.auth.uid == uid;
       }
+    }
+
+    // ── Códigos promocionales ────────────────────────────────────────────────
+    // Los clientes NO leen ni escriben esta colección directamente.
+    // Toda la lógica de validación y canje ocurre en la Cloud Function
+    // con Admin SDK, que no está sujeta a estas reglas.
+    match /promo_codes/{code} {
+      allow read, write: if false;
+    }
+
+    // ── Historial de redenciones ─────────────────────────────────────────────
+    // El usuario puede leer sus propias redenciones (historial futuro), pero
+    // NUNCA escribir — solo la Cloud Function puede crearlas.
+    match /promo_redemptions/{redemptionId} {
+      allow read: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+      allow write: if false;
     }
   }
 }

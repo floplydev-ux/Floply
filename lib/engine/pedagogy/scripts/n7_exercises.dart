@@ -9,11 +9,24 @@ class N7Exercises {
 
   // 7.2 ya tiene un set heredado ("ex-5.4": posición / open-fold / 3-bet,
   // ver AcademyExerciseScripts) que cubre bien ese subnivel — no se
-  // duplica acá para no taparlo ni repetir el mismo tipo de decisión.
+  // duplica acá para no taparlo ni repetir el mismo tipo de decisión. Para
+  // el checkpoint (7.4) sí hace falta una pregunta propia de 3-bet valor/
+  // farol (_threeBetValueOrBluff más abajo): llamar al set heredado desde
+  // acá crearía un ciclo de inicialización con AcademyExerciseScripts (que
+  // a su vez depende de N7Exercises.byId), así que se escribe una pregunta
+  // autocontenida en vez de referenciarlo.
   static final Map<String, InteractiveExerciseSet> byId = {
     '7.1': InteractiveExerciseSet([_callOFold()]),
     '7.3': InteractiveExerciseSet([_spr()]),
-    '7.4': InteractiveExerciseSet([_vsThreeBet()]),
+    // 7.4 es el checkpoint del nivel: la evaluación del módulo repasa
+    // 7.1 (call o fold), 7.2 (3-bet valor/farol) y 7.3 (SPR) antes de
+    // cerrar con su propio contenido (responder a una 3-bet).
+    '7.4': InteractiveExerciseSet([
+      _callOFold(),
+      _threeBetValueOrBluff(),
+      _spr(),
+      _vsThreeBet(),
+    ]),
   };
 
   // ================================================================
@@ -59,6 +72,57 @@ class N7Exercises {
         ExerciseExplainStep(
           text: 'Contra un rango de apertura amplio (botón) y con buen '
               'precio (ya pusiste la BB), el rango de defensa se abre.',
+          anchor: TableAnchor.seat(5),
+        ),
+      ],
+    );
+  }
+
+  // ================================================================
+  // 7.2 — 3-bet: valor o farol (usada solo en el checkpoint 7.4, ver
+  // comentario de byId)
+  // ================================================================
+  static InteractiveTableExercise _threeBetValueOrBluff() {
+    final table = TableSnapshot(
+      seats: TableBuilder.seats(
+        labels: const {0: 'CO', 5: 'BTN', 4: 'SB', 3: 'BB', 2: 'UTG', 1: 'HJ'},
+        folded: const {2, 1, 4, 3},
+        actions: const {0: 'ABRE', 5: '3-BET'},
+        bets: const {0: 2.5, 5: 9.0},
+        cards: const {5: ['As', '5s']},
+        toAct: 0,
+      ),
+      potBb: 12.5,
+      buttonSlot: 5,
+    );
+    return InteractiveTableExercise(
+      situation: table,
+      questionAnchor: const TableAnchor.seat(5),
+      situationHighlight: const [TableAnchor.seat(5)],
+      question: 'El CO abre. El botón 3-betea con A♠5♠ — una mano floja '
+          'para solo pagar. ¿Esa 3-bet es por valor o como farol?',
+      choices: const [
+        ExerciseChoice(
+          label: 'FAROL',
+          rating: ExerciseRating.best,
+          feedback: 'Correcto: A5 suited no le gana cómodo al rango de '
+              'apertura del CO. Esta 3-bet busca que el resto de ese '
+              'rango se retire — gana por fold equity, no por tener lo '
+              'mejor.',
+        ),
+        ExerciseChoice(
+          label: 'VALOR',
+          rating: ExerciseRating.poor,
+          feedback: 'Una 3-bet por valor busca meter fichas mientras estás '
+              'mejor parado (como con KK). A5 suited no le gana cómodo al '
+              'rango de apertura del CO: acá el motivo es otro.',
+        ),
+      ],
+      explanation: const [
+        ExerciseExplainStep(
+          text: 'Un rango de 3-bet bien armado combina manos de valor '
+              '(AA-QQ, AK) con algunos faroles como este — así el rival '
+              'nunca sabe con cuál de los dos está enfrentando.',
           anchor: TableAnchor.seat(5),
         ),
       ],

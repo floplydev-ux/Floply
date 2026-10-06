@@ -10,6 +10,7 @@ import '../poker/game/scenario_builder.dart';
 import '../poker/generation_exception.dart';
 import '../poker/hole_cards.dart';
 import '../poker/poker_action.dart';
+import '../poker/sizing/bet_sizing_engine.dart';
 import '../strategy/opening_ranges.dart';
 import '../strategy/preflop_range_book.dart';
 import 'decision_context.dart';
@@ -315,6 +316,11 @@ class ExerciseScenarioBuilder {
         state, PokerAction.raiseTo(OpeningRanges.sizingFor(heroPosition)));
     state = _resolveBackgroundActors(state, villainSlot, OpponentProfile.balanced);
     state = ActionResolver.apply(state, const PokerAction(ActionType.call));
+    // `heroPosition`/`villainPosition` variados (ver `ScenarioRandomizer.
+    // aggressorWithPositionPositions`) ya no garantizan que villainSlot
+    // sea el último en actuar preflop — puede quedar gente "de fondo"
+    // (p. ej. la BB) por detrás si villainPosition es la SB.
+    state = _foldRemainingBackgroundActors(state);
 
     if (!state.isStreetComplete) {
       throw StateError(
@@ -335,6 +341,257 @@ class ExerciseScenarioBuilder {
     ConceptIds.cbet,
     ConceptIds.boardTexture,
   ];
+
+  /// Tipo G — postflop: el héroe defendió preflop (no fue el agresor),
+  /// pagó un flop chico de guion (mecánico, sin evaluar — el punto
+  /// pedagógico es la calle siguiente, no esta) y en el turn encara una
+  /// apuesta real del agresor, con posición sobre él/ella. El héroe
+  /// decide fold/call/raise fundamentado en equity real
+  /// (`PostflopStrategy`, ver su doc-comment).
+  ///
+  /// **Por qué el turn y no el flop**: `EquityEngine.handVsRange` en el
+  /// flop (2 cartas por venir) enumera del orden de mil runouts POR
+  /// combo del rango del agresor — con un rango de apertura real
+  /// (decenas a cientos de combos) eso tarda varios segundos por
+  /// ejercicio, inviable para una decisión en vivo. En el turn (1 carta
+  /// por venir) son ~46 runouts por combo — el mismo cálculo real, sin
+  /// aproximar nada, pero órdenes de magnitud más rápido. La apuesta que
+  /// el héroe encara en el flop es de guion precisamente para poder
+  /// llegar a esa calle más barata sin inventar una heurística nueva.
+  static ExerciseScenario facingCbet({
+    required Deck deck,
+    int buttonSlot = 0,
+    Position heroPosition = Position.btn,
+    Position aggressorPosition = Position.co,
+    HoleCards? heroHand,
+    double stackBb = 100,
+    double flopBetPotFraction = 0.5,
+    double turnBetPotFraction = 0.66,
+  }) {
+    if (heroPosition == aggressorPosition) {
+      throw ArgumentError('heroPosition y aggressorPosition no pueden ser la misma.');
+    }
+    final heroSlot = TablePositions(buttonSlot).slotOf(heroPosition);
+    final aggressorSlot = TablePositions(buttonSlot).slotOf(aggressorPosition);
+    _requireActsBefore(buttonSlot, aggressorSlot, heroSlot,
+        'facingCbet: heroPosition ($heroPosition) tiene que tener posición '
+        'sobre aggressorPosition ($aggressorPosition) postflop.',
+        street: Street.flop);
+
+    // Sin sesgo de mano: la lección acá es leer equity real contra el
+    // board, no "reconocer una mano típica de apertura" — cualquier
+    // mano que el héroe hubiera defendido sirve (ver `_biasAppliesTo` en
+    // `LabSessionController`, que excluye esta familia del sesgo de
+    // dificultad por el mismo motivo).
+    final hand = heroHand ?? HandPicker.forBias(deck, heroPosition, HandBias.any);
+    final aggressorHand =
+        HandPicker.forBias(deck, aggressorPosition, HandBias.clearlyInRange);
+
+    var state = ScenarioBuilder.freshHand(
+      deck: deck,
+      buttonSlot: buttonSlot,
+      stackBb: stackBb,
+      explicitHandBySlot: {heroSlot: hand, aggressorSlot: aggressorHand},
+    );
+    state = _resolveBackgroundActors(state, aggressorSlot, OpponentProfile.balanced);
+    state = ActionResolver.apply(
+        state, PokerAction.raiseTo(OpeningRanges.sizingFor(aggressorPosition)));
+    state = _resolveBackgroundActors(state, heroSlot, OpponentProfile.balanced);
+    state = ActionResolver.apply(state, const PokerAction(ActionType.call));
+    // heroPosition puede no ser el último en actuar preflop (ver
+    // `ScenarioRandomizer.facingCbetPositions`).
+    state = _foldRemainingBackgroundActors(state);
+
+    if (!state.isStreetComplete) {
+      throw StateError('facingCbet: la calle preflop no cerró donde se esperaba.');
+    }
+    state = ActionResolver.advanceStreet(state);
+    // Flop de guion (mecánico, nunca evaluado): board real, sin forzar
+    // textura — la variedad de texturas es parte del punto, y la única
+    // decisión real de esta familia es la del turn (ver el doc-comment).
+    state = _resolveBackgroundActors(state, aggressorSlot, OpponentProfile.balanced);
+    final flopBetSizeBb =
+        BetSizingEngine.potSizedBet(state.pot.totalBb, fraction: flopBetPotFraction);
+    state = ActionResolver.apply(state, PokerAction.bet(flopBetSizeBb));
+    state = _resolveBackgroundActors(state, heroSlot, OpponentProfile.balanced);
+    state = ActionResolver.apply(state, const PokerAction(ActionType.call));
+
+    if (!state.isStreetComplete) {
+      throw StateError('facingCbet: el flop no cerró donde se esperaba.');
+    }
+    state = ActionResolver.advanceStreet(state);
+    // El turn sí es la decisión real: el agresor apuesta de guion, el
+    // héroe decide.
+    state = _resolveBackgroundActors(state, aggressorSlot, OpponentProfile.balanced);
+    final turnBetSizeBb =
+        BetSizingEngine.potSizedBet(state.pot.totalBb, fraction: turnBetPotFraction);
+    state = ActionResolver.apply(state, PokerAction.bet(turnBetSizeBb));
+    state = _resolveBackgroundActors(state, heroSlot, OpponentProfile.balanced);
+
+    return _finish(state, heroSlot, PreflopScenarioKind.facingCbet, _facingCbetConcepts,
+        metadata: {
+          'aggressorSlot': aggressorSlot,
+          'aggressorPosition': aggressorPosition.abbreviation,
+        });
+  }
+
+  static const List<String> _facingCbetConcepts = [
+    ConceptIds.potOdds,
+    ConceptIds.equity,
+    ConceptIds.call,
+  ];
+
+  /// Tipo H — postflop: el héroe fue el agresor preflop, c-apostó el
+  /// flop (de guion — la calidad de ESE bet ya la cubre [cbetDecision]
+  /// por separado) y el rival pagó (de guion); en el turn, el rival
+  /// checkea y el héroe decide el segundo barril (seguir apostando) o
+  /// pasar a controlar el bote. Fundamentado en la misma equity real que
+  /// [facingCbet].
+  static ExerciseScenario turnBarrel({
+    required Deck deck,
+    int buttonSlot = 0,
+    Position heroPosition = Position.btn,
+    Position villainPosition = Position.bb,
+    HoleCards? heroHand,
+    double stackBb = 100,
+    double flopBetPotFraction = 0.5,
+  }) {
+    var state = _startBarrelLine(
+      deck: deck,
+      buttonSlot: buttonSlot,
+      heroPosition: heroPosition,
+      villainPosition: villainPosition,
+      heroHand: heroHand,
+      stackBb: stackBb,
+      flopBetPotFraction: flopBetPotFraction,
+    );
+    final heroSlot = TablePositions(buttonSlot).slotOf(heroPosition);
+    final villainSlot = TablePositions(buttonSlot).slotOf(villainPosition);
+
+    return _finish(state, heroSlot, PreflopScenarioKind.turnBarrel, _barrelConcepts,
+        metadata: {'villainSlot': villainSlot, 'villainPosition': villainPosition.abbreviation});
+  }
+
+  /// Tipo I — postflop: misma decisión que [turnBarrel] un paso más
+  /// adelante — flop Y turn ya fueron apuesta más pago (de guion), y en
+  /// el río el rival vuelve a checkear. El héroe decide el tercer
+  /// barril de valor o pasar a showdown.
+  static ExerciseScenario riverBarrel({
+    required Deck deck,
+    int buttonSlot = 0,
+    Position heroPosition = Position.btn,
+    Position villainPosition = Position.bb,
+    HoleCards? heroHand,
+    double stackBb = 100,
+    double flopBetPotFraction = 0.5,
+    double turnBetPotFraction = 0.66,
+  }) {
+    var state = _startBarrelLine(
+      deck: deck,
+      buttonSlot: buttonSlot,
+      heroPosition: heroPosition,
+      villainPosition: villainPosition,
+      heroHand: heroHand,
+      stackBb: stackBb,
+      flopBetPotFraction: flopBetPotFraction,
+    );
+    final heroSlot = TablePositions(buttonSlot).slotOf(heroPosition);
+    final villainSlot = TablePositions(buttonSlot).slotOf(villainPosition);
+
+    // `_startBarrelLine` deja al héroe recién en su decisión de turn (el
+    // rival ya checkeó). Acá esa decisión también es de guion (siempre
+    // apuesta), porque el punto pedagógico de esta familia es el río, no
+    // el turn (ese ya lo cubre `turnBarrel` por separado).
+    final turnBetSizeBb =
+        BetSizingEngine.potSizedBet(state.pot.totalBb, fraction: turnBetPotFraction);
+    // Solo héroe y rival siguen activos (ver `_startBarrelLine`) — se
+    // aplica en orden, sin `_resolveBackgroundActors`.
+    state = ActionResolver.apply(state, PokerAction.bet(turnBetSizeBb));
+    state = ActionResolver.apply(state, const PokerAction(ActionType.call));
+
+    if (!state.isStreetComplete) {
+      throw StateError('riverBarrel: el turn no cerró donde se esperaba.');
+    }
+    state = ActionResolver.advanceStreet(state);
+    state = ActionResolver.apply(state, const PokerAction(ActionType.check));
+
+    return _finish(state, heroSlot, PreflopScenarioKind.riverBarrel, _barrelConcepts,
+        metadata: {'villainSlot': villainSlot, 'villainPosition': villainPosition.abbreviation});
+  }
+
+  static const List<String> _barrelConcepts = [
+    ConceptIds.valueBet,
+    ConceptIds.equity,
+    ConceptIds.ev,
+  ];
+
+  /// Arma preflop (héroe abre, rival paga, de guion) + flop (héroe
+  /// c-apuesta, rival paga, de guion) hasta dejar al rival recién
+  /// checkeando el turn — el tramo mecánico compartido por [turnBarrel]
+  /// y [riverBarrel], que solo difieren en qué pasa DESPUÉS de ese
+  /// check. Nunca decide la calidad de ninguna de estas acciones (todas
+  /// son de guion); la única decisión real que arma es la del turn (que
+  /// [turnBarrel] deja tal cual, y [riverBarrel] resuelve mecánicamente
+  /// para seguir una calle más).
+  static GameState _startBarrelLine({
+    required Deck deck,
+    required int buttonSlot,
+    required Position heroPosition,
+    required Position villainPosition,
+    required HoleCards? heroHand,
+    required double stackBb,
+    required double flopBetPotFraction,
+  }) {
+    if (heroPosition == villainPosition) {
+      throw ArgumentError('heroPosition y villainPosition no pueden ser la misma.');
+    }
+    final heroSlot = TablePositions(buttonSlot).slotOf(heroPosition);
+    final villainSlot = TablePositions(buttonSlot).slotOf(villainPosition);
+    _requireActsBefore(buttonSlot, villainSlot, heroSlot,
+        'turnBarrel/riverBarrel: heroPosition ($heroPosition) tiene que '
+        'tener posición sobre villainPosition ($villainPosition) postflop.',
+        street: Street.flop);
+
+    final hand = heroHand ?? HandPicker.forBias(deck, heroPosition, HandBias.any);
+    final villainHand = HandPicker.forBias(deck, villainPosition, HandBias.any);
+
+    var state = ScenarioBuilder.freshHand(
+      deck: deck,
+      buttonSlot: buttonSlot,
+      stackBb: stackBb,
+      explicitHandBySlot: {heroSlot: hand, villainSlot: villainHand},
+    );
+    state = _resolveBackgroundActors(state, heroSlot, OpponentProfile.balanced);
+    state = ActionResolver.apply(
+        state, PokerAction.raiseTo(OpeningRanges.sizingFor(heroPosition)));
+    state = _resolveBackgroundActors(state, villainSlot, OpponentProfile.balanced);
+    state = ActionResolver.apply(state, const PokerAction(ActionType.call));
+    // heroPosition puede no ser el último en actuar preflop (ver
+    // `ScenarioRandomizer.aggressorWithPositionPositions`).
+    state = _foldRemainingBackgroundActors(state);
+
+    if (!state.isStreetComplete) {
+      throw StateError('turnBarrel/riverBarrel: la calle preflop no cerró donde se esperaba.');
+    }
+    state = ActionResolver.advanceStreet(state);
+    // A partir de acá solo quedan héroe y rival activos (todo el resto
+    // se foldeó en preflop) — el rival actúa primero en cada calle
+    // (`_requireActsBefore` ya lo garantiza), así que alcanza con
+    // aplicar las acciones en orden, sin `_resolveBackgroundActors`:
+    // ya no queda nadie de fondo que resolver.
+    state = ActionResolver.apply(state, const PokerAction(ActionType.check));
+    final flopBetSizeBb =
+        BetSizingEngine.potSizedBet(state.pot.totalBb, fraction: flopBetPotFraction);
+    state = ActionResolver.apply(state, PokerAction.bet(flopBetSizeBb));
+    state = ActionResolver.apply(state, const PokerAction(ActionType.call));
+
+    if (!state.isStreetComplete) {
+      throw StateError('turnBarrel/riverBarrel: el flop no cerró donde se esperaba.');
+    }
+    state = ActionResolver.advanceStreet(state);
+    state = ActionResolver.apply(state, const PokerAction(ActionType.check));
+    return state;
+  }
 
   /// Reordena `state.remainingDeckCards` para que las próximas 3 cartas
   /// (las que [ActionResolver.advanceStreet] va a repartir como flop)
@@ -395,6 +652,31 @@ class ExerciseScenarioBuilder {
       throw StateError(
           'ExerciseScenarioBuilder: la mano terminó antes de llegar al '
           'slot $targetSlot.');
+    }
+    return state;
+  }
+
+  /// Foldea a cualquier jugador "de fondo" (sin mano conocida) que
+  /// todavía tenga que actuar DESPUÉS del último actor real de la calle
+  /// — necesario cuando ese actor real no es, por posición, el último en
+  /// la rotación (p. ej. el héroe/rival de una familia postflop cae en
+  /// una posición intermedia, no en la BB): sin esto, `isStreetComplete`
+  /// queda en `false` porque a esos asientos de fondo nunca les tocó
+  /// actuar, aunque su mano ya esté decidida de antemano (no van a hacer
+  /// más que retirarse, no tienen mano real que jugar). Lanza
+  /// [StateError] si el próximo en turno resulta tener una mano
+  /// conocida — eso significaría un actor real sin guionar, un error de
+  /// construcción del escenario, nunca algo que este helper deba
+  /// silenciar foldeándolo igual.
+  static GameState _foldRemainingBackgroundActors(GameState state) {
+    while (!state.isStreetComplete && state.toActSlot != null) {
+      final actor = state.toActSlot!;
+      if (state.seatAt(actor).holeCards != null) {
+        throw StateError(
+            'ExerciseScenarioBuilder: el slot $actor tiene una mano conocida '
+            'y todavía no actuó — no debería quedar ningún actor real acá.');
+      }
+      state = ActionResolver.apply(state, const PokerAction(ActionType.fold));
     }
     return state;
   }

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/engine/pedagogy/table_position.dart';
 import 'package:poker_trainer/engine/poker/deck.dart';
 import 'package:poker_trainer/engine/poker/game/action_resolver.dart';
+import 'package:poker_trainer/engine/poker/game/legal_action_engine.dart';
 import 'package:poker_trainer/engine/poker/game/opponent_policy.dart';
 import 'package:poker_trainer/engine/poker/game/scenario_builder.dart';
 import 'package:poker_trainer/engine/poker/hole_cards.dart';
@@ -93,10 +94,10 @@ void main() {
       expect(action.sizeBb, 9);
     });
 
-    test('mano media (percentil entre 0.06 y 0.35): paga', () {
+    test('mano media (percentil entre 0.06 y 0.28): paga', () {
       final utgSlot = _slotFor(Position.utg, 0);
       final hjSlot = _slotFor(Position.hj, 0);
-      final medium = _handWithPercentile((p) => p > 0.10 && p < 0.30);
+      final medium = _handWithPercentile((p) => p > 0.10 && p < 0.25);
       var state = ScenarioBuilder.freshHand(
         deck: Deck(Random(1)),
         buttonSlot: 0,
@@ -185,8 +186,9 @@ void main() {
       expect(() => OpponentPolicy.decide(state), throwsStateError);
     });
 
-    test('postflop: UnsupportedError, no improvisa una regla sin '
-        'fundamento', () {
+    test('postflop (Grupo 8 — Mesa con Coach): decide una acción legal '
+        'real, fundamentada en HandStrengthClassifier, no en '
+        'UnsupportedError', () {
       final wideRange = HandRange.parse(const [
         '22+', 'A2s+', 'A2o+', 'K2s+', 'K2o+', 'Q2s+', 'Q2o+', 'J2s+', 'J2o+',
       ]);
@@ -201,7 +203,8 @@ void main() {
       state = ActionResolver.apply(state, const PokerAction(ActionType.check));
       state = ActionResolver.advanceStreet(state);
       expect(state.street.name, 'flop');
-      expect(() => OpponentPolicy.decide(state), throwsUnsupportedError);
+      final action = OpponentPolicy.decide(state);
+      expect(LegalActionEngine.legalActionTypes(state), contains(action.type));
     });
   });
 
@@ -311,41 +314,45 @@ void main() {
       });
     }
 
-    test('passive abre más angosto que balanced: una mano que balanced '
-        'abre, passive puede foldear', () {
-      // freq justo entre 0.5 (balanced.openFrequency) y 0.7
-      // (passive.openFrequency) — busco una clase de mano real en esa
-      // franja para UTG en vez de asumir una notación a mano.
+    test('passive siempre foldea manos mixtas (freq=0.5) que balanced '
+        'abre probabilísticamente', () {
+      // Las manos mixtas tienen freq=0.5 en el rango de apertura.
+      // passive.openFrequency=0.7 → nunca las abre (determinístico).
+      // balanced.openFrequency=0.5 → las abre ~50% de veces (probabilístico).
+      // Solo verificamos la propiedad determinística: passive siempre foldea.
       final utgRange = OpeningRanges.forPosition(Position.utg);
-      String? frontierNotation;
+      String? mixedNotation;
       for (final hc in HandClass.all()) {
-        final freq = utgRange.frequencyOf(hc.notation);
-        if (freq >= 0.5 && freq < 0.7) {
-          frontierNotation = hc.notation;
+        if ((utgRange.frequencyOf(hc.notation) - 0.5).abs() < 0.01) {
+          mixedNotation = hc.notation;
           break;
         }
       }
-      expect(frontierNotation, isNotNull,
-          reason: 'debería existir alguna clase de mano en esa franja de frecuencia');
+      expect(mixedNotation, isNotNull,
+          reason: 'debe existir al menos una clase de mano mixta (freq≈0.5) en UTG');
 
       final utgSlot = _slotFor(Position.utg, 0);
       final state = ScenarioBuilder.freshHand(
         deck: Deck(Random(1)),
         buttonSlot: 0,
-        explicitHandBySlot: {utgSlot: _concreteHand(frontierNotation!, seed: 7)},
+        explicitHandBySlot: {utgSlot: _concreteHand(mixedNotation!, seed: 7)},
       );
-      expect(OpponentPolicy.decide(state, profile: OpponentProfile.balanced).type,
-          ActionType.raise);
-      expect(OpponentPolicy.decide(state, profile: OpponentProfile.passive).type,
-          ActionType.fold);
+      // Passive nunca abre manos mixtas (freq=0.5 < openFrequency=0.7).
+      for (var i = 0; i < 20; i++) {
+        expect(OpponentPolicy.decide(state, profile: OpponentProfile.passive).type,
+            ActionType.fold,
+            reason: 'passive no debería abrir freq=0.5 (run $i)');
+      }
     });
 
     test('tag paga menos manos marginales que balanced: donde balanced '
         'paga (callPercentile más ancho), tag foldea', () {
-      // percentile entre 0.25 (tag.callPercentile) y 0.35
+      // percentile entre 0.25 (tag.callPercentile) y 0.28
       // (balanced.callPercentile): balanced todavía paga acá, tag ya no
       // (ni entra en su threeBetPercentile de 0.04, así que foldea).
-      final frontier = _handWithPercentile((p) => p > 0.25 && p <= 0.35);
+      // Busca en la zona (0.25, 0.30) para tener más candidatos — el
+      // umbral balanced=0.28 sigue siendo el que distingue ambos perfiles.
+      final frontier = _handWithPercentile((p) => p > 0.25 && p < 0.28);
       final utgSlot = _slotFor(Position.utg, 0);
       final hjSlot = _slotFor(Position.hj, 0);
       var state = ScenarioBuilder.freshHand(
@@ -398,10 +405,9 @@ void main() {
     });
 
     test(
-        'de punta a punta multi-calle: OpponentPolicy cierra el preflop '
-        'solo, el motor avanza las calles hasta el showdown pendiente por '
-        'su cuenta, y decide() marca explícitamente el límite exacto de '
-        'lo que este motor resuelve hoy (postflop, todavía no)', () {
+        'de punta a punta multi-calle (Grupo 8 — Mesa con Coach): '
+        'OpponentPolicy resuelve preflop Y postflop por su cuenta, calle '
+        'tras calle, hasta el showdown pendiente o el fin de la mano', () {
       final wideRange = HandRange.parse(const [
         '22+', 'A2s+', 'A2o+', 'K2s+', 'K2o+', 'Q2s+', 'Q2o+', 'J2s+', 'J2o+',
       ]);
@@ -411,40 +417,28 @@ void main() {
         rangeBySlot: {for (var s = 0; s < 6; s++) s: wideRange},
       );
 
-      // Preflop: enteramente resuelto por OpponentPolicy, sin ninguna
-      // acción puesta a mano por el test.
+      // De punta a punta: ninguna acción puesta a mano por el test, todo
+      // sale de OpponentPolicy — tanto preflop como postflop.
       var guard = 0;
-      while (!state.isStreetComplete && !state.isHandOver) {
-        state = ActionResolver.apply(state, OpponentPolicy.decide(state));
+      while (!state.isHandOver &&
+          !(state.street.name == 'river' && state.isStreetComplete)) {
+        if (state.isStreetComplete) {
+          state = ActionResolver.advanceStreet(state);
+        } else {
+          final action = OpponentPolicy.decide(state);
+          expect(LegalActionEngine.legalActionTypes(state), contains(action.type));
+          state = ActionResolver.apply(state, action);
+        }
         guard++;
-        expect(guard, lessThan(50));
+        expect(guard, lessThan(100));
       }
 
       if (state.isHandOver) {
-        // Puede pasar (todos foldean menos uno) — igual de válido, pero
-        // no queda ninguna calle que avanzar.
+        // Puede pasar (todos foldean menos uno) — igual de válido.
         expect(state.winnerSlots, isNotEmpty);
         return;
       }
 
-      expect(state.street.name, 'preflop');
-      state = ActionResolver.advanceStreet(state);
-      expect(state.street.name, 'flop');
-
-      // Postflop: OpponentPolicy no decide todavía — el límite exacto
-      // del motor, documentado, no un crash inesperado.
-      expect(() => OpponentPolicy.decide(state), throwsUnsupportedError);
-
-      // El motor SÍ puede seguir avanzando calles mecánicamente (eso no
-      // depende de ninguna decisión de rival): se prueba con checks
-      // explícitos hasta el showdown pendiente.
-      while (state.street.name != 'river' || !state.isStreetComplete) {
-        if (state.isStreetComplete) {
-          state = ActionResolver.advanceStreet(state);
-          continue;
-        }
-        state = ActionResolver.apply(state, const PokerAction(ActionType.check));
-      }
       expect(state.needsShowdown, isTrue);
       expect(state.board.length, 5);
     });

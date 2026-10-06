@@ -7,6 +7,7 @@ import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/l10n/app_strings.dart';
 import 'package:poker_trainer/persistence/local_auth_flag_store.dart';
 import 'package:poker_trainer/screens/root/app_shell.dart';
+import 'package:poker_trainer/services/premium/premium_service.dart';
 import 'package:poker_trainer/widgets/bottom_navigation.dart';
 
 import '../support/responsive_widths.dart';
@@ -27,6 +28,7 @@ Widget _harness() => MaterialApp(
           localStoreBuilder: () => InMemoryAcademyStore(),
           remoteAcademyStoreBuilder: (_) => InMemoryAcademyStore(),
         ),
+        premium: StubPremiumService(),
       ),
     );
 
@@ -125,9 +127,10 @@ void main() {
 
       expect(tester.takeException(), isNull);
       // FOLD nunca necesita tamaño ni tiene paso de razonamiento en
-      // Laboratorio — resuelve directo a la devolución.
-      expect(find.textContaining(AppStrings.playableActionResultLabel),
-          findsOneWidget);
+      // Laboratorio — resuelve directo a la devolución estructurada
+      // (ver `LabFeedbackBuilder`/`_RichFeedbackBody`), que siempre
+      // muestra la acción esperada en su sección DECISIÓN.
+      expect(find.textContaining('Esperado:'), findsOneWidget);
     });
 
     testWidgets('CALL funciona', (tester) async {

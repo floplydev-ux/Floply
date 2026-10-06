@@ -17,7 +17,17 @@ class N9Exercises {
     '9.2': InteractiveExerciseSet([_barrel()]),
     '9.3': InteractiveExerciseSet([_valueBet()]),
     '9.4': InteractiveExerciseSet([_bluffCatcher()]),
-    '9.5': InteractiveExerciseSet([_lineaCompleta()]),
+    // 9.5 es el checkpoint del nivel: la evaluación del módulo repasa
+    // scare card (turn), barrel, value bet y bluff catcher antes de
+    // cerrar con su propio contenido (una mano completa que integra
+    // varias calles a la vez).
+    '9.5': InteractiveExerciseSet([
+      _scareCard(),
+      _barrel(),
+      _valueBet(),
+      _bluffCatcher(),
+      _lineaCompleta(),
+    ]),
   };
 
   // ================================================================

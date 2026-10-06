@@ -1,4 +1,5 @@
 import '../poker/poker_action.dart';
+import 'decision_math.dart';
 import 'preflop_authoring.dart';
 
 /// Qué tan buena es una acción, en una escala que NO es binaria.
@@ -43,6 +44,7 @@ class StrategyOption {
     this.rationaleKey,
     this.role,
     this.contextSensitivity = const ContextSensitivity.stable(),
+    this.math,
   });
 
   final PokerAction action;
@@ -77,6 +79,13 @@ class StrategyOption {
   /// [rating], para decidir `AnswerVerdict.dependent`.
   final ContextSensitivity contextSensitivity;
 
+  /// Valores matemáticos reales ya calculados al armar esta opción (hoy:
+  /// equity/pot odds de `PostflopStrategy` para `facingCbet`/
+  /// `turnBarrel`/`riverBarrel`) — `null` cuando la familia no calcula
+  /// ninguno (p. ej. preflop por tabla de rangos). Puramente informativo
+  /// para el feedback (`LabFeedbackBuilder`): nunca influye en [rating].
+  final DecisionMath? math;
+
   bool get isPrimary => rating == StrategicRating.optimal;
 
   StrategyOption copyWith({
@@ -84,6 +93,7 @@ class StrategyOption {
     double? frequency,
     StrategyRole? role,
     ContextSensitivity? contextSensitivity,
+    DecisionMath? math,
   }) {
     return StrategyOption(
       action: action,
@@ -93,6 +103,7 @@ class StrategyOption {
       rationaleKey: rationaleKey,
       role: role ?? this.role,
       contextSensitivity: contextSensitivity ?? this.contextSensitivity,
+      math: math ?? this.math,
     );
   }
 
@@ -138,6 +149,27 @@ class Strategy {
       if (option.action.matches(action)) return option;
     }
     return null;
+  }
+
+  /// Como [optionFor], pero nunca deja que un BET/RAISE sin tamaño exacto
+  /// coincidente se evalúe como si fuera la peor opción de TODA la
+  /// estrategia (que puede ser un tipo de acción completamente distinto —
+  /// p. ej. fold — la causa real detrás de "aperturas correctas con un
+  /// tamaño razonable marcadas como error"): si no hay un match exacto,
+  /// busca entre las opciones que SÍ comparten el mismo [PokerAction.type]
+  /// que [action] la de mejor calificación — nunca inventa un tamaño ni
+  /// un rating nuevo, solo reutiliza el que la propia estrategia ya
+  /// calculó para esa familia de acción. Si ninguna opción comparte el
+  /// tipo (la acción en sí no tiene ningún respaldo en esta estrategia),
+  /// cae al peor rating de toda la estrategia, igual que antes.
+  StrategyOption optionForSized(PokerAction action) {
+    final exact = optionFor(action);
+    if (exact != null) return exact;
+    final sameType = options.where((o) => o.action.type == action.type);
+    if (sameType.isEmpty) {
+      return options.reduce((a, b) => a.rating.score <= b.rating.score ? a : b);
+    }
+    return sameType.reduce((a, b) => a.rating.score >= b.rating.score ? a : b);
   }
 
   /// Suma de frecuencias; debería estar cerca de 1.0 para ejercicios de

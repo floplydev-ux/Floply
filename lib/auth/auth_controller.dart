@@ -7,10 +7,13 @@ import 'package:flutter/foundation.dart';
 
 import '../engine/academy/academy_store.dart';
 import '../engine/concepts/concept_registry.dart';
+import '../models/app_user.dart';
 import '../persistence/academy_store_provider.dart';
 import '../persistence/firestore_academy_store.dart';
 import '../persistence/local_auth_flag_store.dart';
+import '../persistence/local_profile_store.dart';
 import '../persistence/syncing_academy_store.dart';
+import '../services/connectivity_service.dart';
 import 'auth_repository.dart';
 import 'firebase_auth_repository.dart';
 import 'firestore_user_repository.dart';
@@ -31,13 +34,24 @@ String authErrorMessage(AuthFailureReason reason) => switch (reason) {
       AuthFailureReason.providerError =>
         'Algo falló durante el inicio de sesión. Probá de nuevo en unos '
             'segundos.',
-      AuthFailureReason.invalidCode => 'Ese link ya no es válido.',
+      AuthFailureReason.invalidCode => 'Código incorrecto. Revisá e intentá de nuevo.',
       AuthFailureReason.expiredCode =>
-        'Ese link venció. Pedí uno nuevo para continuar.',
+        'El código venció. Pedí uno nuevo para continuar.',
       AuthFailureReason.reauthenticationRequired =>
         'Por seguridad, necesitamos que confirmes tu identidad de nuevo.',
       AuthFailureReason.tooManyAttempts =>
         'Demasiados intentos. Esperá un momento antes de volver a probar.',
+      AuthFailureReason.wrongPassword ||
+      AuthFailureReason.emailNotFound =>
+        'Email o contraseña incorrectos.',
+      AuthFailureReason.invalidPhone =>
+        'Ese número de teléfono no es válido.',
+      AuthFailureReason.phoneAlreadyRegistered =>
+        'Ya existe una cuenta con ese número de teléfono.',
+      AuthFailureReason.weakPassword =>
+        'La contraseña debe tener al menos 6 caracteres.',
+      AuthFailureReason.emailAlreadyInUse =>
+        'Ya existe una cuenta con ese email.',
       AuthFailureReason.unknown =>
         'No pudimos completar la acción. Intentá nuevamente.',
     };
@@ -62,27 +76,65 @@ class AuthController extends ChangeNotifier {
     AuthRepository? authRepository,
     UserRepository? userRepository,
     AuthFlagStore? flagStore,
+    ProfileStore? profileStore,
     ConceptRegistry? conceptRegistry,
     AcademyStore Function()? localStoreBuilder,
     RemoteAcademyStoreBuilder? remoteAcademyStoreBuilder,
+    ConnectivityService? connectivity,
   })  : _auth = authRepository ?? FirebaseAuthRepository(),
         _users = userRepository ??
             FirestoreUserRepository(firestore: _floplyFirestore()),
         _flags = flagStore ?? FileAuthFlagStore(),
+        _profiles = profileStore ?? FileProfileStore(),
         _registry = conceptRegistry ?? ConceptRegistry.standard(),
         _localStoreBuilder = localStoreBuilder ?? defaultAcademyStore,
         _remoteAcademyStoreBuilder = remoteAcademyStoreBuilder ??
             ((uid) => FirestoreAcademyStore(
                   uid: uid,
                   firestore: _floplyFirestore(),
-                ));
+                )),
+        _connectivity = connectivity {
+    _connectivity?.addListener(_onConnectivityChanged);
+  }
 
   final AuthRepository _auth;
   final UserRepository _users;
   final AuthFlagStore _flags;
+  final ProfileStore _profiles;
   final ConceptRegistry _registry;
   final AcademyStore Function() _localStoreBuilder;
   final AcademyStore Function(String uid) _remoteAcademyStoreBuilder;
+
+  /// Modo offline (sección 10): opcional a propósito — los tests y
+  /// cualquier otro consumidor que no le importe la reconciliación en
+  /// vivo pueden seguir sin pasarlo, igual que antes.
+  final ConnectivityService? _connectivity;
+
+  /// `true` si el último intento de reconciliar progreso local↔remoto
+  /// falló (offline) y todavía no se reintentó con éxito. La Academia
+  /// sigue funcionando 100% en local mientras tanto — ver
+  /// [SyncingAcademyStore].
+  bool _pendingReconcile = false;
+  bool get hasPendingSync => _pendingReconcile;
+
+  void _onConnectivityChanged() {
+    if (_connectivity?.isOnline == true && _pendingReconcile) {
+      _retryReconcile();
+    }
+  }
+
+  Future<void> _retryReconcile() async {
+    final store = _academyStore;
+    if (store is! SyncingAcademyStore) return;
+    try {
+      await store.reconcile(_registry);
+      _pendingReconcile = false;
+      notifyListeners();
+    } catch (_) {
+      // Sigue pendiente — se reintenta la próxima vez que la
+      // conectividad vuelva a `online` (o en el próximo login).
+    }
+  }
 
   StreamSubscription<AuthIdentity?>? _sub;
 
@@ -117,6 +169,30 @@ class AuthController extends ChangeNotifier {
   FloplyUser? get currentUser =>
       switch (_state) { AuthAuthenticated(:final user) => user, _ => null };
 
+  /// Nombre/foto propios de un invitado (sin `FloplyUser`) — ver
+  /// [updateGuestDisplayName]/[updateGuestAvatarPath]. Vacío hasta que
+  /// [bootstrap] lo carga del disco.
+  LocalProfile _guestProfile = const LocalProfile();
+  LocalProfile get guestProfile => _guestProfile;
+
+  /// Mantiene [AppUser.current] (leído por Home/Academia/Laboratorio, ver
+  /// su doc-comment) al día con quien esté activo ahora — autenticado o
+  /// invitado. Única forma en que este archivo toca `AppUser`: nunca un
+  /// screen lo hace directo.
+  void _syncAppUser() {
+    final user = currentUser;
+    if (user != null) {
+      AppUser.current =
+          AppUser(displayName: user.displayName, photoUrl: user.avatarUrl);
+    } else if (_state is AuthGuest) {
+      final name = _guestProfile.displayName;
+      AppUser.current = AppUser(
+        displayName: (name == null || name.trim().isEmpty) ? 'Jugador' : name,
+        photoUrl: _guestProfile.avatarPath,
+      );
+    }
+  }
+
   /// Se llama una única vez, al arrancar la app (antes de mostrar
   /// cualquier UI de auth) — evita el flash de la Fase 10.
   Future<void> bootstrap() async {
@@ -125,8 +201,11 @@ class AuthController extends ChangeNotifier {
     if (identity != null) {
       await _onIdentityChanged(identity);
     } else {
-      final guest = await _flags.isGuestModeChosen();
-      _state = guest ? const AuthGuest() : const AuthUnauthenticated();
+      // El modo invitado fue eliminado: FLOPly requiere una cuenta.
+      // El flag de disco se ignora en adelante — si hubiera uno viejo,
+      // el usuario simplemente ve la pantalla de login.
+      _state = const AuthUnauthenticated();
+      _syncAppUser();
       notifyListeners();
     }
   }
@@ -134,6 +213,7 @@ class AuthController extends ChangeNotifier {
   @override
   void dispose() {
     _sub?.cancel();
+    _connectivity?.removeListener(_onConnectivityChanged);
     super.dispose();
   }
 
@@ -175,33 +255,49 @@ class AuthController extends ChangeNotifier {
     _state = const AuthLoading();
     notifyListeners();
 
+    // Modo offline: un problema de red acá NUNCA debe devolver al usuario
+    // a la pantalla de login — Firebase Auth ya confirmó la identidad
+    // (viene cacheada del SDK, sin red) y eso alcanza para considerarlo
+    // autenticado. Cada paso que sí toca Firestore es best-effort, con su
+    // propio fallback, en vez de un único try/catch que tira todo abajo.
+    FloplyUser? user;
     try {
-      var user = await _users.fetch(identity.uid);
-      user ??= _newUserFrom(identity);
-      user = _withCurrentProviders(user, identity);
-      await _users.save(user);
-
-      final syncing = SyncingAcademyStore(
-        local: _localStoreBuilder(),
-        remote: _remoteAcademyStoreBuilder(identity.uid),
-      );
-      // Fase 12/13: concilia local (posible uso como invitado) con lo que
-      // ya haya en la nube — se ejecuta siempre, las 3 reglas (A/B/C)
-      // están en SyncingAcademyStore.reconcile según qué datos existan
-      // realmente.
-      await syncing.reconcile(_registry);
-      _academyStore = syncing;
-
-      await _flags.setGuestModeChosen(false);
-      _state = AuthAuthenticated(user);
-      notifyListeners();
-      return true;
+      user = await _users.fetch(identity.uid);
     } catch (_) {
-      _state = const AuthUnauthenticated();
-      _lastFailure = AuthFailureReason.network;
-      notifyListeners();
-      return false;
+      // Sin red y sin nada cacheado todavía de este usuario: seguimos con
+      // un perfil mínimo derivado de la identidad (mismo que un login
+      // nuevo) en vez de dejar la sesión colgada.
     }
+    user = _withCurrentProviders(user ?? _newUserFrom(identity), identity);
+    try {
+      await _users.save(user);
+    } catch (_) {
+      // best-effort — el próximo updateDisplayName/updateAvatarPath (o el
+      // reintento de reconcile de abajo) lo vuelve a intentar.
+    }
+
+    final syncing = SyncingAcademyStore(
+      local: _localStoreBuilder(),
+      remote: _remoteAcademyStoreBuilder(identity.uid),
+    );
+    _academyStore = syncing;
+    try {
+      // Fase 12/13: concilia local (posible uso como invitado) con lo que
+      // ya haya en la nube. Si no hay red, queda pendiente
+      // (`_pendingReconcile`) — la Academia sigue andando igual: `syncing`
+      // ya sirve datos 100% locales mientras tanto (ver su doc-comment),
+      // y `_retryReconcile` reintenta sola apenas vuelve la conexión.
+      await syncing.reconcile(_registry);
+      _pendingReconcile = false;
+    } catch (_) {
+      _pendingReconcile = true;
+    }
+
+    await _flags.setGuestModeChosen(false);
+    _state = AuthAuthenticated(user);
+    _syncAppUser();
+    notifyListeners();
+    return true;
   }
 
   FloplyUser _newUserFrom(AuthIdentity identity) {
@@ -252,19 +348,6 @@ class AuthController extends ChangeNotifier {
   }
 
   // ----------------------------------------------------------------
-  // Invitado (Fase 11)
-  // ----------------------------------------------------------------
-
-  Future<void> continueAsGuest() async {
-    await _flags.setGuestModeChosen(true);
-    _academyStore = null;
-    _pendingConflict = null;
-    _lastFailure = null;
-    _state = const AuthGuest();
-    notifyListeners();
-  }
-
-  // ----------------------------------------------------------------
   // Sign-in
   // ----------------------------------------------------------------
 
@@ -273,6 +356,34 @@ class AuthController extends ChangeNotifier {
 
   Future<bool> signInWithApple() =>
       _run(() => _auth.signInWithApple(), AuthProviderType.apple);
+
+  Future<bool> signInWithEmailPassword(String email, String password) => _run(
+        () => _auth.signInWithEmailPassword(email, password),
+        AuthProviderType.email,
+      );
+
+  /// Envía el SMS de verificación y devuelve el `verificationId` para el
+  /// siguiente paso. `null` indica un fallo al enviar.
+  Future<String?> sendSmsVerificationCode(String phoneNumber) =>
+      _auth.sendSmsVerificationCode(phoneNumber);
+
+  Future<bool> createAccountWithPhone({
+    required String name,
+    required String email,
+    required String password,
+    required String phoneVerificationId,
+    required String smsCode,
+  }) =>
+      _run(
+        () => _auth.createAccountWithPhone(
+          name: name,
+          email: email,
+          password: password,
+          phoneVerificationId: phoneVerificationId,
+          smsCode: smsCode,
+        ),
+        AuthProviderType.phone,
+      );
 
   Future<bool> sendEmailSignInLink(String email) =>
       _run(() => _auth.sendEmailSignInLink(email), AuthProviderType.email);
@@ -325,6 +436,58 @@ class AuthController extends ChangeNotifier {
 
   Future<bool> reauthenticate(AuthProviderType type) =>
       _run(() => _auth.reauthenticate(type), type);
+
+  // ----------------------------------------------------------------
+  // Perfil (Grupo 1 — navegación/perfil/configuración): editar nombre y
+  // foto propia sobre el MISMO `FloplyUser`, mismo patrón que [unlink].
+  // ----------------------------------------------------------------
+
+  /// Actualiza el nombre visible. No hace nada si no hay sesión — la
+  /// pantalla de Perfil llama a [updateGuestDisplayName] en modo invitado.
+  Future<void> updateDisplayName(String displayName) async {
+    final user = currentUser;
+    final trimmed = displayName.trim();
+    if (user == null || trimmed.isEmpty) return;
+    final updated = user.copyWith(displayName: trimmed, updatedAt: DateTime.now());
+    await _users.save(updated);
+    _state = AuthAuthenticated(updated);
+    _syncAppUser();
+    notifyListeners();
+  }
+
+  /// Guarda la ruta local de la foto propia (ya copiada a disco por
+  /// `pickAndSaveAvatar`) como [FloplyUser.customPhotoUrl] — gana
+  /// prioridad sobre `photoUrl` del proveedor sin tocar nada más (ver el
+  /// doc-comment de `FloplyUser.avatarUrl`).
+  Future<void> updateAvatarPath(String localPath) async {
+    final user = currentUser;
+    if (user == null) return;
+    final updated =
+        user.copyWith(customPhotoUrl: localPath, updatedAt: DateTime.now());
+    await _users.save(updated);
+    _state = AuthAuthenticated(updated);
+    _syncAppUser();
+    notifyListeners();
+  }
+
+  /// Equivalentes de [updateDisplayName]/[updateAvatarPath] para modo
+  /// invitado: no hay `FloplyUser`, así que se guardan en [LocalProfile]
+  /// (`_profiles`) en vez de Firestore.
+  Future<void> updateGuestDisplayName(String displayName) async {
+    final trimmed = displayName.trim();
+    if (trimmed.isEmpty) return;
+    _guestProfile = _guestProfile.copyWith(displayName: trimmed);
+    await _profiles.save(_guestProfile);
+    _syncAppUser();
+    notifyListeners();
+  }
+
+  Future<void> updateGuestAvatarPath(String localPath) async {
+    _guestProfile = _guestProfile.copyWith(avatarPath: localPath);
+    await _profiles.save(_guestProfile);
+    _syncAppUser();
+    notifyListeners();
+  }
 
   /// Ejecuta un intento de auth/link y traduce el resultado a estado —
   /// único lugar que sabe interpretar [AuthAttemptResult] (Fase 9/23).

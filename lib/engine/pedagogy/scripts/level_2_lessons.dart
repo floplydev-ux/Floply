@@ -42,7 +42,7 @@ class Level2Lessons {
   }) =>
       TableStep(
         table: _showdown(board: board, heroCards: hero, rivalCards: rival),
-        anchor: heroWins ? TableAnchor.heroCards : const TableAnchor.seat(3),
+        anchor: TableAnchor.heroCards,
         highlight: [
           if (heroWins) TableAnchor.heroCards else const TableAnchor.seat(3),
         ],
@@ -57,7 +57,7 @@ class Level2Lessons {
           heroCards: const ['?', '?'],
           rivalCards: const ['?', '?'],
         ),
-        anchor: TableAnchor.board,
+        anchor: TableAnchor.heroCards,
         dimOthers: false,
         bubble: 'Vos y {UTG} llegaron al showdown. Gana la mejor mano de 5 '
             'cartas… pero primero decide la CATEGORÍA.',
@@ -110,7 +110,7 @@ class Level2Lessons {
           heroCards: const ['8c', '5d'],
           rivalCards: const ['As', 'Qs'],
         ),
-        anchor: TableAnchor.pot,
+        anchor: TableAnchor.heroCards,
         dimOthers: false,
         bubble: 'Regla: primero la categoría. Carta alta < pareja < doble '
             'pareja < trío < escalera < color < full < póker < escalera de '

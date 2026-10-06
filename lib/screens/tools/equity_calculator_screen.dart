@@ -7,9 +7,82 @@ import '../../engine/poker/equity/equity_result.dart';
 import '../../engine/poker/hole_cards.dart';
 import '../../engine/strategy/hand_range.dart';
 import '../../l10n/app_strings.dart';
-import '../../theme/app_colors.dart';
-import '../../widgets/pressable_scale.dart';
+import '../../theme/sala_verde/sala_verde_tokens.dart';
+import '../../widgets/sala_verde/sala_verde_widgets.dart';
+import 'ev_calculator_screen.dart';
+import 'widgets/card_situation.dart';
+import 'widgets/tool_explainer.dart';
+import 'widgets/tool_guide_screen.dart';
 import 'widgets/tool_widgets.dart';
+
+/// Público (antes privado): reutilizado por la guía consolidada del hub
+/// (`tools_guide_sheet.dart`) — ver el doc-comment equivalente en
+/// `pot_odds_calculator_screen.dart`.
+const kEquityToolId = 'equity_calculator';
+const kEquityExplainer = ToolExplainerContent(
+  title: 'Equity',
+  description:
+      'Calculá qué porcentaje del bote te corresponde en promedio, '
+      'comparando tu mano (o rango) contra la del rival.',
+  howToUse: 'Elegí el modo (mano vs mano, mano vs rango, rango vs rango). '
+      'Para una mano, tocá sus 2 cartas para elegirlas; para un rango, '
+      'escribilo en notación (ej. 77+,ATs+). El board se elige tocando '
+      'sus cartas: 3 para el flop, y podés sumar el turn y el river.',
+  result: 'Tu equity total, y cómo se reparte entre ganar, empatar y '
+      'perder.',
+  extra: 'En mano vs rango y rango vs rango el cálculo puede tardar unos '
+      'segundos: enumera cada combinación física posible, no es una '
+      'aproximación.',
+);
+
+const kEquityGuide = ToolGuideContent(
+  title: 'Equity',
+  tagline: 'Enumeración exacta de runouts',
+  icon: Icons.pie_chart_rounded,
+  sections: [
+    ToolGuideSection(
+      label: '¿Para qué sirve?',
+      body: 'Calcula tu probabilidad real de ganar enumerando todos los '
+          'runouts posibles. Sin Monte Carlo ni aproximaciones. Es el '
+          'número que alimenta la calculadora de EV.',
+    ),
+    ToolGuideSection(
+      label: '¿Cuándo usarla?',
+      items: [
+        'Con un board de flop, turn o river concreto.',
+        'Para comparar tu equity real con la equity mínima de Pot Odds.',
+        'Modo mano vs mano: instantáneo. Mano vs rango: unos segundos. '
+            'Rango vs rango: puede tardar (no es una aproximación).',
+      ],
+    ),
+    ToolGuideSection(
+      label: 'Limitación importante',
+      isNote: true,
+      body: 'Solo funciona en flop, turn y river (board de 3, 4 o 5 '
+          'cartas). El análisis preflop no está disponible.',
+    ),
+    ToolGuideSection(
+      label: 'La fórmula',
+      isFormula: true,
+      body: 'equity = wins/total + ties/(total × 2)\n\n'
+          'total = todos los runouts posibles con las cartas no vistas.',
+    ),
+    ToolGuideSection(
+      label: 'Ejemplo',
+      body: 'AhKd vs AsQd · Flop 2c7d9h\n'
+          '→ Equity héroe ≈ 66%\n\n'
+          'Desde el resultado podés pasar a EV con esta equity precargada.',
+    ),
+    ToolGuideSection(
+      label: 'Errores comunes',
+      items: [
+        'Usar la misma carta en más de un slot — FLOPly detecta duplicados.',
+        'Rango que queda vacío después de aplicar el board — se avisa con error.',
+        'Esperar resultado instantáneo en rango vs rango con rangos amplios.',
+      ],
+    ),
+  ],
+);
 
 enum _EquityMode { handVsHand, handVsRange, rangeVsRange }
 
@@ -40,25 +113,41 @@ EquityResult _rangeVsRangeInIsolate(_RangeVsRangeRequest request) =>
 /// mano), extendida en V2 con mano vs rango y rango vs rango sobre
 /// [EquityEngine.handVsRange]/[EquityEngine.rangeVsRange].
 ///
-/// **Entrada por notación de texto** (`AhKd`, rangos como `77+,ATs+`):
-/// misma notación que ya usa todo el motor — ver el doc-comment de
-/// [HandRange.parse] para la mini-sintaxis de rangos. Un picker visual
-/// de cartas/rangos es una pieza de UI bastante más grande, que queda
-/// para un bloque aparte si hace falta.
+/// **Selector universal de cartas:** la mano del héroe (los 3 modos), la
+/// del rival (mano vs mano) y el board (los 3 modos) se eligen con
+/// [CardSituationController]/[CardGroupField] — el mismo mecanismo que
+/// usan Blocker Explorer y Combo Calculator, no un picker por modo. Los
+/// rangos (mano vs rango, rango vs rango) no son cartas puntuales —
+/// siguen en notación, que es la única forma sensata de expresar "77+,
+/// ATs+".
 ///
 /// **Por qué mano vs rango y rango vs rango no recalculan en vivo**
 /// (a diferencia de mano vs mano): el propio doc-comment de
 /// [EquityEngine.rangeVsRange] advierte que es el caso más pesado del
-/// motor (`heroCombos × villainCombos × runouts` — hasta millones de
-/// evaluaciones de mano de 7 cartas incluso con rangos chicos como
-/// "AA,KK" vs "QQ,JJ") y pide explícitamente no correrlo en el camino
-/// de un `build()`, sino fuera del isolate de UI. Estos dos modos
-/// calculan solo al tocar "Calcular equity" (nunca en cada tecla) y la
-/// llamada al motor corre con [compute] en un isolate aparte, así que
-/// el hilo de UI nunca se bloquea — la animación de carga sigue
-/// corriendo mientras el cálculo pesado pasa en paralelo.
+/// motor (`heroCombos × villainCombos × runouts`) y pide explícitamente
+/// no correrlo en el camino de un `build()`. Estos dos modos calculan
+/// solo al tocar "Calcular equity" y la llamada corre con [compute] en
+/// un isolate aparte.
 class EquityCalculatorScreen extends StatefulWidget {
-  const EquityCalculatorScreen({super.key});
+  const EquityCalculatorScreen({
+    super.key,
+    this.initialHeroHand,
+    this.initialHeroRangeTokens,
+    this.initialVillainHand,
+    this.initialVillainRangeTokens,
+    this.initialBoard = const [],
+  });
+
+  /// Precarga desde otra herramienta (hoy: Blocker Explorer → mano vs
+  /// rango; Rangos en modo Comparar → rango vs rango). El modo inicial
+  /// se infiere de qué combinación de estos llega, nunca un parámetro de
+  /// modo aparte — todo `null`/vacío conserva el comportamiento de
+  /// siempre (mano vs mano con los valores por defecto).
+  final HoleCards? initialHeroHand;
+  final List<String>? initialHeroRangeTokens;
+  final HoleCards? initialVillainHand;
+  final List<String>? initialVillainRangeTokens;
+  final List<Card> initialBoard;
 
   @override
   State<EquityCalculatorScreen> createState() => _EquityCalculatorScreenState();
@@ -67,25 +156,70 @@ class EquityCalculatorScreen extends StatefulWidget {
 class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
   _EquityMode _mode = _EquityMode.handVsHand;
 
-  // Modo 1: mano vs mano (V1, recalcula en vivo).
-  final _heroController = TextEditingController(text: 'AhKd');
-  final _villainController = TextEditingController(text: 'AsQd');
-  final _boardController = TextEditingController(text: '2c7d9h');
+  // Modo 1: mano vs mano (V1, recalcula en vivo). Board 3-5 cartas: es lo
+  // mínimo que acepta EquityEngine.handVsHand (preflop está fuera de
+  // alcance del motor, ver su doc-comment), nunca 0.
+  late final _hhSituation = CardSituationController([
+    const CardGroupSpec(
+      id: 'hero',
+      label: AppStrings.equityHeroLabel,
+      minCount: 2,
+      maxCount: 2,
+      accent: SalaVerdeColors.brassBright,
+    ),
+    const CardGroupSpec(
+      id: 'villain',
+      label: AppStrings.equityVillainLabel,
+      minCount: 2,
+      maxCount: 2,
+      accent: SalaVerdeColors.errorBright,
+    ),
+    const CardGroupSpec(
+      id: 'board',
+      label: AppStrings.equityBoardLabel,
+      minCount: 3,
+      maxCount: 5,
+      accent: SalaVerdeColors.steelBlueBright,
+    ),
+  ]);
   EquityResult? _result;
-  bool _invalid = false;
 
-  // Modo 2: mano vs rango (V2, botón "Calcular").
-  final _hvrHeroController = TextEditingController(text: 'AhKd');
+  // Modo 2: mano vs rango (V2, botón "Calcular"). El rango rival sigue en
+  // notación de texto: un rango no son 2 cartas concretas del jugador.
+  late final _hvrSituation = CardSituationController([
+    const CardGroupSpec(
+      id: 'hero',
+      label: AppStrings.equityHeroLabel,
+      minCount: 2,
+      maxCount: 2,
+      accent: SalaVerdeColors.brassBright,
+    ),
+    const CardGroupSpec(
+      id: 'board',
+      label: AppStrings.equityBoardLabel,
+      minCount: 3,
+      maxCount: 5,
+      accent: SalaVerdeColors.steelBlueBright,
+    ),
+  ]);
   final _hvrVillainRangeController = TextEditingController(text: 'QQ+,AKs,AKo');
-  final _hvrBoardController = TextEditingController(text: '2c7d9h');
   _RangeCalcState _hvrState = _RangeCalcState.idle;
   EquityResult? _hvrResult;
   String? _hvrError;
 
-  // Modo 3: rango vs rango (V2, botón "Calcular").
+  // Modo 3: rango vs rango (V2, botón "Calcular"). Ninguno de los dos
+  // lados es una mano concreta acá — solo el board son cartas puntuales.
   final _rvrHeroRangeController = TextEditingController(text: 'AA,KK');
   final _rvrVillainRangeController = TextEditingController(text: 'QQ,JJ');
-  final _rvrBoardController = TextEditingController(text: '2c7d9h');
+  late final _rvrSituation = CardSituationController([
+    const CardGroupSpec(
+      id: 'board',
+      label: AppStrings.equityBoardLabel,
+      minCount: 3,
+      maxCount: 5,
+      accent: SalaVerdeColors.steelBlueBright,
+    ),
+  ]);
   _RangeCalcState _rvrState = _RangeCalcState.idle;
   EquityResult? _rvrResult;
   String? _rvrError;
@@ -93,41 +227,94 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
   @override
   void initState() {
     super.initState();
+    final heroHand = widget.initialHeroHand;
+    final villainHand = widget.initialVillainHand;
+    final heroRangeTokens = widget.initialHeroRangeTokens;
+    final villainRangeTokens = widget.initialVillainRangeTokens;
+    final board = widget.initialBoard;
+
+    // Modo inferido de qué llegó precargado — nunca un parámetro de modo
+    // aparte (ver doc-comment del constructor).
+    final bool startInRangeVsRange = heroRangeTokens != null && villainRangeTokens != null;
+    final bool startInHandVsRange =
+        !startInRangeVsRange && heroHand != null && villainRangeTokens != null;
+
+    if (startInRangeVsRange) {
+      _mode = _EquityMode.rangeVsRange;
+      _rvrHeroRangeController.text = heroRangeTokens.join(',');
+      _rvrVillainRangeController.text = villainRangeTokens.join(',');
+      for (final card in board) {
+        _rvrSituation.setCard('board', _rvrSituation.cardsOf('board').length, card);
+      }
+    } else if (startInHandVsRange) {
+      _mode = _EquityMode.handVsRange;
+      _hvrSituation.setCard('hero', 0, heroHand.high);
+      _hvrSituation.setCard('hero', 1, heroHand.low);
+      _hvrVillainRangeController.text = villainRangeTokens.join(',');
+      for (final card in board) {
+        _hvrSituation.setCard('board', _hvrSituation.cardsOf('board').length, card);
+      }
+    }
+
+    if (heroHand != null && villainHand != null) {
+      _hhSituation.setCard('hero', 0, heroHand.high);
+      _hhSituation.setCard('hero', 1, heroHand.low);
+      _hhSituation.setCard('villain', 0, villainHand.high);
+      _hhSituation.setCard('villain', 1, villainHand.low);
+      for (final card in board) {
+        _hhSituation.setCard('board', _hhSituation.cardsOf('board').length, card);
+      }
+      if (!startInRangeVsRange && !startInHandVsRange) _mode = _EquityMode.handVsHand;
+    } else if (!startInRangeVsRange && !startInHandVsRange) {
+      _hhSituation.setCard('hero', 0, const Card(Rank.ace, Suit.hearts));
+      _hhSituation.setCard('hero', 1, const Card(Rank.king, Suit.diamonds));
+      _hhSituation.setCard('villain', 0, const Card(Rank.ace, Suit.spades));
+      _hhSituation.setCard('villain', 1, const Card(Rank.queen, Suit.diamonds));
+      _hhSituation.setCard('board', 0, const Card(Rank.two, Suit.clubs));
+      _hhSituation.setCard('board', 1, const Card(Rank.seven, Suit.diamonds));
+      _hhSituation.setCard('board', 2, const Card(Rank.nine, Suit.hearts));
+    }
+    _hhSituation.addListener(_recalculateHandVsHand);
     _recalculateHandVsHand();
+
+    if (!startInHandVsRange) {
+      _hvrSituation.setCard('hero', 0, const Card(Rank.ace, Suit.hearts));
+      _hvrSituation.setCard('hero', 1, const Card(Rank.king, Suit.diamonds));
+      _hvrSituation.setCard('board', 0, const Card(Rank.two, Suit.clubs));
+      _hvrSituation.setCard('board', 1, const Card(Rank.seven, Suit.diamonds));
+      _hvrSituation.setCard('board', 2, const Card(Rank.nine, Suit.hearts));
+    }
+    if (!startInRangeVsRange) {
+      _rvrSituation.setCard('board', 0, const Card(Rank.two, Suit.clubs));
+      _rvrSituation.setCard('board', 1, const Card(Rank.seven, Suit.diamonds));
+      _rvrSituation.setCard('board', 2, const Card(Rank.nine, Suit.hearts));
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Rango vs rango NO se calcula solo, a propósito: con dos rangos
+      // reales anchos (el caso típico al llegar desde Comparar — p. ej.
+      // "BTN Open vs UTG Open") el costo real es
+      // `heroCombos × villainCombos × runouts` (ver el doc-comment de
+      // `EquityEngine.rangeVsRange`), potencialmente varios segundos —
+      // el botón "Calcular equity" existe justamente para que ese costo
+      // sea una decisión explícita del usuario, no una sorpresa al
+      // abrir la pantalla. Mano vs rango sí calcula sola: como máximo
+      // son 4 combos de hero, mucho más barato.
+      if (startInHandVsRange) _calculateHandVsRange();
+    });
   }
 
   @override
   void dispose() {
-    _heroController.dispose();
-    _villainController.dispose();
-    _boardController.dispose();
-    _hvrHeroController.dispose();
+    _hhSituation.removeListener(_recalculateHandVsHand);
+    _hhSituation.dispose();
+    _hvrSituation.dispose();
     _hvrVillainRangeController.dispose();
-    _hvrBoardController.dispose();
     _rvrHeroRangeController.dispose();
     _rvrVillainRangeController.dispose();
-    _rvrBoardController.dispose();
+    _rvrSituation.dispose();
     super.dispose();
-  }
-
-  static HoleCards? _tryParseHand(String text) {
-    try {
-      return HoleCards.parse(text.trim().replaceAll(' ', ''));
-    } catch (_) {
-      return null;
-    }
-  }
-
-  static List<Card>? _tryParseBoard(String text) {
-    final clean = text.trim().replaceAll(' ', '');
-    if (clean.length != 6 && clean.length != 8 && clean.length != 10) return null;
-    try {
-      return [
-        for (var i = 0; i < clean.length; i += 2) Card.parse(clean.substring(i, i + 2)),
-      ];
-    } catch (_) {
-      return null;
-    }
   }
 
   static HandRange? _tryParseRange(String text) {
@@ -146,37 +333,32 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
   }
 
   void _recalculateHandVsHand() {
-    final hero = _tryParseHand(_heroController.text);
-    final villain = _tryParseHand(_villainController.text);
-    final board = _tryParseBoard(_boardController.text);
-    if (hero == null || villain == null || board == null) {
-      setState(() {
-        _result = null;
-        _invalid = true;
-      });
+    if (!_hhSituation.isComplete('hero') ||
+        !_hhSituation.isComplete('villain') ||
+        !_hhSituation.isComplete('board')) {
+      setState(() => _result = null);
       return;
     }
-    try {
-      final result = EquityEngine.handVsHand(hero, villain, board);
-      setState(() {
-        _result = result;
-        _invalid = false;
-      });
-    } on ArgumentError {
-      setState(() {
-        _result = null;
-        _invalid = true;
-      });
-    }
+    final heroCards = _hhSituation.cardsOf('hero');
+    final villainCards = _hhSituation.cardsOf('villain');
+    final hero = HoleCards(heroCards[0], heroCards[1]);
+    final villain = HoleCards(villainCards[0], villainCards[1]);
+    final result = EquityEngine.handVsHand(hero, villain, _hhSituation.cardsOf('board'));
+    setState(() => _result = result);
   }
 
   Future<void> _calculateHandVsRange() async {
-    final hero = _tryParseHand(_hvrHeroController.text);
-    final board = _tryParseBoard(_hvrBoardController.text);
-    if (hero == null || board == null) {
+    if (!_hvrSituation.isComplete('hero')) {
       setState(() {
         _hvrState = _RangeCalcState.error;
-        _hvrError = AppStrings.equityInvalidInput;
+        _hvrError = AppStrings.toolsHandPickBoth;
+      });
+      return;
+    }
+    if (!_hvrSituation.isComplete('board')) {
+      setState(() {
+        _hvrState = _RangeCalcState.error;
+        _hvrError = AppStrings.toolsBoardMissing(3 - _hvrSituation.cardsOf('board').length);
       });
       return;
     }
@@ -190,10 +372,15 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
     }
 
     setState(() => _hvrState = _RangeCalcState.loading);
+    final heroCards = _hvrSituation.cardsOf('hero');
     try {
       final result = await compute(
         _handVsRangeInIsolate,
-        _HandVsRangeRequest(hero, villainRange, board),
+        _HandVsRangeRequest(
+          HoleCards(heroCards[0], heroCards[1]),
+          villainRange,
+          _hvrSituation.cardsOf('board'),
+        ),
       );
       if (!mounted) return;
       setState(() {
@@ -210,11 +397,10 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
   }
 
   Future<void> _calculateRangeVsRange() async {
-    final board = _tryParseBoard(_rvrBoardController.text);
-    if (board == null) {
+    if (!_rvrSituation.isComplete('board')) {
       setState(() {
         _rvrState = _RangeCalcState.error;
-        _rvrError = AppStrings.equityInvalidInput;
+        _rvrError = AppStrings.toolsBoardMissing(3 - _rvrSituation.cardsOf('board').length);
       });
       return;
     }
@@ -229,6 +415,7 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
     }
 
     setState(() => _rvrState = _RangeCalcState.loading);
+    final board = _rvrSituation.cardsOf('board');
     try {
       final result = await compute(
         _rangeVsRangeInIsolate,
@@ -251,51 +438,66 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: AppColors.backgroundGradient,
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: LayoutBuilder(builder: (context, constraints) {
-            final pad = constraints.maxWidth >= 480 ? 24.0 : 18.0;
-            return SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(pad, 12, pad, 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ToolHeader(
-                    icon: Icons.pie_chart_rounded,
-                    accentColor: AppColors.violetPrimary,
-                    title: AppStrings.toolsEquityTitle,
-                    subtitle: AppStrings.toolsEquityCalculatorSubtitle,
-                    onBack: () => Navigator.of(context).maybePop(),
+      backgroundColor: SalaVerdeColors.background,
+      body: SafeArea(
+        child: LayoutBuilder(builder: (context, constraints) {
+          final pad = constraints.maxWidth >= 480 ? 24.0 : 18.0;
+          return SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(pad, 12, pad, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ToolHeader(
+                  icon: Icons.pie_chart_rounded,
+                  title: AppStrings.toolsEquityTitle,
+                  subtitle: AppStrings.toolsEquityCalculatorSubtitle,
+                  onBack: () => Navigator.of(context).maybePop(),
+                  trailing: ToolInfoButton(
+                    onTap: () => showToolExplainerSheet(
+                      context,
+                      toolId: kEquityToolId,
+                      content: kEquityExplainer,
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  _ModeSelector(
-                    mode: _mode,
-                    onSelected: (mode) => setState(() => _mode = mode),
-                  ),
-                  const SizedBox(height: 16),
-                  switch (_mode) {
-                    _EquityMode.handVsHand => _buildHandVsHand(),
-                    _EquityMode.handVsRange => _buildHandVsRange(),
-                    _EquityMode.rangeVsRange => _buildRangeVsRange(),
-                  },
-                ],
-              ),
-            );
-          }),
-        ),
+                ),
+                const SizedBox(height: SalaVerdeSpace.xl),
+                Wrap(
+                  spacing: SalaVerdeSpace.sm,
+                  runSpacing: SalaVerdeSpace.sm,
+                  children: [
+                    ToolModeChip(
+                      label: AppStrings.equityModeHandVsHandLabel,
+                      active: _mode == _EquityMode.handVsHand,
+                      onTap: () => setState(() => _mode = _EquityMode.handVsHand),
+                    ),
+                    ToolModeChip(
+                      label: AppStrings.equityModeHandVsRangeLabel,
+                      active: _mode == _EquityMode.handVsRange,
+                      onTap: () => setState(() => _mode = _EquityMode.handVsRange),
+                    ),
+                    ToolModeChip(
+                      label: AppStrings.equityModeRangeVsRangeLabel,
+                      active: _mode == _EquityMode.rangeVsRange,
+                      onTap: () => setState(() => _mode = _EquityMode.rangeVsRange),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: SalaVerdeSpace.lg),
+                switch (_mode) {
+                  _EquityMode.handVsHand => _buildHandVsHand(),
+                  _EquityMode.handVsRange => _buildHandVsRange(),
+                  _EquityMode.rangeVsRange => _buildRangeVsRange(),
+                },
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
 
   Widget _buildHandVsHand() {
+    final handsReady = _hhSituation.isComplete('hero') && _hhSituation.isComplete('villain');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -303,37 +505,27 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ToolTextField(
-                label: AppStrings.equityHeroLabel,
-                controller: _heroController,
-                onChanged: _recalculateHandVsHand,
-                hintText: AppStrings.equityHeroHint,
-                accentColor: AppColors.violetPrimary,
-              ),
-              const SizedBox(height: 14),
-              ToolTextField(
-                label: AppStrings.equityVillainLabel,
-                controller: _villainController,
-                onChanged: _recalculateHandVsHand,
-                hintText: AppStrings.equityVillainHint,
-                accentColor: AppColors.violetPrimary,
-              ),
-              const SizedBox(height: 14),
-              ToolTextField(
-                label: AppStrings.equityBoardLabel,
-                controller: _boardController,
-                onChanged: _recalculateHandVsHand,
-                hintText: AppStrings.equityBoardHint,
-                accentColor: AppColors.violetPrimary,
-              ),
+              CardGroupField(controller: _hhSituation, groupId: 'hero'),
+              const SizedBox(height: SalaVerdeSpace.lg),
+              CardGroupField(controller: _hhSituation, groupId: 'villain'),
+              const SizedBox(height: SalaVerdeSpace.lg),
+              CardGroupField(controller: _hhSituation, groupId: 'board'),
             ],
           ),
         ),
-        const SizedBox(height: 16),
-        if (_invalid)
-          const ToolErrorCard(message: AppStrings.equityInvalidInput)
+        const SizedBox(height: SalaVerdeSpace.lg),
+        if (!handsReady)
+          const ToolEmptyState(
+            message: AppStrings.equityEmptyStateHands,
+            icon: Icons.style_rounded,
+          )
         else if (_result != null)
-          _ResultCard(result: _result!),
+          _ResultCard(result: _result!)
+        else
+          ToolEmptyState(
+            message: AppStrings.toolsBoardMissing(3 - _hhSituation.cardsOf('board').length),
+            icon: Icons.style_rounded,
+          ),
       ],
     );
   }
@@ -346,43 +538,28 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ToolTextField(
-                label: AppStrings.equityHeroLabel,
-                controller: _hvrHeroController,
-                onChanged: () {},
-                hintText: AppStrings.equityHeroHint,
-                accentColor: AppColors.violetPrimary,
-              ),
-              const SizedBox(height: 14),
+              CardGroupField(controller: _hvrSituation, groupId: 'hero'),
+              const SizedBox(height: SalaVerdeSpace.lg),
               ToolTextField(
                 label: AppStrings.equityVillainRangeLabel,
                 controller: _hvrVillainRangeController,
                 onChanged: () {},
                 hintText: AppStrings.equityVillainRangeHint,
-                accentColor: AppColors.violetPrimary,
               ),
-              const SizedBox(height: 14),
-              ToolTextField(
-                label: AppStrings.equityBoardLabel,
-                controller: _hvrBoardController,
-                onChanged: () {},
-                hintText: AppStrings.equityBoardHint,
-                accentColor: AppColors.violetPrimary,
-              ),
+              const SizedBox(height: SalaVerdeSpace.lg),
+              CardGroupField(controller: _hvrSituation, groupId: 'board'),
             ],
           ),
         ),
-        const SizedBox(height: 14),
-        _CalculateButton(
+        const SizedBox(height: SalaVerdeSpace.md),
+        ToolCalculateButton(
+          label: AppStrings.equityCalculateButtonLabel,
           loading: _hvrState == _RangeCalcState.loading,
           onTap: _calculateHandVsRange,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SalaVerdeSpace.lg),
         switch (_hvrState) {
-          _RangeCalcState.idle =>
-            const Text(AppStrings.equityRangeModeHint,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12.5, color: AppColors.textMuted)),
+          _RangeCalcState.idle => const ToolEmptyState(message: AppStrings.equityRangeModeHint),
           _RangeCalcState.loading => const SizedBox.shrink(),
           _RangeCalcState.error => ToolErrorCard(message: _hvrError!),
           _RangeCalcState.success => _RangeResultCard(result: _hvrResult!),
@@ -404,38 +581,28 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
                 controller: _rvrHeroRangeController,
                 onChanged: () {},
                 hintText: AppStrings.equityHeroRangeHint,
-                accentColor: AppColors.violetPrimary,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: SalaVerdeSpace.lg),
               ToolTextField(
                 label: AppStrings.equityVillainRangeLabel,
                 controller: _rvrVillainRangeController,
                 onChanged: () {},
                 hintText: AppStrings.equityVillainRangeHint,
-                accentColor: AppColors.violetPrimary,
               ),
-              const SizedBox(height: 14),
-              ToolTextField(
-                label: AppStrings.equityBoardLabel,
-                controller: _rvrBoardController,
-                onChanged: () {},
-                hintText: AppStrings.equityBoardHint,
-                accentColor: AppColors.violetPrimary,
-              ),
+              const SizedBox(height: SalaVerdeSpace.lg),
+              CardGroupField(controller: _rvrSituation, groupId: 'board'),
             ],
           ),
         ),
-        const SizedBox(height: 14),
-        _CalculateButton(
+        const SizedBox(height: SalaVerdeSpace.md),
+        ToolCalculateButton(
+          label: AppStrings.equityCalculateButtonLabel,
           loading: _rvrState == _RangeCalcState.loading,
           onTap: _calculateRangeVsRange,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SalaVerdeSpace.lg),
         switch (_rvrState) {
-          _RangeCalcState.idle =>
-            const Text(AppStrings.equityRangeModeHint,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12.5, color: AppColors.textMuted)),
+          _RangeCalcState.idle => const ToolEmptyState(message: AppStrings.equityRangeModeHint),
           _RangeCalcState.loading => const SizedBox.shrink(),
           _RangeCalcState.error => ToolErrorCard(message: _rvrError!),
           _RangeCalcState.success => _RangeResultCard(result: _rvrResult!),
@@ -447,117 +614,6 @@ class _EquityCalculatorScreenState extends State<EquityCalculatorScreen> {
 
 enum _RangeCalcState { idle, loading, error, success }
 
-class _ModeSelector extends StatelessWidget {
-  const _ModeSelector({required this.mode, required this.onSelected});
-
-  final _EquityMode mode;
-  final ValueChanged<_EquityMode> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        _ModeChip(
-          label: AppStrings.equityModeHandVsHandLabel,
-          active: mode == _EquityMode.handVsHand,
-          onTap: () => onSelected(_EquityMode.handVsHand),
-        ),
-        _ModeChip(
-          label: AppStrings.equityModeHandVsRangeLabel,
-          active: mode == _EquityMode.handVsRange,
-          onTap: () => onSelected(_EquityMode.handVsRange),
-        ),
-        _ModeChip(
-          label: AppStrings.equityModeRangeVsRangeLabel,
-          active: mode == _EquityMode.rangeVsRange,
-          onTap: () => onSelected(_EquityMode.rangeVsRange),
-        ),
-      ],
-    );
-  }
-}
-
-class _ModeChip extends StatelessWidget {
-  const _ModeChip({
-    required this.label,
-    required this.active,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return PressableScale(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(999),
-          color: active
-              ? AppColors.violetPrimary.withValues(alpha: 0.18)
-              : AppColors.surfaceElevated,
-          border: Border.all(
-            color: active ? AppColors.violetPrimary : AppColors.surfaceBorder,
-            width: active ? 1.5 : 1,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12.5,
-            fontWeight: FontWeight.w800,
-            color: active ? AppColors.violetBright : AppColors.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CalculateButton extends StatelessWidget {
-  const _CalculateButton({required this.loading, required this.onTap});
-
-  final bool loading;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return PressableScale(
-      onTap: loading ? () {} : onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 13),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          color: AppColors.violetPrimary.withValues(alpha: loading ? 0.4 : 1),
-        ),
-        child: loading
-            ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.2,
-                  valueColor: AlwaysStoppedAnimation(AppColors.background),
-                ),
-              )
-            : const Text(
-                AppStrings.equityCalculateButtonLabel,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.background,
-                ),
-              ),
-      ),
-    );
-  }
-}
-
 class _ResultCard extends StatelessWidget {
   const _ResultCard({required this.result});
 
@@ -566,50 +622,61 @@ class _ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ToolCard(
-      gradientColors: const [Color(0xFF2A1B45), Color(0xFF1B122E)],
-      borderColor: AppColors.violetPrimary.withValues(alpha: 0.4),
+      borderColor: kToolAccent.withValues(alpha: 0.4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const ToolSectionLabel(AppStrings.toolsResultPrincipal, color: kToolAccent),
+          const SizedBox(height: SalaVerdeSpace.sm),
           ToolResultStat(
-            label: 'EQUITY',
+            label: 'Equity',
             value: '${(result.equity * 100).toStringAsFixed(1)}%',
             big: true,
-            color: AppColors.violetBright,
+            color: kToolAccent,
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: SalaVerdeSpace.lg),
+          const Divider(height: 1, color: SalaVerdeColors.borderSubtle),
+          const SizedBox(height: SalaVerdeSpace.md),
           Row(
             children: [
               Expanded(
                 child: ToolResultStat(
                   label: AppStrings.equityWinLabel,
                   value: '${(result.winProbability * 100).toStringAsFixed(1)}%',
-                  color: AppColors.neonGreen,
+                  color: SalaVerdeColors.success,
                 ),
               ),
               Expanded(
                 child: ToolResultStat(
                   label: AppStrings.equityTieLabel,
                   value: '${(result.tieProbability * 100).toStringAsFixed(1)}%',
-                  color: AppColors.gold,
+                  color: SalaVerdeColors.warning,
                 ),
               ),
               Expanded(
                 child: ToolResultStat(
                   label: AppStrings.equityLoseLabel,
                   value: '${(result.lossProbability * 100).toStringAsFixed(1)}%',
-                  color: AppColors.danger,
+                  color: SalaVerdeColors.errorBright,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: SalaVerdeSpace.md),
           Text(
             AppStrings.equityExplanation(result.equity * 100),
-            style: const TextStyle(
-              fontSize: 12.5,
-              color: AppColors.textSecondary,
-              height: 1.4,
+            style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
+          ),
+          const SizedBox(height: SalaVerdeSpace.md),
+          SizedBox(
+            width: double.infinity,
+            child: SvButtonSecondary(
+              label: AppStrings.potOddsCalculateEv,
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => EvCalculatorScreen(
+                  initialEquityPercent: result.equity * 100,
+                ),
+              )),
             ),
           ),
         ],
@@ -619,10 +686,7 @@ class _ResultCard extends StatelessWidget {
 }
 
 /// Mismo lenguaje visual que [_ResultCard], más el conteo de
-/// confrontaciones evaluadas (`result.total`) — relevante en mano vs
-/// rango y rango vs rango porque ese número varía según cuántos combos
-/// dejó vivos el card removal, algo que en mano vs mano es siempre
-/// obvio a partir del board.
+/// confrontaciones evaluadas (`result.total`).
 class _RangeResultCard extends StatelessWidget {
   const _RangeResultCard({required this.result});
 
@@ -631,56 +695,66 @@ class _RangeResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ToolCard(
-      gradientColors: const [Color(0xFF2A1B45), Color(0xFF1B122E)],
-      borderColor: AppColors.violetPrimary.withValues(alpha: 0.4),
+      borderColor: kToolAccent.withValues(alpha: 0.4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const ToolSectionLabel(AppStrings.toolsResultPrincipal, color: kToolAccent),
+          const SizedBox(height: SalaVerdeSpace.sm),
           ToolResultStat(
-            label: 'EQUITY',
+            label: 'Equity',
             value: '${(result.equity * 100).toStringAsFixed(1)}%',
             big: true,
-            color: AppColors.violetBright,
+            color: kToolAccent,
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: SalaVerdeSpace.lg),
+          const Divider(height: 1, color: SalaVerdeColors.borderSubtle),
+          const SizedBox(height: SalaVerdeSpace.md),
           Row(
             children: [
               Expanded(
                 child: ToolResultStat(
                   label: AppStrings.equityWinLabel,
                   value: '${(result.winProbability * 100).toStringAsFixed(1)}%',
-                  color: AppColors.neonGreen,
+                  color: SalaVerdeColors.success,
                 ),
               ),
               Expanded(
                 child: ToolResultStat(
                   label: AppStrings.equityTieLabel,
                   value: '${(result.tieProbability * 100).toStringAsFixed(1)}%',
-                  color: AppColors.gold,
+                  color: SalaVerdeColors.warning,
                 ),
               ),
               Expanded(
                 child: ToolResultStat(
                   label: AppStrings.equityLoseLabel,
                   value: '${(result.lossProbability * 100).toStringAsFixed(1)}%',
-                  color: AppColors.danger,
+                  color: SalaVerdeColors.errorBright,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: SalaVerdeSpace.md),
           ToolResultStat(
             label: AppStrings.equityScenariosLabel,
             value: '${result.total}',
-            color: AppColors.textSecondary,
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: SalaVerdeSpace.md),
           Text(
             AppStrings.equityExplanation(result.equity * 100),
-            style: const TextStyle(
-              fontSize: 12.5,
-              color: AppColors.textSecondary,
-              height: 1.4,
+            style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
+          ),
+          const SizedBox(height: SalaVerdeSpace.md),
+          SizedBox(
+            width: double.infinity,
+            child: SvButtonSecondary(
+              label: AppStrings.potOddsCalculateEv,
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => EvCalculatorScreen(
+                  initialEquityPercent: result.equity * 100,
+                ),
+              )),
             ),
           ),
         ],

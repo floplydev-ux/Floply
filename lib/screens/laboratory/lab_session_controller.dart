@@ -10,6 +10,7 @@ import '../../engine/exercises/exercise_scenario_adapter.dart';
 import '../../engine/exercises/exercise_scenario_builder.dart';
 import '../../engine/exercises/laboratory_difficulty.dart';
 import '../../engine/exercises/preflop_session_summary.dart';
+import '../../engine/exercises/scenario_randomizer.dart';
 import '../../engine/exercises/student_turn_controller.dart';
 import '../../engine/exercises/templates/hand_picker.dart' show HandBias;
 import '../../engine/pedagogy/playable_exercise.dart';
@@ -17,6 +18,7 @@ import '../../engine/pedagogy/playable_exercise_controller.dart';
 import '../../engine/poker/deck.dart';
 import '../../engine/poker/game/game_state.dart';
 import '../../engine/poker/game/opponent_policy.dart';
+import '../../engine/poker/position.dart';
 import '../../engine/poker_trainer_engine.dart';
 import '../../models/app_user.dart';
 
@@ -156,55 +158,154 @@ class LabSessionController extends ChangeNotifier with PlayableExerciseControlle
   }
 
   /// Despacha al método de `ExerciseScenarioBuilder` correspondiente a
-  /// cada una de las 5 familias — las 5 ya existen (Fase 5), este método
-  /// solo las conecta (Fase 8.1). Desde Fase 10 también pasa
-  /// [activeOpponentProfile]/[activeDifficulty] tal cual están fijados
-  /// para la sesión — ningún cambio de motor acá, solo wiring.
+  /// cada familia, pasando [activeOpponentProfile]/[activeDifficulty]
+  /// tal cual están fijados para la sesión.
   ///
-  /// [_biasAppliesTo] limita a qué familias se les aplica el sesgo de
-  /// dificultad — hallazgo real al implementar esta fase, no una
-  /// decisión previa: `HandBias` (`clearlyInRange`/`clearlyOutOfRange`/
-  /// `borderline`) se define en términos de
+  /// Posición, asiento del botón y stack salen de [ScenarioRandomizer]
+  /// en vez de los defaults fijos de cada builder — antes de esto, cada
+  /// familia se generaba SIEMPRE con la misma pareja de posiciones (p.
+  /// ej. `openRaise` siempre BTN, `defenseVsOpen` siempre BB vs CO), que
+  /// era la causa real de que el Laboratorio se sintiera repetitivo: la
+  /// única variedad entre ejercicios era la mano, nunca la situación.
+  ///
+  /// [_biasAppliesTo] limita a qué familias/posiciones se les aplica el
+  /// sesgo de dificultad: `HandBias` (`clearlyInRange`/
+  /// `clearlyOutOfRange`/`borderline`) se define en términos de
   /// `OpeningRanges.forPosition(heroPosition)`, y esa tabla no tiene
   /// datos reales para la BB (nunca "abre") — pedirle un sesgo distinto
   /// de `any` ahí nunca se puede satisfacer y `HandPicker.forBias`
-  /// termina lanzando `TemplateGenerationException`.
-  /// `defenseVsOpen`/`shortStackFacingOpen` usan `heroPosition == bb`
-  /// por defecto, así que la dificultad no les cambia el sesgo de mano
-  /// todavía (quedan en `HandBias.any`, el mismo comportamiento actual)
-  /// — documentado como deuda en el informe final, no silenciado.
+  /// termina lanzando `TemplateGenerationException`. Antes esto se
+  /// resolvía excluyendo familias enteras (porque su héroe SIEMPRE era
+  /// la BB); ahora que la posición varía, la condición real es sobre la
+  /// posición efectiva de cada intento, no sobre la familia.
   ExerciseScenario _buildScenario(PreflopScenarioKind kind, Deck deck) {
-    final bias = _biasAppliesTo(kind) ? activeDifficulty.heroHandBias(deck) : HandBias.any;
-    return switch (kind) {
-      PreflopScenarioKind.openRaise => ExerciseScenarioBuilder.openRaise(
-          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
-      PreflopScenarioKind.defenseVsOpen => ExerciseScenarioBuilder.defenseVsOpen(
-          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
-      PreflopScenarioKind.threeBet => ExerciseScenarioBuilder.threeBet(
-          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
-      PreflopScenarioKind.facingThreeBet => ExerciseScenarioBuilder.facingThreeBet(
-          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
-      PreflopScenarioKind.shortStack => ExerciseScenarioBuilder.shortStackFacingOpen(
-          deck: deck, opponentProfile: activeOpponentProfile, heroHandBias: bias),
-      // Sin `opponentProfile`: a diferencia de las 5 familias preflop,
-      // el villano de esta familia nunca consulta `OpponentPolicy` —
-      // paga preflop y checkea el flop de guion (ver el doc-comment de
-      // `ExerciseScenarioBuilder.cbetDecision`), así que no hay ningún
-      // perfil de rival que pasarle.
-      PreflopScenarioKind.cbetDecision =>
-        ExerciseScenarioBuilder.cbetDecision(deck: deck, heroHandBias: bias),
-    };
+    final buttonSlot = ScenarioRandomizer.buttonSlot(deck);
+    final stackBb = ScenarioRandomizer.normalStackBb(deck);
+
+    HandBias biasFor(Position heroPosition, {bool applies = true}) =>
+        applies && _biasAppliesTo(kind, heroPosition)
+            ? activeDifficulty.heroHandBias(deck)
+            : HandBias.any;
+
+    switch (kind) {
+      case PreflopScenarioKind.openRaise:
+        final heroPosition = ScenarioRandomizer.openRaiseHeroPosition(deck);
+        return ExerciseScenarioBuilder.openRaise(
+          deck: deck,
+          buttonSlot: buttonSlot,
+          heroPosition: heroPosition,
+          stackBb: stackBb,
+          opponentProfile: activeOpponentProfile,
+          heroHandBias: biasFor(heroPosition),
+        );
+      case PreflopScenarioKind.defenseVsOpen:
+        final (opener, hero) = ScenarioRandomizer.facingOpenPositions(deck);
+        return ExerciseScenarioBuilder.defenseVsOpen(
+          deck: deck,
+          buttonSlot: buttonSlot,
+          heroPosition: hero,
+          openerPosition: opener,
+          stackBb: stackBb,
+          opponentProfile: activeOpponentProfile,
+          heroHandBias: biasFor(hero),
+        );
+      case PreflopScenarioKind.threeBet:
+        final (opener, hero) = ScenarioRandomizer.facingOpenPositions(deck);
+        return ExerciseScenarioBuilder.threeBet(
+          deck: deck,
+          buttonSlot: buttonSlot,
+          heroPosition: hero,
+          openerPosition: opener,
+          stackBb: stackBb,
+          opponentProfile: activeOpponentProfile,
+          heroHandBias: biasFor(hero),
+        );
+      case PreflopScenarioKind.facingThreeBet:
+        final (hero, threeBettor) = ScenarioRandomizer.facingThreeBetPositions(deck);
+        return ExerciseScenarioBuilder.facingThreeBet(
+          deck: deck,
+          buttonSlot: buttonSlot,
+          heroPosition: hero,
+          threeBettorPosition: threeBettor,
+          stackBb: stackBb,
+          opponentProfile: activeOpponentProfile,
+          heroHandBias: biasFor(hero),
+        );
+      case PreflopScenarioKind.shortStack:
+        final (opener, hero) = ScenarioRandomizer.facingOpenPositions(deck);
+        return ExerciseScenarioBuilder.shortStackFacingOpen(
+          deck: deck,
+          buttonSlot: buttonSlot,
+          heroPosition: hero,
+          openerPosition: opener,
+          heroStackBb: ScenarioRandomizer.shortStackBb(deck),
+          opponentProfile: activeOpponentProfile,
+          heroHandBias: biasFor(hero),
+        );
+      case PreflopScenarioKind.cbetDecision:
+        // Sin `opponentProfile`: a diferencia de las 5 familias
+        // preflop, el villano de esta familia nunca consulta
+        // `OpponentPolicy` — paga preflop y checkea el flop de guion
+        // (ver el doc-comment de `ExerciseScenarioBuilder.cbetDecision`),
+        // así que no hay ningún perfil de rival que pasarle.
+        final (hero, villain) = ScenarioRandomizer.aggressorWithPositionPositions(deck);
+        return ExerciseScenarioBuilder.cbetDecision(
+          deck: deck,
+          buttonSlot: buttonSlot,
+          heroPosition: hero,
+          villainPosition: villain,
+          stackBb: stackBb,
+          heroHandBias: biasFor(hero, applies: false),
+        );
+      case PreflopScenarioKind.facingCbet:
+        final (aggressor, hero) = ScenarioRandomizer.facingCbetPositions(deck);
+        return ExerciseScenarioBuilder.facingCbet(
+          deck: deck,
+          buttonSlot: buttonSlot,
+          heroPosition: hero,
+          aggressorPosition: aggressor,
+          stackBb: stackBb,
+          flopBetPotFraction: ScenarioRandomizer.betPotFraction(deck),
+          turnBetPotFraction: ScenarioRandomizer.betPotFraction(deck),
+        );
+      case PreflopScenarioKind.turnBarrel:
+        final (hero, villain) = ScenarioRandomizer.aggressorWithPositionPositions(deck);
+        return ExerciseScenarioBuilder.turnBarrel(
+          deck: deck,
+          buttonSlot: buttonSlot,
+          heroPosition: hero,
+          villainPosition: villain,
+          stackBb: stackBb,
+          flopBetPotFraction: ScenarioRandomizer.betPotFraction(deck),
+        );
+      case PreflopScenarioKind.riverBarrel:
+        final (hero, villain) = ScenarioRandomizer.aggressorWithPositionPositions(deck);
+        return ExerciseScenarioBuilder.riverBarrel(
+          deck: deck,
+          buttonSlot: buttonSlot,
+          heroPosition: hero,
+          villainPosition: villain,
+          stackBb: stackBb,
+          flopBetPotFraction: ScenarioRandomizer.betPotFraction(deck),
+          turnBetPotFraction: ScenarioRandomizer.betPotFraction(deck),
+        );
+    }
   }
 
-  /// [kind] no aplica el sesgo de dificultad: `defenseVsOpen`/
-  /// `shortStack` por la limitación de `OpeningRanges` en la BB ya
-  /// documentada arriba; `cbetDecision` porque la fuerza de la mano del
-  /// héroe no cambia la respuesta correcta de esta familia (la lección
-  /// es "hay que c-apostar", no "con esta mano en particular").
-  static bool _biasAppliesTo(PreflopScenarioKind kind) =>
-      kind != PreflopScenarioKind.defenseVsOpen &&
-      kind != PreflopScenarioKind.shortStack &&
-      kind != PreflopScenarioKind.cbetDecision;
+  /// `false` si aplicar el sesgo de dificultad no tiene sentido acá:
+  /// [heroPosition] es la BB (`OpeningRanges` no tiene rango de apertura
+  /// propio para ella, ver el doc-comment de arriba), o [kind] es una de
+  /// las familias postflop nuevas/`cbetDecision` — todas se gradúan por
+  /// equity real contra el board (`PostflopStrategy`), no por si la mano
+  /// del héroe "está en rango": la fuerza de la mano ya es un dato que
+  /// la propia estrategia usa, pedirle además un sesgo de dificultad
+  /// sería pedirle dos cosas contradictorias a `HandPicker`.
+  static bool _biasAppliesTo(PreflopScenarioKind kind, Position heroPosition) =>
+      heroPosition != Position.bb &&
+      kind != PreflopScenarioKind.cbetDecision &&
+      kind != PreflopScenarioKind.facingCbet &&
+      kind != PreflopScenarioKind.turnBarrel &&
+      kind != PreflopScenarioKind.riverBarrel;
 
   @override
   int get itemNumber => answered + 1;

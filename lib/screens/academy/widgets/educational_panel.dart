@@ -29,7 +29,8 @@ const TextStyle kEducationalPanelTextStyle = TextStyle(
 class EducationalPanel extends StatelessWidget {
   const EducationalPanel({
     super.key,
-    required this.text,
+    this.text = '',
+    this.child,
     this.stepNumber,
     this.contextLabel,
     this.icon,
@@ -37,6 +38,12 @@ class EducationalPanel extends StatelessWidget {
   });
 
   final String text;
+
+  /// Cuerpo alternativo al texto plano — cuando viene, reemplaza el
+  /// `Text(text, ...)` de siempre (usado hoy solo por la devolución
+  /// estructurada de Laboratorio, ver `table_explanation_view.dart`).
+  /// `null` mantiene el comportamiento de toda la vida.
+  final Widget? child;
 
   /// Número del paso / ítem para el indicador circular. `null` lo oculta.
   final int? stepNumber;
@@ -61,7 +68,7 @@ class EducationalPanel extends StatelessWidget {
         physics: bounded
             ? const ClampingScrollPhysics()
             : const NeverScrollableScrollPhysics(),
-        child: Text(text, style: kEducationalPanelTextStyle),
+        child: child ?? Text(text, style: kEducationalPanelTextStyle),
       );
 
       final inner = Column(

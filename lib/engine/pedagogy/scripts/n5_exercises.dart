@@ -17,7 +17,19 @@ class N5Exercises {
     '5.3': InteractiveExerciseSet([_rfi()]),
     '5.4': InteractiveExerciseSet([_sizing()]),
     '5.5': InteractiveExerciseSet([_utgAngosto(), _btnAncho()]),
-    '5.6': InteractiveExerciseSet([_isoRaise()]),
+    // 5.6 es el checkpoint del nivel: además de su propio contenido
+    // (contra limpers), la evaluación del módulo repasa una pregunta de
+    // cada subnivel anterior — combos, rango vs rango, RFI, tamaño de
+    // apertura y rango por posición — para comprobar el nivel entero, no
+    // solo lo último que se enseñó.
+    '5.6': InteractiveExerciseSet([
+      _combos(),
+      _rangoVsRango(),
+      _rfi(),
+      _sizing(),
+      _btnAncho(),
+      _isoRaise(),
+    ]),
   };
 
   // ================================================================

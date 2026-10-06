@@ -99,12 +99,13 @@ void main() {
   });
 
   group('ExerciseScenarioAdapter.adapt — sizings (Fase 8.4)', () {
-    test('ofrece 2 tamaños distintos cuando el mínimo legal y el '
-        'recomendado por PreflopStrategy difieren', () {
-      // UTG con mano premium: PreflopStrategy recomienda el sizing de
-      // apertura estándar (2.5bb vía OpeningRanges.sizingFor), que es
-      // mayor al mínimo técnico de subida (2bb) — deberían ofrecerse
-      // ambos, no solo uno.
+    test('ofrece 3 tamaños reales y distintos para un Open Raise — nunca '
+        'hardcodeados, surgen de OpeningRanges para la posición real',
+        () {
+      // UTG con mano premium: siempre debería abrir, con graduación real
+      // de tamaño (mínimo defendible / ideal / máximo defendible de
+      // OpeningRanges) — nunca un solo tamaño "tómalo o déjalo" ni 3
+      // números fijos iguales para cualquier posición.
       final scenario = ExerciseScenarioBuilder.openRaise(
         deck: Deck(Random(1)),
         heroPosition: Position.utg,
@@ -115,24 +116,35 @@ void main() {
 
       final raiseChoice =
           adaptation.tableExercise.actions.firstWhere((a) => a.action == ActionType.raise);
-      expect(raiseChoice.sizeOptions.length, 2);
+      expect(raiseChoice.sizeOptions.length, 3);
       final sizes = raiseChoice.sizeOptions
           .map((s) => adaptation.actionFor(raiseChoice, s).sizeBb)
           .toSet();
-      expect(sizes.length, 2, reason: 'los 2 tamaños ofrecidos son distintos');
+      expect(sizes.length, 3, reason: 'los 3 tamaños ofrecidos son distintos');
       for (final size in sizes) {
         expect(size, greaterThanOrEqualTo(scenario.decisionContext.minRaiseToBb!));
         expect(size, lessThanOrEqualTo(scenario.decisionContext.maxRaiseToBb!));
       }
+
+      // Corrección de Open Raise: NINGUNO de los 3 tamaños reales y
+      // razonables debería marcarse como error (`poor`) solo por no ser
+      // el único tamaño "ideal" exacto — la mano es premium, abrir con
+      // cualquiera de estos 3 tamaños es correcto.
+      for (final sizeOption in raiseChoice.sizeOptions) {
+        final action = adaptation.actionFor(raiseChoice, sizeOption);
+        final result = AnswerEvaluator.evaluate(scenario, action);
+        expect(result.verdict, isNot(AnswerVerdict.poor), reason: '${action.sizeBb} bb');
+      }
     });
 
-    test('ofrece un único tamaño (dedupe) cuando la opción primaria de la '
-        'estrategia no es RAISE/BET — no hay un "recomendado" con qué '
-        'distinguirse del mínimo', () {
+    test('ofrece hasta 3 tamaños para RAISE aunque la opción primaria de '
+        'la estrategia no sea RAISE/BET — igual deben ser legales y '
+        'distintos entre sí', () {
       // Mano muy débil enfrentando un open: la opción primaria de
       // PreflopStrategy es fold/call, no 3-bet — aun así RAISE sigue
-      // siendo legal (siempre se puede 3-betear con chips), así que
-      // debería ofrecerse solo el mínimo legal.
+      // siendo legal (siempre se puede 3-betear con chips), y el pedido
+      // de "siempre 3 opciones de sizing" no depende de que 3-betear sea
+      // la jugada recomendada.
       final scenario = ExerciseScenarioBuilder.defenseVsOpen(
         deck: Deck(Random(3)),
         heroHand: HoleCards.parse('7c2d'),
@@ -144,11 +156,16 @@ void main() {
           .where((a) => a.action == ActionType.raise)
           .firstOrNull;
       if (raiseChoice == null) return; // RAISE no legal acá, nada que revisar.
-      expect(raiseChoice.sizeOptions.length, 1);
-      expect(
-        adaptation.actionFor(raiseChoice, raiseChoice.sizeOptions.first).sizeBb,
-        scenario.decisionContext.minRaiseToBb,
-      );
+      final sizes = raiseChoice.sizeOptions
+          .map((s) => adaptation.actionFor(raiseChoice, s).sizeBb)
+          .toSet();
+      expect(sizes.length, raiseChoice.sizeOptions.length,
+          reason: 'los tamaños ofrecidos son todos distintos entre sí');
+      expect(sizes.length, lessThanOrEqualTo(3));
+      for (final size in sizes) {
+        expect(size, greaterThanOrEqualTo(scenario.decisionContext.minRaiseToBb!));
+        expect(size, lessThanOrEqualTo(scenario.decisionContext.maxRaiseToBb!));
+      }
     });
   });
 

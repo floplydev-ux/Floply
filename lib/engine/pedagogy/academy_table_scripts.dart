@@ -22,7 +22,17 @@ class AcademyTableScripts {
 
   static final CurriculumSpec _spec = CurriculumSpec.standard();
 
+  /// Subniveles migrados al flujo canónico (mesa DESPUÉS de la teoría).
+  /// Para estos, [forLesson] devuelve null — [isInteractiveTheory] nunca se
+  /// activa — y el contenido se sirve vía [migratedClosingFor] al
+  /// [AcademyClosingExamples], que lo muestra en la posición de cierre.
+  static const _migrated = {
+    '2.1', '3.1', '3.3', '3.4', '3.5',
+    '5.1', '5.2', '5.3', '5.5',
+  };
+
   static TableLessonScript? forLesson(String sublevelCode) {
+    if (_migrated.contains(sublevelCode)) return null;
     final scripts = _spec.sublevelByCode(sublevelCode)?.legacy?.tableScripts ??
         const <String>[];
     if (scripts.isEmpty) return null;
@@ -30,6 +40,18 @@ class AcademyTableScripts {
   }
 
   static bool has(String sublevelCode) => forLesson(sublevelCode) != null;
+
+  /// Guion legacy de un subnivel migrado, para ser mostrado como ejemplo de
+  /// cierre (DESPUÉS de la teoría) por [AcademyClosingExamples].
+  /// Distinto de [forLesson]: devuelve el script aunque el subnivel esté
+  /// en [_migrated], precisamente porque en esa posición sí debe mostrarse.
+  static TableLessonScript? migratedClosingFor(String sublevelCode) {
+    if (!_migrated.contains(sublevelCode)) return null;
+    final scripts = _spec.sublevelByCode(sublevelCode)?.legacy?.tableScripts ??
+        const <String>[];
+    if (scripts.isEmpty) return null;
+    return _byOldId[scripts.first];
+  }
 
   /// Guion crudo de una lección histórica (`"1.1"`…). Para el resolver / tests.
   static TableLessonScript? byOldId(String oldLessonId) => _byOldId[oldLessonId];

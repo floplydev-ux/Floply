@@ -2,7 +2,8 @@
 """
 PASO 4 — Contenido redactado del NIVEL 10: "Leer al rival".
 13 teorías, 4 subniveles. Banda AVANZADO, estadio DECIDIR (10.1-10.3) y
-EXPLICAR (10.4). Voz: profesor de póker rioplatense.
+EXPLICAR (10.4). Voz: mentor de póker rioplatense hablándole directo al
+alumno.
 
 Fuente de verdad: curriculum_spec.json.
 
@@ -28,13 +29,14 @@ N10 = {
 # ============================================================
 
 "T211": dict(  # Las acciones son información
- que_es="Cada acción del rival — abrir, pagar, subir, pasar — es una "
-        "pista sobre su mano. Juntando todas las pistas de la mano, "
+ que_es="Vamos a juntar algo que venías usando por separado en cada "
+        "nivel: cada acción del rival —abrir, pagar, subir, pasar— es "
+        "una pista sobre su mano. Juntando todas las pistas de la mano, "
         "podés reconstruir un rango cada vez más ajustado.",
  por_que_importa="Ya veníamos usando esta idea por separado en cada "
         "nivel (rango de apertura en N5, rango después de una c-bet en "
-        "N8...). Acá se formaliza como un proceso único que se repite "
-        "en cada acción de toda la mano.",
+        "N8...). Acá se formaliza como un proceso único que se repite en "
+        "cada acción de toda la mano.",
  como_funciona="Después de cada acción del rival, actualizás mentalmente "
         "su rango: sacás las manos que no encajan con lo que acaba de "
         "hacer, y te quedás con las que sí.",
@@ -53,9 +55,9 @@ N10 = {
 ),
 
 "T212": dict(  # El rango después de un open
- que_es="El primer paso de esa reconstrucción: el rango del rival "
-        "después de abrir es, simplemente, su rango de apertura (N5) "
-        "para esa posición.",
+ que_es="Empecemos por el principio: el rango del rival después de "
+        "abrir es, simplemente, su rango de apertura que ya conocés de "
+        "N5, para esa posición.",
  por_que_importa="Es el punto de partida de toda lectura: antes de "
         "cualquier otra acción, ya tenés una primera estimación basada "
         "en dónde estaba sentado cuando abrió.",
@@ -67,27 +69,27 @@ N10 = {
  ejemplo="El rival abre desde UTG: tu primera estimación de su rango ya "
         "es que es angosto y fuerte, antes de que pase nada más en la "
         "mano.",
- error_comun="Ignorar la posición del open como primer dato, esperando "
-        "a tener 'más información' cuando en realidad ya tenías la "
-        "primera pista desde el arranque.",
+ error_comun="Ignorar la posición del open como primer dato, esperando a "
+        "tener 'más información' cuando en realidad ya tenías la primera "
+        "pista desde el arranque.",
  idea_clave="El rango después de un open = el rango de apertura de esa "
         "posición. El punto de partida de toda lectura.",
 ),
 
 "T213": dict(  # El rango después de un call
- que_es="El rango del rival después de pagar (en vez de subir) tiende a "
-        "quedar compuesto por manos que juegan bien con el bote chico "
-        "— ni tan fuertes como para subir, ni tan flojas como para "
-        "foldear.",
+ que_es="El siguiente paso: el rango del rival después de pagar, en vez "
+        "de subir, tiende a quedar compuesto por manos que juegan bien "
+        "con el bote chico — ni tan fuertes como para subir, ni tan "
+        "flojas como para foldear.",
  por_que_importa="Un call es una pista distinta a un raise: te dice que "
-        "el rival, con esa mano, prefirió no agrandar el bote — algo "
-        "que ya viste con el rango de call (N7, T160).",
+        "el rival, con esa mano, prefirió no agrandar el bote — algo que "
+        "ya viste con el rango de call (N7, T160).",
  como_funciona="Sacás del rango de apertura las manos que, con esa "
-        "acción, más probablemente hubieran subido en vez de pagar "
-        "(las más fuertes de valor y los faroles) y te quedás con lo "
-        "que suele pagar: manos medias con buen potencial.",
- cuando_lo_uso="Cada vez que el rival responde con un call en vez de "
-        "una subida.",
+        "acción, más probablemente hubieran subido en vez de pagar (las "
+        "más fuertes de valor y los faroles) y te quedás con lo que "
+        "suele pagar: manos medias con buen potencial.",
+ cuando_lo_uso="Cada vez que el rival responde con un call en vez de una "
+        "subida.",
  cuando_no=None,
  ejemplo="El rival paga tu open en vez de 3-betear: su rango ahí "
         "probablemente ya no incluye sus manos más fuertes (esas suelen "
@@ -95,45 +97,44 @@ N10 = {
         "foldear).",
  error_comun="Tratar un call como si dejara el rango exactamente igual "
         "de amplio que antes de esa acción.",
- idea_clave="Un call filtra el rango: quedan las manos medias que "
-        "juegan bien con el bote chico, no las más fuertes ni las más "
-        "flojas.",
+ idea_clave="Un call filtra el rango: quedan las manos medias que juegan "
+        "bien con el bote chico, no las más fuertes ni las más flojas.",
 ),
 
 "T216": dict(  # El rango después de un raise
- que_es="El rango del rival después de subir postflop (un check-raise, "
-        "por ejemplo) tiende a estar más polarizado: manos fuertes de "
-        "valor o proyectos con buenos outs jugados como semi-farol, y "
-        "poco en el medio.",
+ que_es="Y del otro lado: el rango del rival después de subir postflop "
+        "—un check-raise, por ejemplo— tiende a estar más polarizado: "
+        "manos fuertes de valor o proyectos con buenos outs jugados como "
+        "semi-farol, y poco en el medio.",
  por_que_importa="Subir cuesta más fichas que pagar: los jugadores "
         "suelen reservar esa jugada para sus mejores manos o sus "
         "mejores semi-faroles, no para cualquier mano media.",
  como_funciona="Pensá en lo que ya sabés del check-raise (N8, TN06-"
         "TN07): valor o semi-farol. Ese mismo patrón aplica a cualquier "
         "raise postflop.",
- cuando_lo_uso="Cada vez que el rival sube una apuesta en el flop, "
-        "turn o river.",
+ cuando_lo_uso="Cada vez que el rival sube una apuesta en el flop, turn "
+        "o river.",
  cuando_no=None,
  ejemplo="El rival te sube tu c-bet: su rango ahí probablemente combina "
-        "manos ya hechas fuertes con algunos proyectos de buenos outs "
-        "— no manos medias que preferirían solo pagar.",
+        "manos ya hechas fuertes con algunos proyectos de buenos outs — "
+        "no manos medias que preferirían solo pagar.",
  error_comun="Asumir que cualquier raise significa automáticamente 'la "
         "mejor mano posible', ignorando que también puede ser un "
         "semi-farol con buenos outs.",
- idea_clave="Un raise postflop suele venir de un rango polarizado: "
-        "valor fuerte o semi-farol, poco en el medio.",
+ idea_clave="Un raise postflop suele venir de un rango polarizado: valor "
+        "fuerte o semi-farol, poco en el medio.",
 ),
 
 "T217": dict(  # El rango después de un check
- que_es="El rango del rival después de pasar no es 'nada': puede "
-        "incluir manos medias (algunas de ellas jugando pot control, "
-        "N9: pasan a propósito para no inflar el bote) y proyectos. "
-        "Pero SÍ suele quedar sin sus manos MÁS fuertes, porque esas "
-        "suelen preferir apostar.",
- por_que_importa="Leer bien un check evita dos errores opuestos: "
-        "pensar que 'pasó, seguro no tiene nada' (falso: puede tener "
-        "pot control) o 'pasó, puede tener cualquier cosa' (tampoco: "
-        "sus manos más fuertes suelen apostar).",
+ que_es="Falta una pieza más: el rango del rival después de pasar no es "
+        "'nada'. Puede incluir manos medias —algunas de ellas jugando "
+        "pot control, que ya viste en N9: pasan a propósito para no "
+        "inflar el bote— y proyectos. Pero SÍ suele quedar sin sus manos "
+        "MÁS fuertes, porque esas suelen preferir apostar.",
+ por_que_importa="Leer bien un check evita dos errores opuestos: pensar "
+        "que 'pasó, seguro no tiene nada' (falso: puede tener pot "
+        "control) o 'pasó, puede tener cualquier cosa' (tampoco: sus "
+        "manos más fuertes suelen apostar).",
  como_funciona="Un check saca del rango, sobre todo, las manos que casi "
         "siempre apostarían solas (los value bets más claros). Deja "
         "manos medias -algunas jugando pot control (N9)- y proyectos.",
@@ -155,9 +156,9 @@ N10 = {
 # ============================================================
 
 "T214": dict(  # El rango después de una 3-bet
- que_es="El rango del rival después de 3-betear (N7): combina sus "
-        "manos de valor más fuertes con algunos faroles elegidos "
-        "(T161).",
+ que_es="Ahora sumemos algo que ya conocés de otro nivel: el rango del "
+        "rival después de 3-betear, que viste en N7, combina sus manos "
+        "de valor más fuertes con algunos faroles elegidos.",
  por_que_importa="Ya lo estudiaste como concepto en N7 (T167); acá lo "
         "sumás al proceso general de leer TODA la línea de la mano, "
         "junto con las acciones que vengan después.",
@@ -178,12 +179,13 @@ N10 = {
 ),
 
 "T215": dict(  # El rango después de una c-bet
- que_es="El rango del rival después de c-betear (N8): puede ser por "
-        "valor, farol o proyecto, según el board, la posición y si el "
-        "bote es multiway.",
- por_que_importa="Igual que con la 3-bet, ya estudiaste esto en N8; "
-        "acá se convierte en otro paso más dentro de la línea completa "
-        "que vas armando mano tras mano.",
+ que_es="Y lo mismo con la c-bet: el rango del rival después de "
+        "c-betear, que viste en N8, puede ser por valor, farol o "
+        "proyecto, según el board, la posición y si el bote es "
+        "multiway.",
+ por_que_importa="Igual que con la 3-bet, ya estudiaste esto en N8; acá "
+        "se convierte en otro paso más dentro de la línea completa que "
+        "vas armando mano tras mano.",
  como_funciona="Repasás lo que ya sabés: c-bet por valor, farol o "
         "proyecto (N8, 8.2), ajustado por el tipo de board (8.3) y la "
         "posición (8.4).",
@@ -191,8 +193,8 @@ N10 = {
         "que el rival c-beteó en algún momento de la mano.",
  cuando_no=None,
  ejemplo="El rival c-beteó un board coordinado: ya sabés (N8, T181) que "
-        "eso suele ser más selectivo que en un board seco — un dato "
-        "más para sumar a la línea completa.",
+        "eso suele ser más selectivo que en un board seco — un dato más "
+        "para sumar a la línea completa.",
  error_comun="Tratar la c-bet como si fuera información aislada, sin "
         "conectarla con el resto de las acciones de la mano.",
  idea_clave="El rango después de una c-bet ya lo conocés (N8). Acá se "
@@ -204,22 +206,24 @@ N10 = {
 # ============================================================
 
 "T218": dict(  # Estrechar el rango (narrowing)
- que_es="Estrechar el rango es el proceso de ir sacando manos del "
-        "rango posible del rival, calle a calle, a medida que actúa.",
- por_que_importa="Es la idea central de todo el nivel: no leés el "
-        "rango del rival una sola vez al final, lo vas recortando en "
-        "cada acción, desde el open hasta el río.",
+ que_es="Ahora unamos todas las piezas en una sola idea, la más "
+        "importante del nivel: estrechar el rango es el proceso de ir "
+        "sacando manos del rango posible del rival, calle a calle, a "
+        "medida que actúa.",
+ por_que_importa="Es la idea central de todo el nivel: no leés el rango "
+        "del rival una sola vez al final, lo vas recortando en cada "
+        "acción, desde el open hasta el río.",
  como_funciona="Empezás con el rango más amplio posible (su rango de "
-        "apertura) y, con cada acción nueva (T212-T217), sacás las "
-        "manos que ya no son compatibles con lo que hizo.",
+        "apertura) y, con cada acción nueva (T212-T217), sacás las manos "
+        "que ya no son compatibles con lo que hizo.",
  cuando_lo_uso="A lo largo de toda la mano, actualizando tu estimación "
         "después de cada acción del rival.",
  cuando_no=None,
  ejemplo="El rival abre (rango amplio) → paga tu 3-bet (se recorta: "
-        "salen sus manos más flojas y sus manos más fuertes que "
-        "hubieran 4-beteado) → paga tu c-bet en el flop (se recorta "
-        "más, según el board) → paga tu apuesta en el turn de nuevo "
-        "(se recorta todavía más).",
+        "salen sus manos más flojas y sus manos más fuertes que hubieran "
+        "4-beteado) → paga tu c-bet en el flop (se recorta más, según el "
+        "board) → paga tu apuesta en el turn de nuevo (se recorta "
+        "todavía más).",
  error_comun="Reiniciar la lectura en cada calle, en vez de seguir "
         "recortando el mismo rango que ya venías construyendo.",
  idea_clave="Estrechar el rango = recortarlo acción por acción, no "
@@ -227,49 +231,47 @@ N10 = {
 ),
 
 "T219": dict(  # Contar los combos posibles
- que_es="Usar el conteo de combos (N5, T133) para saber cuántas "
-        "combinaciones concretas de cada mano le quedan al rival, "
-        "después de estrechar su rango.",
- por_que_importa="No alcanza con decir 'todavía puede tener X': "
-        "contar cuántos combos reales le quedan te dice qué tan "
-        "probable es cada posibilidad, en vez de tratarlas todas por "
-        "igual.",
- como_funciona="Para cada clase de mano que sigue en su rango después "
-        "de estrechar (T218), contás cuántos combos reales representa "
-        "(6 para una pareja, 4 suited + 12 offsuit para una no "
-        "pareada) y comparás.",
+ que_es="Una vez que estrechaste el rango, hay un paso más fino: usar el "
+        "conteo de combos que ya viste en N5, para saber cuántas "
+        "combinaciones concretas de cada mano le quedan al rival.",
+ por_que_importa="No alcanza con decir 'todavía puede tener X': contar "
+        "cuántos combos reales le quedan te dice qué tan probable es "
+        "cada posibilidad, en vez de tratarlas todas por igual.",
+ como_funciona="Para cada clase de mano que sigue en su rango después de "
+        "estrechar (T218), contás cuántos combos reales representa (6 "
+        "para una pareja, 4 suited + 12 offsuit para una no pareada) y "
+        "comparás.",
  cuando_lo_uso="Al querer precisar qué tan probable es que el rival "
         "tenga una mano puntual, dentro de todo lo que su rango "
         "estrechado todavía permite.",
  cuando_no=None,
- ejemplo="Si su rango estrechado todavía incluye AA (6 combos) y AK "
-        "(16 combos entre suited y offsuit), hay bastante más chance de "
-        "que tenga AK que AA, simplemente por cantidad de combos.",
- error_comun="Tratar cada clase de mano que sigue en el rango como "
-        "igual de probable, sin contar cuántos combos reales tiene "
-        "cada una.",
- idea_clave="Contar combos te dice qué tan probable es cada mano "
-        "dentro del rango ya estrechado, no solo si 'todavía es "
-        "posible'.",
+ ejemplo="Si su rango estrechado todavía incluye AA (6 combos) y AK (16 "
+        "combos entre suited y offsuit), hay bastante más chance de que "
+        "tenga AK que AA, simplemente por cantidad de combos.",
+ error_comun="Tratar cada clase de mano que sigue en el rango como igual "
+        "de probable, sin contar cuántos combos reales tiene cada una.",
+ idea_clave="Contar combos te dice qué tan probable es cada mano dentro "
+        "del rango ya estrechado, no solo si 'todavía es posible'.",
 ),
 
 "T220": dict(  # La línea de juego
- que_es="La línea de juego es la secuencia COMPLETA de acciones del "
-        "rival en toda la mano, leída como una sola historia — no "
-        "acción por acción por separado.",
+ que_es="Démosle nombre a todo este proceso junto: la línea de juego es "
+        "la secuencia COMPLETA de acciones del rival en toda la mano, "
+        "leída como una sola historia — no acción por acción por "
+        "separado.",
  por_que_importa="Una acción sola puede significar varias cosas. La "
-        "secuencia completa, en cambio, suele contar una historia "
-        "mucho más clara.",
+        "secuencia completa, en cambio, suele contar una historia mucho "
+        "más clara.",
  como_funciona="En vez de preguntarte '¿qué significa esta apuesta?', "
         "preguntate '¿qué mano jugaría exactamente así, desde el "
         "principio hasta acá?'.",
  cuando_lo_uso="Al llegar a una decisión importante (normalmente el "
         "river), mirando toda la mano de punta a punta.",
  cuando_no=None,
- ejemplo="Abrió, c-beteó el flop, apostó el turn, y ahora apuesta "
-        "grande el río: esa secuencia completa (abrir + tres apuestas "
-        "seguidas) es la línea de juego, y cuenta una historia distinta "
-        "a cualquiera de esas acciones sueltas.",
+ ejemplo="Abrió, c-beteó el flop, apostó el turn, y ahora apuesta grande "
+        "el río: esa secuencia completa (abrir + tres apuestas seguidas) "
+        "es la línea de juego, y cuenta una historia distinta a "
+        "cualquiera de esas acciones sueltas.",
  error_comun="Analizar solo la última apuesta sin mirar cómo se llegó "
         "hasta ahí — la historia completa suele decir mucho más.",
  idea_clave="La línea de juego es la mano entera contada como una "
@@ -277,12 +279,13 @@ N10 = {
 ),
 
 "T221": dict(  # La coherencia de la línea
- que_es="Evaluar si esa historia completa (T220) tiene sentido para una "
-        "mano de valor, para un farol, o si hay algo que no encaja.",
+ que_es="Y el paso que le da sentido a esa historia: evaluar si esa "
+        "historia completa tiene sentido para una mano de valor, para "
+        "un farol, o si hay algo que no encaja.",
  por_que_importa="Es el paso que te permite finalmente decidir: una "
-        "línea coherente con valor te dice 'cuidado, probablemente "
-        "tiene lo que representa'; una línea que no encaja bien puede "
-        "ser un farol.",
+        "línea coherente con valor te dice 'cuidado, probablemente tiene "
+        "lo que representa'; una línea que no encaja bien puede ser un "
+        "farol.",
  como_funciona="Preguntate: ¿qué mano jugaría CADA UNA de estas "
         "acciones, en este orden, en estos boards? Si hay una mano de "
         "valor real que encaja perfecto con toda la secuencia, la línea "
@@ -291,17 +294,16 @@ N10 = {
  cuando_lo_uso="Después de reconstruir la línea completa (T220), como "
         "paso final antes de decidir.",
  cuando_no=None,
- ejemplo="Alguien que apostó fuerte en un board que mejoró mucho para "
-        "un color, con una línea que encaja perfecto con tener ese "
-        "color: coherente con valor. Alguien que apuesta fuerte en un "
-        "board que no cambió para nada desde el flop, sin motivo claro "
-        "para esa apuesta grande: menos coherente, más sospechoso de "
-        "farol.",
+ ejemplo="Alguien que apostó fuerte en un board que mejoró mucho para un "
+        "color, con una línea que encaja perfecto con tener ese color: "
+        "coherente con valor. Alguien que apuesta fuerte en un board que "
+        "no cambió para nada desde el flop, sin motivo claro para esa "
+        "apuesta grande: menos coherente, más sospechoso de farol.",
  error_comun="Juzgar la línea solo por el tamaño de las apuestas, sin "
         "preguntarte qué mano de verdad jugaría toda esa secuencia.",
  idea_clave="Una línea coherente con valor encaja con una mano real en "
-        "cada paso. Una línea rara, difícil de explicar con valor, "
-        "huele a farol.",
+        "cada paso. Una línea rara, difícil de explicar con valor, huele "
+        "a farol.",
 ),
 
 # ============================================================
@@ -309,51 +311,52 @@ N10 = {
 # ============================================================
 
 "T222": dict(  # Identificar valor
- que_es="Reconocer cuándo la línea completa del rival representa "
-        "valor: encaja con una mano real que quiere pago, en cada paso "
+ que_es="Llegamos a la conclusión práctica de todo el nivel. Primer "
+        "caso: reconocer cuándo la línea completa del rival representa "
+        "valor — encaja con una mano real que quiere pago, en cada paso "
         "de la secuencia.",
- por_que_importa="Es la conclusión práctica de todo el nivel: juntar "
-        "el rango estrechado (T218), los combos (T219) y la coherencia "
-        "de la línea (T221) para decidir 'esto probablemente es "
-        "valor'.",
- como_funciona="Si la secuencia de acciones coincide con lo que una "
-        "mano fuerte haría en cada calle, y el rango estrechado todavía "
-        "deja bastantes combos de esas manos fuertes, la conclusión es "
+ por_que_importa="Es la conclusión práctica de todo el nivel: juntar el "
+        "rango estrechado (T218), los combos (T219) y la coherencia de "
+        "la línea (T221) para decidir 'esto probablemente es valor'.",
+ como_funciona="Si la secuencia de acciones coincide con lo que una mano "
+        "fuerte haría en cada calle, y el rango estrechado todavía deja "
+        "bastantes combos de esas manos fuertes, la conclusión es "
         "valor.",
  cuando_lo_uso="Al llegar a la decisión final del río, para decidir si "
         "foldear o pagar contra una apuesta que parece de valor.",
  cuando_no=None,
- ejemplo="Apostó cada calle en un board que mejoró mucho para un "
-        "color, y su rango estrechado todavía incluye varios combos de "
-        "ese color: la línea completa apunta a valor.",
+ ejemplo="Apostó cada calle en un board que mejoró mucho para un color, "
+        "y su rango estrechado todavía incluye varios combos de ese "
+        "color: la línea completa apunta a valor.",
  error_comun="Foldear contra cualquier apuesta grande 'por las dudas', "
-        "sin haber hecho el trabajo de leer si la línea realmente "
-        "apunta a valor.",
+        "sin haber hecho el trabajo de leer si la línea realmente apunta "
+        "a valor.",
  idea_clave="Identificar valor = la línea completa encaja con una mano "
         "real que quiere pago.",
 ),
 
 "T223": dict(  # Identificar faroles
- que_es="Reconocer cuándo la línea completa del rival representa un "
-        "farol: no encaja bien con ninguna mano de valor real en "
-        "alguno de los pasos de la secuencia.",
+ que_es="Y el segundo caso, el espejo del anterior: reconocer cuándo la "
+        "línea completa del rival representa un farol — no encaja bien "
+        "con ninguna mano de valor real en alguno de los pasos de la "
+        "secuencia.",
  por_que_importa="Es la otra cara de T222: te da la confianza para "
         "pagar como bluff catcher (N9, T202) cuando la línea, bien "
         "leída, no cuenta una historia creíble de valor.",
  como_funciona="Buscá el paso de la secuencia que 'no cierra': una "
-        "apuesta en un board que no cambió nada, un tamaño raro para "
-        "una mano de valor, una línea que no coincide con ninguna mano "
+        "apuesta en un board que no cambió nada, un tamaño raro para una "
+        "mano de valor, una línea que no coincide con ninguna mano "
         "fuerte razonable.",
  cuando_lo_uso="Al llegar a la decisión final del río, para decidir si "
         "pagar contra una apuesta que parece un farol.",
  cuando_no=None,
  ejemplo="Apostó grande en un board que no cambió nada desde el flop, "
         "sin ninguna scare card (N9) de por medio, en una situación "
-        "donde sus manos fuertes normalmente hubieran apostado antes: "
-        "la línea completa no cierra con valor.",
+        "donde sus manos fuertes normalmente hubieran apostado antes: la "
+        "línea completa no cierra con valor.",
  error_comun="Pagar cualquier apuesta grande 'porque puede ser farol', "
-        "sin haber hecho el trabajo de leer si la línea realmente "
-        "apunta a eso.",
+        "sin haber hecho el trabajo de leer si la línea realmente apunta "
+        "a eso.",
  idea_clave="Identificar un farol = la línea completa no encaja con "
         "ninguna mano de valor real en algún punto de la secuencia.",
 ),

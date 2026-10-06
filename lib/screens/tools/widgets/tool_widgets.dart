@@ -1,20 +1,34 @@
 import 'package:flutter/material.dart';
 
-import '../../../theme/app_colors.dart';
+import '../../../theme/sala_verde/sala_verde_tokens.dart';
 import '../../../widgets/pressable_scale.dart';
 
-/// Encabezado compartido por las pantallas de una herramienta puntual
-/// (Pot Odds, EV, ...) — ícono + título + subtítulo + volver. Extraído
-/// de `pot_odds_calculator_screen.dart` para no repetirlo en cada
-/// calculadora nueva.
+/// Componentes compartidos por TODAS las calculadoras de Tools (Grupo 2:
+/// profesionalización de Tools) — migrados de `AppColors` (violeta/gold/
+/// diamond-blue, un color de marca distinto por herramienta) a Sala
+/// Verde, con un único acento compartido (`graphiteSteelBright`, la
+/// temperatura de Tools ya definida en `SvSectionHeaderVariant.tools`) en
+/// vez de un arcoíris de colores por pantalla — esa es la consistencia
+/// que pide la sección 4: misma jerarquía de encabezados, mismo
+/// tratamiento de inputs/botones/resultados en las 6 herramientas.
+///
+/// Los colores semánticos (`SalaVerdeColors.success`/`warning`/`error`)
+/// siguen usándose, pero solo para lo que de verdad es semántico (EV
+/// positivo/negativo, combo bloqueado) — nunca como "color de marca" de
+/// una herramienta puntual.
+const Color kToolAccent = SalaVerdeColors.graphiteSteelBright;
+
+/// Encabezado compartido por las pantallas de una herramienta puntual —
+/// ícono + título + subtítulo + volver.
 class ToolHeader extends StatelessWidget {
   const ToolHeader({
     super.key,
     required this.icon,
-    required this.accentColor,
     required this.title,
     required this.subtitle,
     required this.onBack,
+    this.accentColor = kToolAccent,
+    this.trailing,
   });
 
   final IconData icon;
@@ -22,6 +36,11 @@ class ToolHeader extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onBack;
+
+  /// El ícono ⓘ de ayuda contextual (Grupo 3) se cablea acá — este
+  /// header ya reserva el lugar para no tener que rehacer el layout de
+  /// las 6 pantallas cuando llegue ese grupo.
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -35,91 +54,88 @@ class ToolHeader extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.surfaceElevated,
-              border: Border.all(color: AppColors.surfaceBorder),
+              color: SalaVerdeColors.surfaceElevated,
+              border: Border.all(color: SalaVerdeColors.borderSubtle),
             ),
             child: const Icon(Icons.arrow_back_rounded,
-                color: AppColors.textSecondary, size: 18),
+                color: SalaVerdeColors.textSecondary, size: 18),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: SalaVerdeSpace.md),
         Container(
           width: 40,
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: accentColor.withValues(alpha: 0.18),
+            color: accentColor.withValues(alpha: 0.16),
           ),
           child: Icon(icon, color: accentColor, size: 20),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: SalaVerdeSpace.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5,
-                ),
-              ),
+              Text(title, style: SalaVerdeType.title()),
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  color: AppColors.textSecondary,
-                  height: 1.3,
-                ),
+                style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
               ),
             ],
           ),
         ),
+        if (trailing != null) trailing!,
       ],
     );
   }
 }
 
-/// Tarjeta contenedora genérica (fondo + borde) para agrupar inputs o
-/// una sección de resultado, con el mismo lenguaje visual que ya usa
-/// `StatsScreen`.
+/// Tarjeta contenedora genérica (fondo + borde) para agrupar inputs o una
+/// sección de resultado.
 class ToolCard extends StatelessWidget {
-  const ToolCard({
-    super.key,
-    required this.child,
-    this.gradientColors,
-    this.borderColor,
-  });
+  const ToolCard({super.key, required this.child, this.borderColor});
 
   final Widget child;
-  final List<Color>? gradientColors;
   final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(SalaVerdeSpace.lg),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: gradientColors == null ? AppColors.surface : null,
-        gradient: gradientColors == null
-            ? null
-            : LinearGradient(
-                colors: gradientColors!,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-        border: Border.all(color: borderColor ?? AppColors.surfaceBorder),
+        borderRadius: BorderRadius.circular(SalaVerdeRadius.panel),
+        color: SalaVerdeColors.surface,
+        border: Border.all(color: borderColor ?? SalaVerdeColors.borderSubtle),
       ),
       child: child,
     );
   }
 }
 
-/// Campo numérico con label + sufijo — mismo estilo para cualquier
-/// input de cualquier calculadora.
+/// Encabezado de una sección de resultado ("RESULTADO PRINCIPAL", "DATOS
+/// UTILIZADOS", "INFORMACIÓN COMPLEMENTARIA" — sección 5): separa
+/// visualmente qué es el número que importa de qué es contexto, en vez de
+/// que todo compita al mismo nivel dentro de la misma tarjeta.
+class ToolSectionLabel extends StatelessWidget {
+  const ToolSectionLabel(this.label, {super.key, this.color});
+
+  final String label;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label.toUpperCase(),
+      style: SalaVerdeType.label(color: color ?? SalaVerdeColors.textMuted),
+    );
+  }
+}
+
+/// Campo numérico con label + sufijo — mismo estilo para cualquier input
+/// de cualquier calculadora. El valor usa IBM Plex Mono (cifras
+/// tabulares): es un número que el usuario va a comparar con otros, no
+/// prosa.
 class ToolNumberField extends StatelessWidget {
   const ToolNumberField({
     super.key,
@@ -127,61 +143,44 @@ class ToolNumberField extends StatelessWidget {
     required this.controller,
     required this.onChanged,
     this.suffixText,
-    this.accentColor = AppColors.diamondBlue,
   });
 
   final String label;
   final TextEditingController controller;
   final VoidCallback onChanged;
   final String? suffixText;
-  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-          ),
-        ),
+        Text(label, style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary)),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
           onChanged: (_) => onChanged(),
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: SalaVerdeType.numeric(size: 16),
           decoration: InputDecoration(
             isDense: true,
             suffixText: suffixText,
-            suffixStyle: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textMuted,
-            ),
+            suffixStyle: SalaVerdeType.caption(color: SalaVerdeColors.textMuted),
             filled: true,
-            fillColor: AppColors.surfaceElevated,
+            fillColor: SalaVerdeColors.surfaceElevated,
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.surfaceBorder),
+              borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+              borderSide: const BorderSide(color: SalaVerdeColors.borderSubtle),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.surfaceBorder),
+              borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+              borderSide: const BorderSide(color: SalaVerdeColors.borderSubtle),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: accentColor, width: 1.5),
+              borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+              borderSide: const BorderSide(color: kToolAccent, width: 1.5),
             ),
           ),
         ),
@@ -190,9 +189,9 @@ class ToolNumberField extends StatelessWidget {
   }
 }
 
-/// Campo de texto libre con label + hint — para notación de cartas
-/// (`AhKd`) u otro texto que no sea un número. Mismo lenguaje visual que
-/// [ToolNumberField], sin forzar teclado numérico.
+/// Campo de texto libre con label + hint — para notación de rango
+/// (`77+,ATs+`) u otro texto que no sea ni un número ni una carta
+/// puntual (esas dos usan [ToolNumberField]/`CardGroupField`).
 class ToolTextField extends StatelessWidget {
   const ToolTextField({
     super.key,
@@ -200,62 +199,44 @@ class ToolTextField extends StatelessWidget {
     required this.controller,
     required this.onChanged,
     this.hintText,
-    this.accentColor = AppColors.diamondBlue,
   });
 
   final String label;
   final TextEditingController controller;
   final VoidCallback onChanged;
   final String? hintText;
-  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-          ),
-        ),
+        Text(label, style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary)),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
           onChanged: (_) => onChanged(),
           textCapitalization: TextCapitalization.none,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-            letterSpacing: 0.5,
-          ),
+          style: SalaVerdeType.bodyStrong().copyWith(letterSpacing: 0.5),
           decoration: InputDecoration(
             isDense: true,
             hintText: hintText,
-            hintStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textMuted,
-            ),
+            hintStyle: SalaVerdeType.body(color: SalaVerdeColors.textMuted),
             filled: true,
-            fillColor: AppColors.surfaceElevated,
+            fillColor: SalaVerdeColors.surfaceElevated,
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.surfaceBorder),
+              borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+              borderSide: const BorderSide(color: SalaVerdeColors.borderSubtle),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.surfaceBorder),
+              borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+              borderSide: const BorderSide(color: SalaVerdeColors.borderSubtle),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: accentColor, width: 1.5),
+              borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+              borderSide: const BorderSide(color: kToolAccent, width: 1.5),
             ),
           ),
         ),
@@ -264,8 +245,9 @@ class ToolTextField extends StatelessWidget {
   }
 }
 
-/// Tarjeta de error genérica (entrada inválida) — mismo estilo en toda
-/// Tools.
+/// Tarjeta de error — entrada inválida o sin datos suficientes. Mensaje
+/// siempre en lenguaje humano (nunca "Invalid input"): qué falta o qué
+/// hay que corregir, en términos de póker — ver sección 7.
 class ToolErrorCard extends StatelessWidget {
   const ToolErrorCard({super.key, required this.message});
 
@@ -274,33 +256,133 @@ class ToolErrorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(SalaVerdeSpace.md),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: AppColors.danger.withValues(alpha: 0.1),
-        border: Border.all(color: AppColors.danger.withValues(alpha: 0.4)),
+        borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+        color: SalaVerdeColors.error.withValues(alpha: 0.12),
+        border: Border.all(color: SalaVerdeColors.errorBright.withValues(alpha: 0.4)),
       ),
-      child: Text(
-        message,
-        style: const TextStyle(
-          fontSize: 12.5,
-          fontWeight: FontWeight.w700,
-          color: AppColors.danger,
-        ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.error_outline_rounded,
+              size: 16, color: SalaVerdeColors.errorBright),
+          const SizedBox(width: SalaVerdeSpace.sm),
+          Expanded(
+            child: Text(
+              message,
+              style: SalaVerdeType.caption(color: SalaVerdeColors.errorBright)
+                  .copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// Un valor de resultado con su label — reutilizado por cualquier
-/// calculadora (pot odds, EV, ...).
+/// Aviso informativo (no un error) — mismo contenedor que
+/// [ToolErrorCard] pero en tono ámbar, para lo que no bloquea el cálculo
+/// pero conviene saber (p. ej. una rama del modelo que quedó afuera).
+class ToolWarningCard extends StatelessWidget {
+  const ToolWarningCard({super.key, required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(SalaVerdeSpace.md),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+        color: SalaVerdeColors.warning.withValues(alpha: 0.12),
+        border: Border.all(color: SalaVerdeColors.warning.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.info_outline_rounded, size: 16, color: SalaVerdeColors.warning),
+          const SizedBox(width: SalaVerdeSpace.sm),
+          Expanded(
+            child: Text(
+              message,
+              style: SalaVerdeType.caption(color: SalaVerdeColors.warning)
+                  .copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Estado vacío/inicial — "todavía no hiciste lo necesario para ver un
+/// resultado" (sección 6), nunca una tarjeta de resultado a medio
+/// llenar. Mismo lugar en el layout donde iría el resultado, para que la
+/// pantalla no "salte" de tamaño al completarse.
+class ToolEmptyState extends StatelessWidget {
+  const ToolEmptyState({
+    super.key,
+    required this.message,
+    this.icon = Icons.touch_app_rounded,
+    this.title,
+  });
+
+  final String message;
+  final IconData icon;
+
+  /// Encabezado opcional, más prominente que [message] — para el caso
+  /// (Range Explorer/BB) donde el estado vacío necesita un hecho corto
+  /// ("La BB no abre") ANTES de la explicación, no las dos frases al
+  /// mismo nivel visual.
+  final String? title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: SalaVerdeSpace.lg,
+        vertical: SalaVerdeSpace.xl,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(SalaVerdeRadius.panel),
+        border: Border.all(color: SalaVerdeColors.borderSubtle),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 26, color: SalaVerdeColors.textMuted),
+          const SizedBox(height: SalaVerdeSpace.sm),
+          if (title != null) ...[
+            Text(
+              title!,
+              textAlign: TextAlign.center,
+              style: SalaVerdeType.bodyStrong(color: SalaVerdeColors.textSecondary),
+            ),
+            const SizedBox(height: 4),
+          ],
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: SalaVerdeType.caption(color: SalaVerdeColors.textMuted),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Un valor de resultado con su label — [big] para el resultado
+/// PRINCIPAL de la pantalla (uno solo por tarjeta), tamaño normal para
+/// los datos que lo acompañan. Siempre en IBM Plex Mono: son cifras que
+/// se leen y se comparan, no texto corrido.
 class ToolResultStat extends StatelessWidget {
   const ToolResultStat({
     super.key,
     required this.label,
     required this.value,
     this.big = false,
-    this.color = AppColors.diamondBlue,
+    this.color = SalaVerdeColors.textPrimary,
   });
 
   final String label;
@@ -313,30 +395,124 @@ class ToolResultStat extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 10.5,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textMuted,
-            letterSpacing: 0.4,
-          ),
-        ),
+        Text(label.toUpperCase(), style: SalaVerdeType.label(color: SalaVerdeColors.textMuted)),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: big ? 26 : 16,
-            fontWeight: FontWeight.w900,
-            color: color,
-          ),
-        ),
+        Text(value, style: SalaVerdeType.numeric(size: big ? 28 : 17, color: color)),
       ],
     );
   }
 }
 
-/// Formatea un double sin decimales inútiles (`10` en vez de `10.0`,
-/// pero `10.5` cuando hace falta) — mismo criterio en toda Tools.
+/// Selector de modo compartido (antes `_ModeChip`, duplicado en Equity y
+/// EV) — misma pastilla en cualquier herramienta que tenga más de un modo
+/// de cálculo.
+class ToolModeChip extends StatelessWidget {
+  const ToolModeChip({
+    super.key,
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return PressableScale(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(SalaVerdeRadius.pill),
+          color: active
+              ? kToolAccent.withValues(alpha: 0.16)
+              : SalaVerdeColors.surfaceElevated,
+          border: Border.all(
+            color: active ? kToolAccent : SalaVerdeColors.borderSubtle,
+            width: active ? 1.5 : 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: SalaVerdeType.caption(
+            color: active ? kToolAccent : SalaVerdeColors.textSecondary,
+          ).copyWith(fontWeight: active ? FontWeight.w800 : FontWeight.w600),
+        ),
+      ),
+    );
+  }
+}
+
+/// Botón "Calcular" compartido (antes `_CalculateButton`, duplicado en
+/// Equity y EV) — para los modos que no recalculan en vivo.
+class ToolCalculateButton extends StatelessWidget {
+  const ToolCalculateButton({
+    super.key,
+    required this.label,
+    required this.loading,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool loading;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return PressableScale(
+      onTap: loading ? () {} : onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+          color: kToolAccent.withValues(alpha: loading ? 0.4 : 1),
+        ),
+        child: loading
+            ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
+                  valueColor: AlwaysStoppedAnimation(SalaVerdeColors.background),
+                ),
+              )
+            : Text(
+                label,
+                style: SalaVerdeType.bodyStrong(color: SalaVerdeColors.background),
+              ),
+      ),
+    );
+  }
+}
+
+/// Pastilla de estado corta (p. ej. "+EV" / "Break-even" / "-EV") — un
+/// solo lugar donde se pinta ese patrón, en vez de uno por pantalla.
+class ToolStatusPill extends StatelessWidget {
+  const ToolStatusPill({super.key, required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+      ),
+      child: Text(
+        label,
+        style: SalaVerdeType.caption(color: color).copyWith(fontWeight: FontWeight.w800),
+      ),
+    );
+  }
+}
+
+/// Formatea un double sin decimales inútiles (`10` en vez de `10.0`, pero
+/// `10.5` cuando hace falta) — mismo criterio en toda Tools.
 String formatToolNumber(double v) =>
     v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);

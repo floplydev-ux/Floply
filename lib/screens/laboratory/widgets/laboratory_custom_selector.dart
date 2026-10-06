@@ -12,9 +12,10 @@ import '../../../widgets/sala_verde/sala_verde_widgets.dart';
 /// [PreflopScenarioKind.label]) y cuántos ejercicios, en vez de aceptar
 /// una dificultad preconfigurada.
 ///
-/// Las 6 familias mostradas son exactamente las 6 que
-/// `ExerciseScenarioBuilder` puede generar hoy — ninguna opción ficticia
-/// (ver auditoría, `FLOPLY_PHASE_8_LABORATORIO_CUSTOM.md` §H/§I).
+/// Itera [PreflopScenarioKind.values] — todas las familias que
+/// `ExerciseScenarioBuilder` puede generar hoy, ninguna opción ficticia
+/// (ver auditoría, `FLOPLY_PHASE_8_LABORATORIO_CUSTOM.md` §H/§I) —
+/// crece sola cuando se agregan familias nuevas, sin tocar este widget.
 /// Deliberadamente sin usar `surfaceReading`: esto es una decisión, no
 /// una lectura (Sección 32 del prompt de fase).
 class LaboratoryCustomSelector extends StatefulWidget {

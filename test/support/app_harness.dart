@@ -5,6 +5,7 @@ import 'package:poker_trainer/auth/fake_user_repository.dart';
 import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/persistence/local_auth_flag_store.dart';
 import 'package:poker_trainer/screens/root/app_shell.dart';
+import 'package:poker_trainer/services/premium/premium_service.dart';
 
 /// La app completa (`AppShell`, invitado) sin Firebase real — mismo patrón
 /// que ya usaba `test/ui/app_shell_test.dart` de forma privada, extraído
@@ -24,5 +25,6 @@ Widget testAppShell({AcademyStore? academyStore}) => MaterialApp(
           localStoreBuilder: () => InMemoryAcademyStore(),
           remoteAcademyStoreBuilder: (_) => InMemoryAcademyStore(),
         ),
+        premium: StubPremiumService(),
       ),
     );

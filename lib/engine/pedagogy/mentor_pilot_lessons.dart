@@ -774,8 +774,8 @@ class MentorPilotLessons {
     );
 
     beats.say(
-      'De acá en más, el Laboratorio es donde vas a practicar aplicando '
-      'todo esto en situaciones nuevas.',
+      'De acá en más, el Campo de Entrenamiento es donde vas a practicar '
+      'aplicando todo esto en situaciones nuevas.',
       role: MentorSayRole.bridge,
     );
 

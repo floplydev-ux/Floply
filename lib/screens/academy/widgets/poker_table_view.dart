@@ -36,7 +36,12 @@ export 'table/table_layout.dart'
 /// responsabilidad propia y sin depender entre sí más de lo necesario (ver
 /// `table/` para el detalle de cada una). `PokerTableView` solo decide
 /// DÓNDE va cada una (vía [TableLayout]) y las compone en un `Stack`.
-class PokerTableView extends StatelessWidget {
+///
+/// **Animación de recolección:** cuando el snapshot cambia y todas las
+/// apuestas pasan a 0 mientras el bote crece (= nueva calle o showdown),
+/// las fichas viejas vuelan hacia el centro antes de que el nuevo estado
+/// sea visible.
+class PokerTableView extends StatefulWidget {
   const PokerTableView({
     super.key,
     required this.snapshot,
@@ -59,150 +64,238 @@ class PokerTableView extends StatelessWidget {
   /// out concreto en el board).
   final Set<CardRef> cardGlow;
 
+  @override
+  State<PokerTableView> createState() => _PokerTableViewState();
+}
+
+/// Par (slot, betBb) usado durante la animación de recolección.
+typedef _CollectEntry = ({int slot, double betBb});
+
+class _PokerTableViewState extends State<PokerTableView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _collectCtrl;
+  late final Animation<double> _collectAnim;
+
+  /// Fichas que se están animando hacia el bote (slot + monto del snapshot anterior).
+  List<_CollectEntry> _collectingBets = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _collectCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 380),
+    );
+    _collectAnim = CurvedAnimation(
+      parent: _collectCtrl,
+      curve: Curves.easeInCubic,
+    );
+    _collectCtrl.addStatusListener((s) {
+      if (s == AnimationStatus.completed && mounted) {
+        setState(() => _collectingBets = const []);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(PokerTableView old) {
+    super.didUpdateWidget(old);
+    if (old.snapshot == widget.snapshot) return;
+
+    final prev = old.snapshot;
+    final next = widget.snapshot;
+
+    // Detectar recolección: había apuestas, el nuevo snapshot no tiene
+    // ninguna y el bote creció → nueva calle o showdown.
+    final prevBetting =
+        prev.seats.where((s) => !s.empty && s.betBb > 0).toList();
+    final nextBetting =
+        next.seats.where((s) => !s.empty && s.betBb > 0).toList();
+
+    if (prevBetting.isNotEmpty &&
+        nextBetting.isEmpty &&
+        next.potBb > prev.potBb) {
+      setState(() {
+        _collectingBets =
+            prevBetting.map((s) => (slot: s.slot, betBb: s.betBb)).toList();
+      });
+      _collectCtrl.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _collectCtrl.dispose();
+    super.dispose();
+  }
+
   Set<int> _cardGlowIndices(CardSource source, {int slot = -1}) => {
-        for (final r in cardGlow)
+        for (final r in widget.cardGlow)
           if (r.source == source &&
               (source != CardSource.seat || r.slot == slot))
             r.index,
       };
 
-  bool _isHi(TableAnchor a) => highlight.contains(a);
+  bool _isHi(TableAnchor a) => widget.highlight.contains(a);
 
-  /// Atenuación del elemento no enfocado. El foco ya destaca con halo +
-  /// escala, así que la atenuación es suave y **nunca** toca el contexto
-  /// que hay que poder comparar: board, bote y cualquier asiento con
-  /// cartas reveladas.
   double _opacityFor(TableAnchor a, {bool context = false}) {
-    if (!dimOthers || _isHi(a)) return 1;
+    if (!widget.dimOthers || _isHi(a)) return 1;
     return context ? 0.85 : 0.5;
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final size = Size(constraints.maxWidth, constraints.maxHeight);
-      final layout = TableLayout(size);
-      final s = layout.scale;
+    final snapshot = widget.snapshot;
+    return AnimatedBuilder(
+      animation: _collectAnim,
+      builder: (context, _) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final size = Size(constraints.maxWidth, constraints.maxHeight);
+          final layout = TableLayout(size);
+          final s = layout.scale;
 
-      Widget dim(TableAnchor a, Widget child, {bool context = false}) =>
-          Opacity(opacity: _opacityFor(a, context: context), child: child);
+          Widget dim(TableAnchor a, Widget child, {bool context = false}) =>
+              Opacity(opacity: _opacityFor(a, context: context), child: child);
 
-      return SizedBox.fromSize(
-        size: size,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            const Positioned.fill(
-                child: CustomPaint(painter: TableSurfacePainter())),
+          // Posición del bote — destino de la animación de recolección.
+          final potTarget =
+              layout.clampInFelt(layout.pot, Size(100 * s, 38 * s));
 
-            // --- Bote (rótulo, arriba del paño, asociado al board) ---
-            _pin(
-              layout.clampInFelt(layout.pot, Size(100 * s, 38 * s)),
-              dim(
-                TableAnchor.pot,
-                Highlightable(
-                  active: _isHi(TableAnchor.pot),
-                  glow: glow,
-                  radius: 10,
-                  color: TableMaterial.focus,
-                  child: PotBadge(bb: snapshot.potBb, scale: s),
-                ),
-                context: true,
+          // Fichas fantasma animadas hacia el bote.
+          final collectWidgets = [
+            for (final e in _collectingBets)
+              _animatedCollect(
+                from: layout.bet(e.slot),
+                to: potTarget,
+                t: _collectAnim.value,
+                child: BetChip(bb: e.betBb, scale: s),
               ),
-            ),
+          ];
 
-            // --- Board: zona central única, recortada al verde ---
-            if (snapshot.board.isNotEmpty)
-              _pin(
-                layout.clampInFelt(
-                  layout.board,
-                  Size(snapshot.board.length * 24.0 * s + 16, 40 * s),
+          return SizedBox.fromSize(
+            size: size,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Positioned.fill(
+                    child: CustomPaint(painter: TableSurfacePainter())),
+
+                // --- Bote ---
+                _pin(
+                  potTarget,
+                  dim(
+                    TableAnchor.pot,
+                    Highlightable(
+                      active: _isHi(TableAnchor.pot),
+                      glow: widget.glow,
+                      radius: 10,
+                      color: TableMaterial.focus,
+                      child: PotBadge(bb: snapshot.potBb, scale: s),
+                    ),
+                    context: true,
+                  ),
                 ),
-                dim(
-                  TableAnchor.board,
-                  Highlightable(
-                    active: _isHi(TableAnchor.board),
-                    glow: glow,
-                    radius: 10,
-                    color: TableMaterial.focus,
-                    child: CommunityCards(
-                      codes: snapshot.board,
-                      scale: s,
-                      glowIndices: _cardGlowIndices(CardSource.board),
+
+                // --- Board ---
+                if (snapshot.board.isNotEmpty)
+                  _pin(
+                    layout.clampInFelt(
+                      layout.board,
+                      Size(snapshot.board.length * 24.0 * s + 16, 40 * s),
+                    ),
+                    dim(
+                      TableAnchor.board,
+                      Highlightable(
+                        active: _isHi(TableAnchor.board),
+                        glow: widget.glow,
+                        radius: 10,
+                        color: TableMaterial.focus,
+                        child: CommunityCards(
+                          codes: snapshot.board,
+                          scale: s,
+                          glowIndices: _cardGlowIndices(CardSource.board),
+                        ),
+                      ),
+                      context: true,
                     ),
                   ),
-                  context: true,
-                ),
-              ),
 
-            // --- Fichas apostadas: en la línea jugador → centro ---
-            for (final seat in snapshot.seats)
-              if (!seat.empty && seat.betBb > 0)
-                _pin(
-                  layout.bet(seat.slot),
-                  dim(
-                    TableAnchor.bet(seat.slot),
-                    ChipEntrance(
-                      // Re-anima solo cuando este monto es nuevo para este
-                      // asiento (sube o aparece) — no en cada rebuild donde
-                      // la apuesta ya estaba mostrada.
-                      key: ValueKey('bet_${seat.slot}_${seat.betBb}'),
-                      from: layout.seat(seat.slot) - layout.bet(seat.slot),
-                      child: Highlightable(
-                        active: _isHi(TableAnchor.bet(seat.slot)),
-                        glow: glow,
-                        radius: 12,
-                        color: TableMaterial.focus,
-                        child: BetChip(bb: seat.betBb, scale: s),
+                // --- Fichas apostadas normales (nuevo snapshot) ---
+                for (final seat in snapshot.seats)
+                  if (!seat.empty && seat.betBb > 0)
+                    _pin(
+                      layout.bet(seat.slot),
+                      dim(
+                        TableAnchor.bet(seat.slot),
+                        ChipEntrance(
+                          key: ValueKey('bet_${seat.slot}_${seat.betBb}'),
+                          from: layout.seat(seat.slot) - layout.bet(seat.slot),
+                          child: Highlightable(
+                            active: _isHi(TableAnchor.bet(seat.slot)),
+                            glow: widget.glow,
+                            radius: 12,
+                            color: TableMaterial.focus,
+                            child: BetChip(bb: seat.betBb, scale: s),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
 
-            // --- Los 6 jugadores: un único PlayerSeat por asiento, con
-            //     sus propias cartas ancladas ADENTRO (ver player_seat.dart).
-            //     La mesa solo decide dónde va el asiento (layout.panel) —
-            //     nunca dónde van las cartas de ese jugador; eso lo
-            //     resuelve el propio PlayerSeat con un offset local.
-            //     Mismo componente y mismo código para los 6, héroe
-            //     incluido: la única diferencia es el propio SeatState y
-            //     qué anchor/tabla de resaltado le corresponde (abajo). ---
-            for (final seat in snapshot.seats)
-              if (!seat.empty)
+                // --- Fichas fantasma (animación de recolección al bote) ---
+                ...collectWidgets,
+
+                // --- Los 6 jugadores ---
+                for (final seat in snapshot.seats)
+                  if (!seat.empty)
+                    _pin(
+                      layout.panel(seat.slot),
+                      PlayerSeat(
+                        key: kAcademyTableAvatarKey(seat.slot),
+                        seat: seat,
+                        scale: s,
+                        panelHighlighted:
+                            _isHi(TableAnchor.seat(seat.slot)),
+                        cardsHighlighted:
+                            seat.isHero ? _isHi(TableAnchor.heroCards) : false,
+                        glow: widget.glow,
+                        cardGlowIndices: seat.isHero
+                            ? _cardGlowIndices(CardSource.hero)
+                            : _cardGlowIndices(CardSource.seat,
+                                slot: seat.slot),
+                      ),
+                    ),
+
+                // --- Botón del dealer ---
                 _pin(
-                  layout.panel(seat.slot),
-                  PlayerSeat(
-                    key: kAcademyTableAvatarKey(seat.slot),
-                    seat: seat,
-                    scale: s,
-                    panelHighlighted: _isHi(TableAnchor.seat(seat.slot)),
-                    // Único lugar donde el héroe recibe un valor distinto
-                    // — no una estructura distinta: su glow depende de
-                    // TableAnchor.heroCards en vez de seat(slot), igual
-                    // que antes de fusionar cartas y panel en una pieza.
-                    cardsHighlighted:
-                        seat.isHero ? _isHi(TableAnchor.heroCards) : false,
-                    glow: glow,
-                    cardGlowIndices: seat.isHero
-                        ? _cardGlowIndices(CardSource.hero)
-                        : _cardGlowIndices(CardSource.seat, slot: seat.slot),
-                  ),
+                  layout.dealerButton(snapshot.buttonSlot),
+                  DealerButton(scale: s),
                 ),
-
-            // --- Botón del dealer: SOBRE EL PAÑO, separado del panel del
-            //     jugador que lo tiene pero derivado de su posición (ver
-            //     TableLayout.dealerButton) — no vive dentro de PlayerSeat
-            //     a propósito, para no leerse como parte del panel. Si el
-            //     panel se mueve, o el botón cambia de asiento, lo sigue
-            //     solo. ---
-            _pin(
-              layout.dealerButton(snapshot.buttonSlot),
-              DealerButton(scale: s),
+              ],
             ),
-          ],
-        ),
-      );
-    });
+          );
+        });
+      },
+    );
+  }
+
+  /// Chip volando desde [from] hasta [to] según [t] ∈ [0,1],
+  /// con fade-out en la segunda mitad.
+  Widget _animatedCollect({
+    required Offset from,
+    required Offset to,
+    required double t,
+    required Widget child,
+  }) {
+    final pos = Offset.lerp(from, to, t)!;
+    final opacity = (1.0 - t * 2).clamp(0.0, 1.0);
+    return Positioned(
+      left: pos.dx,
+      top: pos.dy,
+      child: FractionalTranslation(
+        translation: const Offset(-0.5, -0.5),
+        child: Opacity(opacity: opacity, child: child),
+      ),
+    );
   }
 
   /// Coloca [child] centrado en la coordenada [c].

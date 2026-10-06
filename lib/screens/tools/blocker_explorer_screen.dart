@@ -5,8 +5,85 @@ import '../../engine/poker/combos/combo_engine.dart';
 import '../../engine/poker/hole_cards.dart';
 import '../../engine/strategy/hand_range.dart';
 import '../../l10n/app_strings.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/sala_verde/sala_verde_tokens.dart';
+import '../../widgets/sala_verde/sala_verde_widgets.dart';
+import 'combo_calculator_screen.dart';
+import 'equity_calculator_screen.dart';
+import 'range/range_explorer_controller.dart';
+import 'range/range_explorer_screen.dart';
+import 'widgets/card_situation.dart';
+import 'widgets/tool_explainer.dart';
+import 'widgets/tool_guide_screen.dart';
 import 'widgets/tool_widgets.dart';
+
+/// Público (antes privado): reutilizado por la guía consolidada del hub
+/// (`tools_guide_sheet.dart`) — ver el doc-comment equivalente en
+/// `pot_odds_calculator_screen.dart`.
+const kBlockerToolId = 'blocker_explorer';
+const kBlockerExplainer = ToolExplainerContent(
+  title: 'Blockers',
+  description:
+      'Mostrá cuánto bloquea tu mano al rango del rival: cuántos de sus '
+      'combos posibles ya no puede tener.',
+  howToUse: 'Tocá tus 2 cartas para elegirlas, escribí el rango del '
+      'rival y, si corresponde, tocá las cartas del board (opcional: '
+      'podés dejarlo vacío para un análisis preflop).',
+  result: 'Combos disponibles vs. bloqueados del rango rival, y el '
+      'detalle por clase de mano.',
+);
+
+const kBlockerGuide = ToolGuideContent(
+  title: 'Blockers',
+  tagline: 'Efecto de tu mano sobre el rango del rival',
+  icon: Icons.block_rounded,
+  sections: [
+    ToolGuideSection(
+      label: '¿Para qué sirve?',
+      body: 'Te muestra cuántos combos del rango del rival quedan '
+          'disponibles después de que tu mano y el board bloquean combos. '
+          'Cuantificá si tus cartas hacen más o menos probable que el '
+          'rival tenga manos específicas.',
+    ),
+    ToolGuideSection(
+      label: '¿Cuándo usarla?',
+      items: [
+        'Cuando evaluás un bluff: ¿tus cartas hacen menos probable que '
+            'el rival tenga manos fuertes?',
+        'Para analizar si conviene apostar por valor según los combos de '
+            'nuts disponibles.',
+        'En análisis postflop para cuantificar blockers antes de decidir.',
+      ],
+    ),
+    ToolGuideSection(
+      label: 'Cómo funciona',
+      isFormula: true,
+      body: 'total       = combos del rango (solo board como muertas)\n'
+          'disponibles = combos (tu mano + board como muertas)\n'
+          'bloqueados  = total − disponibles',
+    ),
+    ToolGuideSection(
+      label: 'Ejemplo',
+      body: 'AhKd vs QQ+,AKs,AKo (sin board)\n'
+          '→ 34 totales · 21 disponibles · 13 bloqueados\n\n'
+          'KK: 6→3 (Kd bloquea) · AA: 6→3 (Ah bloquea) · QQ: sin cambio',
+    ),
+    ToolGuideSection(
+      label: 'Errores comunes',
+      items: [
+        'Concluir que un bluff es bueno solo por tener blockers. Los '
+            'blockers son un factor, no la decisión completa.',
+        'Ignorar que el board ya bloquea combos antes de que entre '
+            'tu mano.',
+      ],
+    ),
+    ToolGuideSection(
+      label: 'Consejo FLOPly',
+      body: 'Usá blockers junto con Equity: si bloqueás muchos combos de '
+          'nuts del rival Y tu equity es razonable, el bluff tiene más '
+          'sentido matemático.',
+    ),
+  ],
+);
 
 /// Blocker Explorer — sexta herramienta real de Tools (parte de V2, ver
 /// `AUDITORIA_CHECKLIST_2026-09-18.md` §6).
@@ -15,28 +92,54 @@ import 'widgets/tool_widgets.dart';
 /// bloquean las dos cartas de tu mano (más el board, si hay)? Reutiliza
 /// [ComboEngine] tal cual existe — corre el mismo cálculo dos veces con
 /// distintas `deadCards` (solo board, vs. board + tu mano) y compara.
-/// No suma ningún concepto nuevo al motor: es la misma idea del Combo
-/// Calculator (combos totales vs. disponibles) pero aplicada a un
-/// rango entero en vez de una sola clase, para responder
-/// "¿qué tanto bloqueo con esta mano?" en vez de "¿cuántos combos me
-/// quedan de esta clase?".
 ///
-/// **Por qué recalcula en vivo** (a diferencia de mano vs rango/rango
-/// vs rango del Equity Calculator): acá no hay runouts que enumerar —
-/// es pura combinatoria de card removal, como mucho 169 clases × 12
-/// combos, miles de operaciones, no millones. Ningún motivo para
-/// gatillarlo con un botón aparte.
+/// **Selector universal (sección 1):** tu mano y el board ahora se eligen
+/// con [CardSituationController]/[CardGroupField] — mismo mecanismo que
+/// Equity, no un picker aparte. El rango del rival sigue en texto — no
+/// son "las cartas del jugador".
 class BlockerExplorerScreen extends StatefulWidget {
-  const BlockerExplorerScreen({super.key});
+  const BlockerExplorerScreen({
+    super.key,
+    this.initialHero,
+    this.initialBoard = const [],
+    this.initialVillainRangeTokens,
+  });
+
+  /// Precarga desde otra herramienta (hoy: Rangos, sección 13 — "Analizar
+  /// blockers" desde una celda de la matriz). `null`/vacío conserva el
+  /// comportamiento de siempre (mano A♥K♦ por defecto, sin board).
+  final HoleCards? initialHero;
+  final List<Card> initialBoard;
+  final List<String>? initialVillainRangeTokens;
 
   @override
   State<BlockerExplorerScreen> createState() => _BlockerExplorerScreenState();
 }
 
 class _BlockerExplorerScreenState extends State<BlockerExplorerScreen> {
-  final _heroController = TextEditingController(text: 'AhKd');
-  final _villainRangeController = TextEditingController(text: 'QQ+,AKs,AKo');
-  final _boardController = TextEditingController(text: '');
+  late final _villainRangeController = TextEditingController(
+    text: widget.initialVillainRangeTokens?.join(',') ?? 'QQ+,AKs,AKo',
+  );
+
+  // El board acá es opcional (min 0): a diferencia de EquityEngine,
+  // ComboEngine no exige flop/turn/river — "sin board" es un análisis
+  // preflop válido.
+  late final _situation = CardSituationController([
+    const CardGroupSpec(
+      id: 'hero',
+      label: AppStrings.blockerHeroLabel,
+      minCount: 2,
+      maxCount: 2,
+      accent: SalaVerdeColors.brassBright,
+    ),
+    const CardGroupSpec(
+      id: 'board',
+      label: AppStrings.blockerBoardLabel,
+      minCount: 0,
+      maxCount: 5,
+      accent: SalaVerdeColors.steelBlueBright,
+    ),
+  ]);
 
   _BlockerResult? _result;
   String? _error;
@@ -44,38 +147,27 @@ class _BlockerExplorerScreenState extends State<BlockerExplorerScreen> {
   @override
   void initState() {
     super.initState();
+    final hero = widget.initialHero;
+    if (hero != null) {
+      _situation.setCard('hero', 0, hero.high);
+      _situation.setCard('hero', 1, hero.low);
+    } else {
+      _situation.setCard('hero', 0, const Card(Rank.ace, Suit.hearts));
+      _situation.setCard('hero', 1, const Card(Rank.king, Suit.diamonds));
+    }
+    for (final card in widget.initialBoard) {
+      _situation.setCard('board', _situation.cardsOf('board').length, card);
+    }
+    _situation.addListener(_recalculate);
     _recalculate();
   }
 
   @override
   void dispose() {
-    _heroController.dispose();
+    _situation.removeListener(_recalculate);
+    _situation.dispose();
     _villainRangeController.dispose();
-    _boardController.dispose();
     super.dispose();
-  }
-
-  static HoleCards? _tryParseHand(String text) {
-    try {
-      return HoleCards.parse(text.trim().replaceAll(' ', ''));
-    } catch (_) {
-      return null;
-    }
-  }
-
-  /// `null` si la notación es inválida; lista vacía si el board está
-  /// vacío (board vacío = análisis preflop, entrada válida).
-  static List<Card>? _tryParseBoard(String text) {
-    final clean = text.trim().replaceAll(' ', '');
-    if (clean.isEmpty) return const [];
-    if (clean.length != 6 && clean.length != 8 && clean.length != 10) return null;
-    try {
-      return [
-        for (var i = 0; i < clean.length; i += 2) Card.parse(clean.substring(i, i + 2)),
-      ];
-    } catch (_) {
-      return null;
-    }
   }
 
   static HandRange? _tryParseRange(String text) {
@@ -94,30 +186,17 @@ class _BlockerExplorerScreenState extends State<BlockerExplorerScreen> {
   }
 
   void _recalculate() {
-    final hero = _tryParseHand(_heroController.text);
-    final board = _tryParseBoard(_boardController.text);
-    if (hero == null) {
+    if (!_situation.isComplete('hero')) {
       setState(() {
         _result = null;
-        _error = AppStrings.blockerInvalidHand;
+        _error = null;
       });
       return;
     }
-    if (board == null) {
-      setState(() {
-        _result = null;
-        _error = AppStrings.blockerInvalidBoard;
-      });
-      return;
-    }
+    final heroCards = _situation.cardsOf('hero');
+    final board = _situation.cardsOf('board');
+    final hero = HoleCards(heroCards[0], heroCards[1]);
     final known = [...hero.cards, ...board];
-    if (known.toSet().length != known.length) {
-      setState(() {
-        _result = null;
-        _error = AppStrings.blockerInvalidBoard;
-      });
-      return;
-    }
     final villainRange = _tryParseRange(_villainRangeController.text);
     if (villainRange == null) {
       setState(() {
@@ -157,74 +236,104 @@ class _BlockerExplorerScreenState extends State<BlockerExplorerScreen> {
     });
   }
 
+  void _openEquity() {
+    final heroCards = _situation.cardsOf('hero');
+    final villainRange = _tryParseRange(_villainRangeController.text);
+    if (heroCards.length < 2 || villainRange == null) return;
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => EquityCalculatorScreen(
+        initialHeroHand: HoleCards(heroCards[0], heroCards[1]),
+        initialVillainRangeTokens: villainRange.frequencies.keys.toList(),
+        initialBoard: _situation.cardsOf('board'),
+      ),
+    ));
+  }
+
+  void _openRangeBuilder() {
+    final villainRange = _tryParseRange(_villainRangeController.text);
+    if (villainRange == null) return;
+    final controller = RangeExplorerController()
+      ..startDraftFromScratch()
+      ..setMode(RangeToolMode.build);
+    for (final entry in villainRange.frequencies.entries) {
+      controller.setDraftFrequency(entry.key, entry.value);
+    }
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => RangeExplorerScreen(controller: controller),
+    ));
+  }
+
+  void _openCombos(String notation) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => ComboCalculatorScreen(
+        initialNotation: notation,
+        initialDeadCards: _situation.cardsOf('board'),
+      ),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: AppColors.backgroundGradient,
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: LayoutBuilder(builder: (context, constraints) {
-            final pad = constraints.maxWidth >= 480 ? 24.0 : 18.0;
-            return SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(pad, 12, pad, 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ToolHeader(
-                    icon: Icons.block_rounded,
-                    accentColor: AppColors.danger,
-                    title: AppStrings.toolsBlockerTitle,
-                    subtitle: AppStrings.toolsBlockerCalculatorSubtitle,
-                    onBack: () => Navigator.of(context).maybePop(),
-                  ),
-                  const SizedBox(height: 20),
-                  ToolCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        ToolTextField(
-                          label: AppStrings.blockerHeroLabel,
-                          controller: _heroController,
-                          onChanged: _recalculate,
-                          hintText: AppStrings.blockerHeroHint,
-                          accentColor: AppColors.danger,
-                        ),
-                        const SizedBox(height: 14),
-                        ToolTextField(
-                          label: AppStrings.blockerVillainRangeLabel,
-                          controller: _villainRangeController,
-                          onChanged: _recalculate,
-                          hintText: AppStrings.blockerVillainRangeHint,
-                          accentColor: AppColors.danger,
-                        ),
-                        const SizedBox(height: 14),
-                        ToolTextField(
-                          label: AppStrings.blockerBoardLabel,
-                          controller: _boardController,
-                          onChanged: _recalculate,
-                          hintText: AppStrings.blockerBoardHint,
-                          accentColor: AppColors.danger,
-                        ),
-                      ],
+      backgroundColor: SalaVerdeColors.background,
+      body: SafeArea(
+        child: LayoutBuilder(builder: (context, constraints) {
+          final pad = constraints.maxWidth >= 480 ? 24.0 : 18.0;
+          return SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(pad, 12, pad, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ToolHeader(
+                  icon: Icons.block_rounded,
+                  title: AppStrings.toolsBlockerTitle,
+                  subtitle: AppStrings.toolsBlockerCalculatorSubtitle,
+                  onBack: () => Navigator.of(context).maybePop(),
+                  trailing: ToolInfoButton(
+                    onTap: () => showToolExplainerSheet(
+                      context,
+                      toolId: kBlockerToolId,
+                      content: kBlockerExplainer,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  if (_error != null)
-                    ToolErrorCard(message: _error!)
-                  else if (_result != null)
-                    _ResultSection(result: _result!),
-                ],
-              ),
-            );
-          }),
-        ),
+                ),
+                const SizedBox(height: SalaVerdeSpace.xl),
+                ToolCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      CardGroupField(controller: _situation, groupId: 'hero'),
+                      const SizedBox(height: SalaVerdeSpace.lg),
+                      ToolTextField(
+                        label: AppStrings.blockerVillainRangeLabel,
+                        controller: _villainRangeController,
+                        onChanged: _recalculate,
+                        hintText: AppStrings.blockerVillainRangeHint,
+                      ),
+                      const SizedBox(height: SalaVerdeSpace.lg),
+                      CardGroupField(controller: _situation, groupId: 'board'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: SalaVerdeSpace.lg),
+                if (_error != null)
+                  ToolErrorCard(message: _error!)
+                else if (!_situation.isComplete('hero'))
+                  const ToolEmptyState(
+                    message: AppStrings.toolsHandPickBoth,
+                    icon: Icons.style_rounded,
+                  )
+                else if (_result != null)
+                  _ResultSection(
+                    result: _result!,
+                    onViewEquity: _openEquity,
+                    onViewRangeInBuilder: _openRangeBuilder,
+                    onViewCombos: _openCombos,
+                  ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
@@ -254,9 +363,17 @@ class _ClassBlockInfo {
 }
 
 class _ResultSection extends StatelessWidget {
-  const _ResultSection({required this.result});
+  const _ResultSection({
+    required this.result,
+    required this.onViewEquity,
+    required this.onViewRangeInBuilder,
+    required this.onViewCombos,
+  });
 
   final _BlockerResult result;
+  final VoidCallback onViewEquity;
+  final VoidCallback onViewRangeInBuilder;
+  final ValueChanged<String> onViewCombos;
 
   @override
   Widget build(BuildContext context) {
@@ -264,27 +381,20 @@ class _ResultSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ToolCard(
-          gradientColors: const [Color(0xFF3A1620), Color(0xFF240D14)],
-          borderColor: AppColors.danger.withValues(alpha: 0.4),
+          borderColor: kToolAccent.withValues(alpha: 0.4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const ToolSectionLabel(AppStrings.toolsResultPrincipal, color: kToolAccent),
+              const SizedBox(height: SalaVerdeSpace.sm),
               Row(
                 children: [
-                  Expanded(
-                    child: ToolResultStat(
-                      label: AppStrings.blockerTotalLabel,
-                      value: '${result.total}',
-                      big: true,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
                   Expanded(
                     child: ToolResultStat(
                       label: AppStrings.blockerAvailableLabel,
                       value: '${result.available}',
                       big: true,
-                      color: AppColors.neonGreen,
+                      color: SalaVerdeColors.success,
                     ),
                   ),
                   Expanded(
@@ -292,50 +402,63 @@ class _ResultSection extends StatelessWidget {
                       label: AppStrings.blockerBlockedLabel,
                       value: '${result.total - result.available}',
                       big: true,
-                      color: AppColors.danger,
+                      color: SalaVerdeColors.errorBright,
+                    ),
+                  ),
+                  Expanded(
+                    child: ToolResultStat(
+                      label: AppStrings.blockerTotalLabel,
+                      value: '${result.total}',
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: SalaVerdeSpace.md),
               Text(
                 AppStrings.blockerExplanation(
                   total: result.total,
                   available: result.available,
                 ),
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  color: AppColors.textSecondary,
-                  height: 1.4,
-                ),
+                style: SalaVerdeType.caption(color: SalaVerdeColors.textSecondary),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: SalaVerdeSpace.lg),
         ToolCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                AppStrings.blockerClassesHeader,
-                style: TextStyle(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textMuted,
-                  letterSpacing: 0.4,
-                ),
-              ),
-              const SizedBox(height: 10),
+              const ToolSectionLabel(AppStrings.blockerClassesHeader),
+              const SizedBox(height: SalaVerdeSpace.sm),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: SalaVerdeSpace.sm,
+                runSpacing: SalaVerdeSpace.sm,
                 children: [
-                  for (final classInfo in result.classes) _ClassChip(info: classInfo),
+                  for (final classInfo in result.classes)
+                    _ClassChip(info: classInfo, onTap: () => onViewCombos(classInfo.notation)),
                 ],
               ),
             ],
           ),
+        ),
+        const SizedBox(height: SalaVerdeSpace.lg),
+        Row(
+          children: [
+            Expanded(
+              child: SvButtonSecondary(
+                label: AppStrings.blockerViewEquity,
+                onTap: onViewEquity,
+              ),
+            ),
+            const SizedBox(width: SalaVerdeSpace.sm),
+            Expanded(
+              child: SvButtonSecondary(
+                label: AppStrings.blockerViewRangeInBuilder,
+                onTap: onViewRangeInBuilder,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -343,38 +466,34 @@ class _ResultSection extends StatelessWidget {
 }
 
 class _ClassChip extends StatelessWidget {
-  const _ClassChip({required this.info});
+  const _ClassChip({required this.info, required this.onTap});
 
   final _ClassBlockInfo info;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final Color background;
-    final Color textColor;
+    final Color color;
     if (info.isFullyBlocked) {
-      background = AppColors.danger.withValues(alpha: 0.18);
-      textColor = AppColors.danger;
+      color = SalaVerdeColors.errorBright;
     } else if (info.isPartiallyBlocked) {
-      background = AppColors.gold.withValues(alpha: 0.18);
-      textColor = AppColors.gold;
+      color = SalaVerdeColors.warning;
     } else {
-      background = AppColors.surfaceElevated;
-      textColor = AppColors.textSecondary;
+      color = SalaVerdeColors.textSecondary;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: background,
-        border: Border.all(color: textColor.withValues(alpha: 0.4)),
-      ),
-      child: Text(
-        '${info.notation} ${info.after}/${info.before}',
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: textColor,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(SalaVerdeRadius.control),
+          color: color.withValues(alpha: 0.14),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
+        ),
+        child: Text(
+          '${info.notation} ${info.after}/${info.before}',
+          style: SalaVerdeType.caption(color: color).copyWith(fontWeight: FontWeight.w700),
         ),
       ),
     );

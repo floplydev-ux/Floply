@@ -131,7 +131,7 @@ class ActionResolver {
     // vuelve a cobrar.
     final delta = investedThisStreetBb - player.investedThisStreetBb;
     final newPlayer = player.copyWith(
-      stackBb: player.stackBb - delta,
+      stackBb: _cleanBb(player.stackBb - delta),
       investedThisStreetBb: investedThisStreetBb,
       investedTotalBb: player.investedTotalBb + delta,
     );
@@ -180,10 +180,10 @@ class ActionResolver {
 
     final delta = total - player.investedThisStreetBb;
     final newPlayer = player.copyWith(
-      stackBb: player.stackBb - delta,
+      stackBb: _cleanBb(player.stackBb - delta),
       investedThisStreetBb: total,
       investedTotalBb: player.investedTotalBb + delta,
-      isAllIn: player.stackBb - delta <= 0,
+      isAllIn: player.stackBb - delta <= 1e-9,
     );
     final newSeats = _replaceSeat(state, newPlayer);
     final increment = total - state.round.currentBetBb;
@@ -288,6 +288,20 @@ class ActionResolver {
       player.slot,
     );
   }
+
+  /// Redondea a exactamente 0 un resultado de resta en punto flotante que
+  /// matemáticamente debería ser 0 (p. ej. un call que iguala justo el
+  /// stack restante) — sin esto, `stackBb` puede quedar en un residuo
+  /// como `7.1e-15` en vez de `0.0` (imprecisión estándar de `double`),
+  /// que después `LegalActionEngine.legalActionTypes` interpretaría como
+  /// "todavía tiene con qué apostar" (`stackBb > 0`), ofreciendo un BET
+  /// legal cuyo `maxRaiseToBb` (ese mismo residuo) termina siendo menor
+  /// que el mínimo legal — un rango `[min, max]` inconsistente que
+  /// `ActionResolver._applyAggressive` rechaza. Hallazgo real de la Mesa
+  /// con Coach (Grupo 8): con manos completas de hasta 4 calles y varias
+  /// acciones cada una, esta imprecisión aparece con más frecuencia que
+  /// en el uso preflop-only anterior del motor.
+  static double _cleanBb(double value) => value.abs() < 1e-9 ? 0.0 : value;
 
   static List<PlayerState> _replaceSeat(GameState state, PlayerState player) => [
         for (final s in state.seats) s.slot == player.slot ? player : s,

@@ -4,7 +4,7 @@ description: >
   la Academia (326 teorías) con ejercicios interactivos, con cuenta global
   (Google/Apple/email) y progreso sincronizado vía Firebase.
 publish_to: 'none'
-version: 0.2.0
+version: 0.3.0+6
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -17,10 +17,17 @@ dependencies:
   firebase_core: ^4.15.0
   firebase_auth: ^6.7.0
   cloud_firestore: ^6.10.0
+  cloud_functions: ^6.5.0
+  firebase_app_check: ^0.4.8
   google_sign_in: ^7.2.0
   sign_in_with_apple: ^8.2.0
   crypto: ^3.0.7
   marionette_flutter: ^0.6.0
+  image_picker: ^1.1.2
+  connectivity_plus: ^6.1.3
+  google_mobile_ads: ^9.1.0
+  purchases_flutter: ^10.14.0
+  audioplayers: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -29,17 +36,36 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
   alchemist: ^0.14.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/floply_icon.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+  background_color_ios: "#0E0D0B"
+  adaptive_icon_background: "#0E0D0B"
+  adaptive_icon_foreground: "assets/icon/floply_icon_foreground.png"
 
 flutter:
   uses-material-design: true
   assets:
+    - assets/audio/poker/
     - assets/curriculum/curriculum_spec.json
     - assets/ranges/opening_ranges.json
-  # Tipografía de "Sala Verde" (docs/design/FLOPLY_DESIGN_DECISIONS.md #3),
-  # empaquetada como asset estático — sin el paquete `google_fonts` para no
-  # depender de una descarga de red en tiempo de ejecución. Usada por ahora
-  # solo por la Home migrada (Fase 2); el resto de la app sigue con
-  # `AppTheme`/fuente de sistema sin cambios.
+    - assets/images/home/home_background.jpg
+    - assets/images/home/academy_card_bg.jpg
+    - assets/images/home/laboratory_card_bg.jpg
+    - assets/images/home/tools_banner_bg.jpg
+    - assets/images/home/coach_banner_bg.jpg
+    - assets/images/home/economy_coin_icon.png
+    - assets/images/home/floply_coin.png
+    - assets/images/home/economy_training_icon.png
+    - assets/images/loading/floply_chip.png
+  # Tipografía "Sala Verde" empaquetada como asset estático (sin google_fonts).
+  # Sistema: Fraunces (display/headlines) · Public Sans (UI principal) · IBM Plex Mono (datos numéricos/póker).
+  # Centralizado en lib/theme/sala_verde/sala_verde_typography.dart.
   fonts:
     - family: Fraunces
       fonts:
@@ -47,6 +73,11 @@ flutter:
     - family: PublicSans
       fonts:
         - asset: assets/fonts/PublicSans-Variable.ttf
-    - family: IBMPlexMonoSemiBold
+    - family: IBMPlexMono
       fonts:
+        - asset: assets/fonts/IBMPlexMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/IBMPlexMono-Medium.ttf
+          weight: 500
         - asset: assets/fonts/IBMPlexMono-SemiBold.ttf
+          weight: 600

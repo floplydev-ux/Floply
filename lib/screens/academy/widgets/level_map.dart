@@ -42,6 +42,10 @@ class LevelMap extends StatelessWidget {
             const _AcademyHeader(),
             const SizedBox(height: 16),
             _ProgressStrip(snapshot: snap),
+            if (controller.pendingReviewId != null) ...[
+              const SizedBox(height: 14),
+              _PendingReviewBanner(controller: controller),
+            ],
             const SizedBox(height: 20),
             for (final level in levels) ...[
               _LevelCard(
@@ -107,6 +111,44 @@ class _ProgressStrip extends StatelessWidget {
               style: SalaVerdeType.caption(color: SalaVerdeColors.textMuted),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Banner del mapa cuando hay un repaso acumulativo aprobado-pero-pendiente
+/// (`AcademyController.pendingReviewId`): el checkpoint que lo habilita ya
+/// se aprobó, pero el usuario todavía no hizo el repaso — típicamente
+/// porque, al terminarlo, tocó "MÁS TARDE" en vez de hacerlo ahí mismo. Es
+/// el único otro lugar (además del resultado del checkpoint) donde se
+/// puede arrancar; sin esto, un repaso pospuesto quedaría inalcanzable.
+class _PendingReviewBanner extends StatelessWidget {
+  const _PendingReviewBanner({required this.controller});
+
+  final AcademyController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final reviewId = controller.pendingReviewId;
+    if (reviewId == null) return const SizedBox.shrink();
+
+    return SvSurfacePanel(
+      borderColor: SalaVerdeColors.brassBright.withValues(alpha: 0.4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SvCalloutAccent(
+            eyebrow: controller.reviewTitle(reviewId),
+            body: AppStrings.academyReviewBannerBody,
+            color: SalaVerdeColors.brassBright,
+            icon: Icons.history_edu_rounded,
+          ),
+          const SizedBox(height: SalaVerdeSpace.md),
+          SvButtonPrimary(
+            label: AppStrings.academyStartReview,
+            onTap: () => controller.startCumulativeReview(reviewId),
+          ),
         ],
       ),
     );

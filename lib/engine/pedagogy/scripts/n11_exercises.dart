@@ -19,7 +19,18 @@ class N11Exercises {
     '11.3': InteractiveExerciseSet([_condensado()]),
     '11.4': InteractiveExerciseSet([_bloqueador()]),
     '11.5': InteractiveExerciseSet([_mdf()]),
-    '11.6': InteractiveExerciseSet([_explotar()]),
+    // 11.6 es el checkpoint del nivel: la evaluación del módulo repasa
+    // ventaja de rango, SPR estratégico, condensación, bloqueadores y
+    // MDF, antes de cerrar con su propio contenido (explotar vs jugar
+    // equilibrado).
+    '11.6': InteractiveExerciseSet([
+      _ventajaDeRango(),
+      _sprEstrategico(),
+      _condensado(),
+      _bloqueador(),
+      _mdf(),
+      _explotar(),
+    ]),
   };
 
   // ================================================================

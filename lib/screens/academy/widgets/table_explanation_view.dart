@@ -32,13 +32,21 @@ class TableExplanationView extends StatefulWidget {
     this.accent = AppColors.violetPrimary,
     this.panelIcon,
     this.cardGlow = const {},
+    this.richBody,
   });
 
   /// Mesa ya "casteada" (con nombres y avatares).
   final TableSnapshot table;
 
   /// Texto educativo ya resuelto (marcadores `{me}` / `{BTN}` reemplazados).
+  /// Ignorado cuando [richBody] no es `null`.
   final String text;
+
+  /// Cuerpo alternativo al texto plano de [text] — hoy solo lo usa la
+  /// devolución estructurada de Laboratorio (ver
+  /// `playable_table_exercise_view.dart`); `null` para todo lo demás,
+  /// exactamente el comportamiento de siempre.
+  final Widget? richBody;
 
   /// Elemento de la mesa que enfoca este paso.
   final TableAnchor anchor;
@@ -183,6 +191,7 @@ class _TableExplanationViewState extends State<TableExplanationView>
                 contextLabel: _anchorLabel(widget.anchor),
                 icon: widget.panelIcon,
                 accent: widget.accent,
+                child: widget.richBody,
               ),
             ),
           ),

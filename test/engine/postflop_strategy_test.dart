@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:poker_trainer/engine/concepts/concept_ids.dart';
 import 'package:poker_trainer/engine/exercises/exercise_scenario.dart';
 import 'package:poker_trainer/engine/exercises/exercise_scenario_builder.dart';
 import 'package:poker_trainer/engine/exercises/postflop_strategy.dart';
@@ -9,6 +10,7 @@ import 'package:poker_trainer/engine/poker/deck.dart';
 import 'package:poker_trainer/engine/poker/poker_action.dart';
 import 'package:poker_trainer/engine/poker/position.dart';
 import 'package:poker_trainer/engine/poker/street.dart';
+import 'package:poker_trainer/engine/strategy/strategy.dart';
 
 Card _c(String code) => Card.parse(code);
 
@@ -131,6 +133,94 @@ void main() {
         ),
         throwsArgumentError,
       );
+    });
+  });
+
+  group('PostflopStrategy — rationaleKey/math (devolución estructurada de '
+      'Laboratorio)', () {
+    test('_cbetStrategy: bet/check tienen rationaleKey propio y declaran '
+        'rangeAdvantage — nunca math (heurística, no equity real)', () {
+      final scenario = ExerciseScenarioBuilder.cbetDecision(deck: Deck(Random(1)));
+      final strategy =
+          PostflopStrategy.forDecision(scenario.initialState, scenario.heroSlot);
+
+      final bet = strategy.optionFor(const PokerAction(ActionType.bet))!;
+      final check = strategy.optionFor(const PokerAction(ActionType.check))!;
+
+      expect(bet.rationaleKey, 'cbet.bet');
+      expect(check.rationaleKey, 'cbet.check');
+      expect(bet.justifyingConcepts, contains(ConceptIds.rangeAdvantage));
+      expect(check.justifyingConcepts, contains(ConceptIds.rangeAdvantage));
+      expect(bet.math, isNull);
+      expect(check.math, isNull);
+    });
+
+    test('_facingCbetStrategy: call/fold traen la equity/pot odds reales ya '
+        'calculadas (no un número inventado) y un rationaleKey coherente '
+        'con quién de los dos es la línea óptima', () {
+      for (var seed = 1; seed <= 15; seed++) {
+        final scenario = ExerciseScenarioBuilder.facingCbet(deck: Deck(Random(seed)));
+        final strategy =
+            PostflopStrategy.forDecision(scenario.initialState, scenario.heroSlot);
+
+        final call = strategy.optionFor(const PokerAction(ActionType.call))!;
+        final fold = strategy.optionFor(PokerAction.fold)!;
+
+        for (final option in [call, fold]) {
+          final math = option.math;
+          expect(math, isNotNull, reason: 'seed $seed: ${option.action}');
+          expect(math!.equityPct, isNotNull, reason: 'seed $seed');
+          expect(math.requiredEquityPct, isNotNull, reason: 'seed $seed');
+          expect(math.edgePct, isNotNull, reason: 'seed $seed');
+          expect(math.potBb, isNotNull, reason: 'seed $seed');
+          expect(math.toCallBb, isNotNull, reason: 'seed $seed');
+          // edgePct es exactamente equityPct - requiredEquityPct — nunca
+          // un tercer número calculado por separado.
+          expect(math.edgePct, closeTo(math.equityPct! - math.requiredEquityPct!, 0.01),
+              reason: 'seed $seed');
+          expect(option.rationaleKey, isNotNull, reason: 'seed $seed');
+          expect(option.rationaleKey, startsWith('facing_cbet.'), reason: 'seed $seed');
+        }
+
+        // Call y fold comparten exactamente los mismos números (es la
+        // misma decisión, vista desde las dos acciones) — nunca dos
+        // equities distintas para el mismo spot.
+        expect(call.math!.equityPct, fold.math!.equityPct, reason: 'seed $seed');
+      }
+    });
+
+    test('_barrelStrategy (turnBarrel): bet/check traen equity real, y '
+        'exactamente uno de los dos es la línea óptima', () {
+      for (var seed = 1; seed <= 200; seed++) {
+        final scenario = ExerciseScenarioBuilder.turnBarrel(deck: Deck(Random(seed)));
+        Strategy strategy;
+        try {
+          strategy = PostflopStrategy.forDecision(scenario.initialState, scenario.heroSlot);
+        } on ArgumentError {
+          // Caso límite ya documentado en `PostflopStrategy.
+          // _villainRangeFor`: para algunos pares hero/board, el rango de
+          // referencia queda sin combos válidos una vez descontadas las
+          // cartas conocidas — no es algo que este test (ni
+          // `PostflopStrategy`) deba resolver, así que estas semillas
+          // puntuales se saltan.
+          continue;
+        }
+
+        final bet = strategy.optionFor(const PokerAction(ActionType.bet))!;
+        final check = strategy.optionFor(const PokerAction(ActionType.check))!;
+
+        for (final option in [bet, check]) {
+          expect(option.math, isNotNull, reason: 'seed $seed: ${option.action}');
+          expect(option.math!.equityPct, isNotNull, reason: 'seed $seed');
+          expect(option.rationaleKey, isNotNull, reason: 'seed $seed');
+          expect(option.rationaleKey, startsWith('barrel.'), reason: 'seed $seed');
+        }
+        expect(bet.math!.equityPct, check.math!.equityPct, reason: 'seed $seed');
+        // Exactamente una de las dos es la línea óptima — nunca ambas ni
+        // ninguna (el piso de equity siempre inclina para un lado).
+        expect({bet.rating, check.rating}, {StrategicRating.optimal, StrategicRating.dubious},
+            reason: 'seed $seed');
+      }
     });
   });
 }

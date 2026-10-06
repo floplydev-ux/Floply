@@ -37,19 +37,34 @@ void main() {
 
   test('la migración no pierde contenido: todo guion y set histórico queda '
       're-anclado a algún subnivel nuevo', () {
+    // '1.1'/'1.3' (guiones de mesa) y '1.4'/'1.5' (sets de ejercicios)
+    // quedan deliberadamente sin re-anclar: 1.1, 1.2, 1.3 y 1.4 migraron
+    // al piloto de 3 bloques con ejemplos/ejercicios propios en Dart puro
+    // (`AcademyClosingExamples`/`N1PilotExercises`, sin legacy) — mismo
+    // criterio ya establecido en `curriculum_spec_test.dart`, que esta
+    // prueba no debe divergir.
+    const knownOrphanedScripts = {'1.1', '1.3'};
+    const knownOrphanedSets = {'1.4', '1.5'};
+
     final anchoredScripts = <String>{
       for (final s in spec.allSublevels) ...?s.legacy?.tableScripts,
     };
-    expect(anchoredScripts, containsAll(AcademyTableScripts.all.keys),
-        reason: 'guiones de mesa sin re-anclar: '
-            '${AcademyTableScripts.all.keys.toSet().difference(anchoredScripts)}');
+    final missingScripts = AcademyTableScripts.all.keys
+        .toSet()
+        .difference(anchoredScripts)
+        .difference(knownOrphanedScripts);
+    expect(missingScripts, isEmpty,
+        reason: 'guiones de mesa sin re-anclar: $missingScripts');
 
     final anchoredSets = <String>{
       for (final s in spec.allSublevels) ...?s.legacy?.exerciseSets,
     };
-    expect(anchoredSets, containsAll(AcademyExerciseScripts.all.keys),
-        reason: 'sets de ejercicios sin re-anclar: '
-            '${AcademyExerciseScripts.all.keys.toSet().difference(anchoredSets)}');
+    final missingSets = AcademyExerciseScripts.all.keys
+        .toSet()
+        .difference(anchoredSets)
+        .difference(knownOrphanedSets);
+    expect(missingSets, isEmpty,
+        reason: 'sets de ejercicios sin re-anclar: $missingSets');
 
     // Y todo subnivel que hereda un guion/set lo resuelve.
     for (final code in AcademyTableScripts.lessonIds) {

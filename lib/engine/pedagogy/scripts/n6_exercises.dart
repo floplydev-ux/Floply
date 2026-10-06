@@ -20,7 +20,19 @@ class N6Exercises {
     '6.4': InteractiveExerciseSet([_boteFinal()]),
     '6.5': InteractiveExerciseSet([_potOdds()]),
     '6.6': InteractiveExerciseSet([_evSign()]),
-    '6.7': InteractiveExerciseSet([_foldEquity()]),
+    // 6.7 es el checkpoint del nivel: la evaluación del módulo recorre el
+    // mismo hilo numérico completo (outs → equity → regla del 4 → bote
+    // final → pot odds → EV) antes de cerrar con su propio contenido
+    // (fold equity/farol) — repasa el nivel entero, no solo lo último.
+    '6.7': InteractiveExerciseSet([
+      _outs(),
+      _equityReal(),
+      _reglaDel4(),
+      _boteFinal(),
+      _potOdds(),
+      _evSign(),
+      _foldEquity(),
+    ]),
   };
 
   static TableSnapshot _flopColor({double pot = 8.0, double bet = 4.0}) =>

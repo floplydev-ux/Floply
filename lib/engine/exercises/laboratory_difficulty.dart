@@ -14,17 +14,14 @@ import 'exercise_scenario.dart';
 /// simplemente manos más "difíciles" con los mismos conceptos de siempre.
 ///
 /// Estado real del contenido disponible: [ExerciseScenarioBuilder] ya
-/// tiene una primera familia postflop
-/// (`PreflopScenarioKind.cbetDecision` — ver
-/// `LABORATORIO_POSTFLOP_AUDITORIA_DISENO.md`), pero acotada a una sola
-/// situación (c-bet de rango completo en un flop que favorece al
-/// agresor). Por eso solo entra en **Experto**: necesita conceptos
-/// bastante más avanzados (`cbet` se enseña recién en el nivel 8 de
-/// Academia) que las 5 familias preflop, así que mezclarla en Fácil/
-/// Medio rompería la progresión de dificultad real (qué tanto sabe el
-/// alumno), no solo la de "cuántas familias hay". "Experto" sigue
-/// significando *todo lo que el motor puede generar hoy* — turn/river,
-/// más familias postflop, siguen sin existir.
+/// tiene cuatro familias postflop (`cbetDecision`/`facingCbet`/
+/// `turnBarrel`/`riverBarrel` — ver `LABORATORIO_POSTFLOP_AUDITORIA_DISENO.md`
+/// y el doc-comment de `PostflopStrategy`), cubriendo flop, turn y río.
+/// Todas entran solo en **Experto**: necesitan conceptos bastante más
+/// avanzados (`cbet`/`pot_odds`/`equity`/`value_bet`, recién enseñados
+/// desde el nivel 6-9 de Academia) que las 5 familias preflop, así que
+/// mezclarlas en Fácil/Medio rompería la progresión de dificultad real
+/// (qué tanto sabe el alumno), no solo la de "cuántas familias hay".
 enum LaboratoryDifficulty {
   /// Una sola familia (`openRaise`): el héroe decide si abre o no desde
   /// una posición, con una mano clara dentro o fuera de rango. El
@@ -57,10 +54,10 @@ enum LaboratoryDifficulty {
         LaboratoryDifficulty.expert => PreflopScenarioKind.values,
       };
 
-  /// `true` si esta dificultad puede generar `cbetDecision` — la única
-  /// familia postflop hoy, gateada a Experto (ver el doc-comment de la
-  /// clase). Atajo sobre [allowedScenarioKinds] para no repetir la
-  /// comparación en cada caller.
+  /// `true` si esta dificultad puede generar alguna familia postflop —
+  /// todas gateadas a Experto (ver el doc-comment de la clase). Atajo
+  /// sobre [allowedScenarioKinds] para no repetir la comparación en cada
+  /// caller.
   bool get includesPostflop => allowedScenarioKinds.contains(PreflopScenarioKind.cbetDecision);
 
   /// Sesgo de mano secundario para esta dificultad — reutiliza
@@ -94,6 +91,7 @@ enum LaboratoryDifficulty {
               'corto. Combina más de un concepto por decisión.',
         LaboratoryDifficulty.expert =>
           'Todas las familias disponibles hoy, incluyendo 3-bet, encarar '
-              'un 3-bet, y tu primera decisión postflop (c-bet).',
+              'un 3-bet, y decisiones postflop hasta el río (c-bet, '
+              'encarar presión y seguir apostando por valor).',
       };
 }

@@ -82,9 +82,9 @@ void main() {
     });
 
     test(
-        'si falla la sincronización de perfil después de un login exitoso '
-        '(Firestore caído), no queda colgado en AuthLoading: vuelve a '
-        'Unauthenticated con lastFailure seteado', () async {
+        'si falla Firestore después de un login exitoso, el controller '
+        'no queda colgado: sigue con perfil mínimo y llega a AuthAuthenticated '
+        '(best-effort — Firebase Auth ya confirmó la identidad)', () async {
       final h = _Harness();
       final controller = h.build();
       await controller.bootstrap();
@@ -93,9 +93,11 @@ void main() {
       h.auth.queueSuccess(h.identity());
       final ok = await controller.signInWithGoogle();
 
-      expect(ok, isFalse);
-      expect(controller.state, isA<AuthUnauthenticated>());
-      expect(controller.lastFailure, AuthFailureReason.network);
+      // La falla de Firestore no bloquea el login: el controlador construye
+      // un perfil mínimo desde la identidad y pasa a AuthAuthenticated.
+      expect(ok, isTrue);
+      expect(controller.state, isA<AuthAuthenticated>());
+      expect(controller.lastFailure, isNull);
     });
 
     test(
@@ -222,19 +224,14 @@ void main() {
       expect(states, isNot(contains(AuthUnauthenticated)));
     });
 
-    test(
-        'invitado: continueAsGuest() persiste y bootstrap() posterior '
-        'respeta el flag sin volver a preguntar', () async {
+    // El modo invitado fue eliminado: el test de continueAsGuest() se
+    // reemplazó por la verificación de que bootstrap() siempre va a
+    // AuthUnauthenticated cuando no hay sesión activa.
+    test('sin sesión: bootstrap() va a AuthUnauthenticated', () async {
       final h = _Harness();
-      final first = h.build();
-      await first.bootstrap();
-      await first.continueAsGuest();
-      expect(first.state, isA<AuthGuest>());
-
-      // "reabrir la app": nuevo controller, mismo flagStore.
-      final second = h.build();
-      await second.bootstrap();
-      expect(second.state, isA<AuthGuest>());
+      final controller = h.build();
+      await controller.bootstrap();
+      expect(controller.state, isA<AuthUnauthenticated>());
     });
   });
 
@@ -336,14 +333,13 @@ void main() {
   });
 
   group('migración de progreso (Fase 12/13)', () {
-    test('progreso guardado como invitado aparece al crear la cuenta',
+    test('progreso guardado localmente aparece al crear la cuenta',
         () async {
       final h = _Harness();
       final controller = h.build();
       await controller.bootstrap();
-      await controller.continueAsGuest();
 
-      // Progreso "como invitado": se guarda en el store local compartido.
+      // Progreso local antes del login: se guarda en el store local.
       await controller.academyStore.save(AcademySaveData(
         knowledge: _emptyKnowledge(),
         progress: AcademyProgress()..entry('1.1').completed = true,

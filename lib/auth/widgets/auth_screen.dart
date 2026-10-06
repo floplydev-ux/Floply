@@ -5,11 +5,8 @@ import '../../theme/app_colors.dart';
 import '../../widgets/pressable_scale.dart';
 import '../auth_controller.dart';
 import 'account_conflict_sheet.dart';
-import 'email_link_screen.dart';
 
-/// Pantalla de acceso (Fase 22): simple, moderna, sin convertirse en una
-/// pantalla enorme. Solo habla con [AuthController] — nunca con Firebase
-/// directo (Fase 24).
+/// Pantalla de acceso — métodos disponibles: Google y Email+Contraseña.
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key, required this.controller});
 
@@ -21,6 +18,18 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool _busy = false;
+  bool _showEmailForm = false;
+
+  final _emailCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
+  String? _emailAuthError;
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passwordCtrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _run(Future<bool> Function() action) async {
     if (_busy) return;
@@ -34,12 +43,25 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  Future<void> _signInWithEmail() async {
+    final email = _emailCtrl.text.trim();
+    final password = _passwordCtrl.text;
+    setState(() => _emailAuthError = null);
+    await _run(
+      () => widget.controller.signInWithEmailPassword(email, password),
+    );
+    if (!mounted) return;
+    final failure = widget.controller.lastFailure;
+    if (failure != null) {
+      setState(() => _emailAuthError = authErrorMessage(failure));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.controller,
       builder: (context, _) {
-        final failure = widget.controller.lastFailure;
         return Scaffold(
           backgroundColor: AppColors.background,
           body: DecoratedBox(
@@ -64,13 +86,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         children: [
                           const _Wordmark(),
                           const SizedBox(height: 48),
-                          if (failure != null) ...[
-                            _ErrorBanner(
-                              message: authErrorMessage(failure),
-                              onDismiss: widget.controller.clearLastFailure,
-                            ),
-                            const SizedBox(height: 16),
-                          ],
                           _ProviderButton(
                             label: AppStrings.authContinueGoogle,
                             glyph: 'G',
@@ -80,59 +95,33 @@ class _AuthScreenState extends State<AuthScreen> {
                             onTap: () =>
                                 _run(widget.controller.signInWithGoogle),
                           ),
-                          const SizedBox(height: 12),
-                          _ProviderButton(
-                            label: AppStrings.authContinueApple,
-                            icon: Icons.apple_rounded,
-                            background: Colors.black,
-                            foreground: Colors.white,
-                            busy: _busy,
-                            onTap: () =>
-                                _run(widget.controller.signInWithApple),
-                          ),
+                          const SizedBox(height: 24),
+                          const _DividerOr(),
                           const SizedBox(height: 20),
-                          const _OrDivider(),
-                          const SizedBox(height: 20),
-                          _ProviderButton(
-                            label: AppStrings.authContinueEmail,
-                            icon: Icons.mail_outline_rounded,
-                            background: AppColors.surfaceElevated,
-                            foreground: AppColors.textPrimary,
-                            outline: true,
-                            busy: _busy,
-                            onTap: () async {
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => EmailLinkScreen(
-                                    controller: widget.controller,
-                                    mode: EmailLinkMode.signIn,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 28),
-                          Center(
-                            child: PressableScale(
-                              onTap: _busy
-                                  ? () {}
-                                  : () => widget.controller.continueAsGuest(),
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 12),
-                                child: Text(
-                                  AppStrings.authContinueWithoutAccount,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.textSecondary,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: AppColors.textSecondary,
-                                  ),
+                          if (!_showEmailForm)
+                            GestureDetector(
+                              onTap: () =>
+                                  setState(() => _showEmailForm = true),
+                              child: const Text(
+                                AppStrings.authSignInWithEmail,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textSecondary,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AppColors.textSecondary,
                                 ),
                               ),
+                            )
+                          else
+                            _EmailForm(
+                              emailCtrl: _emailCtrl,
+                              passwordCtrl: _passwordCtrl,
+                              busy: _busy,
+                              error: _emailAuthError,
+                              onSubmit: _signInWithEmail,
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -146,6 +135,10 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Wordmark
+// ---------------------------------------------------------------------------
 
 class _Wordmark extends StatelessWidget {
   const _Wordmark();
@@ -173,41 +166,138 @@ class _Wordmark extends StatelessWidget {
         const Text(
           AppStrings.authTagline,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
         ),
       ],
     );
   }
 }
 
-class _OrDivider extends StatelessWidget {
-  const _OrDivider();
+// ---------------------------------------------------------------------------
+// Divisor "─ o bien ─"
+// ---------------------------------------------------------------------------
+
+class _DividerOr extends StatelessWidget {
+  const _DividerOr();
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       children: [
-        Expanded(child: Container(height: 1, color: AppColors.surfaceBorder)),
+        Expanded(child: Divider(color: AppColors.surfaceBorder)),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            AppStrings.authOr.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.6,
-              color: AppColors.textMuted,
+            'o bien',
+            style: TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        Expanded(child: Container(height: 1, color: AppColors.surfaceBorder)),
+        Expanded(child: Divider(color: AppColors.surfaceBorder)),
       ],
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Formulario Email + Contraseña
+// ---------------------------------------------------------------------------
+
+class _EmailForm extends StatelessWidget {
+  const _EmailForm({
+    required this.emailCtrl,
+    required this.passwordCtrl,
+    required this.busy,
+    required this.onSubmit,
+    this.error,
+  });
+
+  final TextEditingController emailCtrl;
+  final TextEditingController passwordCtrl;
+  final bool busy;
+  final VoidCallback onSubmit;
+  final String? error;
+
+  @override
+  Widget build(BuildContext context) {
+    const inputDecoration = InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderSide: BorderSide(color: AppColors.surfaceBorder),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderSide: BorderSide(color: AppColors.surfaceBorder),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderSide: BorderSide(color: Color(0xFF7C6DEF), width: 1.5),
+      ),
+      contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+      labelStyle: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+    );
+
+    return Theme(
+      data: Theme.of(context).copyWith(inputDecorationTheme: inputDecoration),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: emailCtrl,
+            keyboardType: TextInputType.emailAddress,
+            autocorrect: false,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+            decoration: const InputDecoration(
+              labelText: AppStrings.authEmailLabel,
+              hintText: AppStrings.authEmailHint,
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: passwordCtrl,
+            obscureText: true,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+            decoration: const InputDecoration(
+              labelText: AppStrings.authPasswordLabel,
+              hintText: AppStrings.authPasswordHint,
+            ),
+            onSubmitted: (_) => busy ? null : onSubmit(),
+          ),
+          if (error != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              error!,
+              style: const TextStyle(
+                color: Color(0xFFFF6B6B),
+                fontSize: 12.5,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+          const SizedBox(height: 16),
+          _ProviderButton(
+            label: AppStrings.authSignInButton,
+            background: const Color(0xFF7C6DEF),
+            foreground: Colors.white,
+            busy: busy,
+            onTap: onSubmit,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Botón de proveedor (Google, Email)
+// ---------------------------------------------------------------------------
 
 class _ProviderButton extends StatelessWidget {
   const _ProviderButton({
@@ -216,9 +306,7 @@ class _ProviderButton extends StatelessWidget {
     required this.foreground,
     required this.busy,
     required this.onTap,
-    this.icon,
     this.glyph,
-    this.outline = false,
   });
 
   final String label;
@@ -226,9 +314,7 @@ class _ProviderButton extends StatelessWidget {
   final Color foreground;
   final bool busy;
   final VoidCallback onTap;
-  final IconData? icon;
   final String? glyph;
-  final bool outline;
 
   @override
   Widget build(BuildContext context) {
@@ -242,12 +328,10 @@ class _ProviderButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: background,
             borderRadius: BorderRadius.circular(14),
-            border: outline ? Border.all(color: AppColors.surfaceBorder) : null,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (icon != null) Icon(icon, size: 20, color: foreground),
               if (glyph != null)
                 Text(
                   glyph!,
@@ -258,60 +342,17 @@ class _ProviderButton extends StatelessWidget {
                   ),
                 ),
               const SizedBox(width: 10),
-              Flexible(
-                child: Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w700,
-                    color: foreground,
-                  ),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w700,
+                  color: foreground,
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ErrorBanner extends StatelessWidget {
-  const _ErrorBanner({required this.message, required this.onDismiss});
-
-  final String message;
-  final VoidCallback onDismiss;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.danger.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.danger.withValues(alpha: 0.4)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline_rounded,
-              size: 18, color: AppColors.danger),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              message,
-              style:
-                  const TextStyle(fontSize: 12.5, color: AppColors.textPrimary),
-            ),
-          ),
-          PressableScale(
-            onTap: onDismiss,
-            child: const Icon(Icons.close_rounded,
-                size: 16, color: AppColors.textMuted),
-          ),
-        ],
       ),
     );
   }

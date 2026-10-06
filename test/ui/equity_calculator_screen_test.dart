@@ -1,9 +1,25 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Card;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:poker_trainer/engine/poker/card.dart';
+import 'package:poker_trainer/engine/poker/hole_cards.dart';
 import 'package:poker_trainer/l10n/app_strings.dart';
+import 'package:poker_trainer/persistence/tool_explainer_store.dart';
+import 'package:poker_trainer/screens/academy/widgets/table/playing_card.dart';
 import 'package:poker_trainer/screens/tools/equity_calculator_screen.dart';
+import 'package:poker_trainer/screens/tools/widgets/card_picker.dart';
 
 Widget _harness() => const MaterialApp(home: EquityCalculatorScreen());
+
+/// Elige [card] en el picker de cartas (grilla de 52) que ya está abierto
+/// — mismo mecanismo que usa el usuario real (ver
+/// `blocker_explorer_screen_test.dart` para el mismo patrón).
+Future<void> _chooseCard(WidgetTester tester, Card card) async {
+  final target = find.text(card.pretty);
+  await tester.ensureVisible(target);
+  await tester.pumpAndSettle();
+  await tester.tap(target);
+  await tester.pumpAndSettle();
+}
 
 /// Toca "Calcular equity" y espera a que termine el cálculo real en el
 /// isolate aparte que abre `compute()` (ver el doc-comment de
@@ -15,6 +31,14 @@ Widget _harness() => const MaterialApp(home: EquityCalculatorScreen());
 Future<void> _tapCalculateAndWaitForIsolate(WidgetTester tester) async {
   await tester.tap(find.text(AppStrings.equityCalculateButtonLabel));
   await tester.pump();
+  await _waitForIsolate(tester);
+}
+
+/// Igual que [_tapCalculateAndWaitForIsolate] pero sin el tap inicial —
+/// para cuando el cálculo arranca solo (precarga desde otra herramienta,
+/// ver el `postFrameCallback` del constructor con `initialHeroHand`/
+/// `initialHeroRangeTokens`/etc).
+Future<void> _waitForIsolate(WidgetTester tester) async {
   await tester.runAsync(() async {
     for (var i = 0; i < 300; i++) {
       if (find.byType(CircularProgressIndicator).evaluate().isEmpty) return;
@@ -26,6 +50,12 @@ Future<void> _tapCalculateAndWaitForIsolate(WidgetTester tester) async {
 }
 
 void main() {
+  // Ver el mismo comentario en blocker_explorer_screen_test.dart: evita
+  // la carrera del sistema de explicación contextual (Grupo 3).
+  setUpAll(() async {
+    await defaultToolExplainerStore.setDismissed('equity_calculator', true);
+  });
+
   testWidgets('muestra un resultado real con los valores por defecto '
       '(AK vs AQ, dominación clara)', (tester) async {
     await tester.pumpWidget(_harness());
@@ -34,9 +64,11 @@ void main() {
     expect(tester.takeException(), isNull);
     // Mismo caso que EquityEngine ya prueba en el motor (equity_engine_
     // test.dart, "caso clásico de dominación"): hero muy favorito.
-    expect(find.text(AppStrings.equityWinLabel), findsOneWidget);
-    expect(find.text(AppStrings.equityTieLabel), findsOneWidget);
-    expect(find.text(AppStrings.equityLoseLabel), findsOneWidget);
+    // ToolResultStat muestra sus labels en mayúsculas (tool_widgets.dart)
+    // — no son "Ganás", son "GANÁS".
+    expect(find.text(AppStrings.equityWinLabel.toUpperCase()), findsOneWidget);
+    expect(find.text(AppStrings.equityTieLabel.toUpperCase()), findsOneWidget);
+    expect(find.text(AppStrings.equityLoseLabel.toUpperCase()), findsOneWidget);
     // "EQUITY" aparece dos veces (título del header + label del stat) a
     // propósito — alcanza con confirmar que el resultado se muestra.
     expect(find.text('EQUITY'), findsNWidgets(2));
@@ -47,55 +79,125 @@ void main() {
     await tester.pumpWidget(_harness());
     await tester.pumpAndSettle();
 
-    final fields = find.byType(TextField);
-    await tester.enterText(fields.at(0), '2c3d');
-    await tester.enterText(fields.at(1), '6h7d');
-    await tester.enterText(fields.at(2), '5s5d5c9h9d');
+    // Arma hero=2c3d, villain=6h7d, board=5s5d5c9h9d reemplazando carta
+    // por carta (mismo gesto real que el usuario: tocar una carta ya
+    // puesta reabre el picker) — el board se reemplaza PRIMERO porque
+    // sus valores por defecto (2c/7d/9h) chocan con lo que van a
+    // necesitar hero/villain más abajo; nunca texto libre, ver
+    // `CardGroupField`/`card_picker.dart`. Orden de `PlayingCard` en el
+    // árbol: hero[0,1], villain[0,1], board[0,1,2].
+    await tester.tap(find.byType(PlayingCard).at(4)); // board[0]: 2c
     await tester.pumpAndSettle();
+    await _chooseCard(tester, const Card(Rank.five, Suit.spades));
+    await tester.tap(find.byType(PlayingCard).at(5)); // board[1]: 7d
+    await tester.pumpAndSettle();
+    await _chooseCard(tester, const Card(Rank.five, Suit.diamonds));
+    await tester.tap(find.byType(PlayingCard).at(6)); // board[2]: 9h
+    await tester.pumpAndSettle();
+    await _chooseCard(tester, const Card(Rank.five, Suit.clubs));
+
+    await tester.tap(find.byType(PlayingCard).at(0)); // hero[0]: Ah
+    await tester.pumpAndSettle();
+    await _chooseCard(tester, const Card(Rank.two, Suit.clubs));
+    await tester.tap(find.byType(PlayingCard).at(1)); // hero[1]: Kd
+    await tester.pumpAndSettle();
+    await _chooseCard(tester, const Card(Rank.three, Suit.diamonds));
+
+    await tester.tap(find.byType(PlayingCard).at(2)); // villain[0]: As
+    await tester.pumpAndSettle();
+    await _chooseCard(tester, const Card(Rank.six, Suit.hearts));
+    await tester.tap(find.byType(PlayingCard).at(3)); // villain[1]: Qd
+    await tester.pumpAndSettle();
+    await _chooseCard(tester, const Card(Rank.seven, Suit.diamonds));
+
+    // Board todavía tiene 3 cartas (5s5d5c) — agrega el turn y el river.
+    await tester.tap(find.byType(DottedCardOutline));
+    await tester.pumpAndSettle();
+    await _chooseCard(tester, const Card(Rank.nine, Suit.hearts));
+    await tester.tap(find.byType(DottedCardOutline));
+    await tester.pumpAndSettle();
+    await _chooseCard(tester, const Card(Rank.nine, Suit.diamonds));
 
     expect(tester.takeException(), isNull);
     expect(find.text('50.0%'), findsWidgets); // equity, y gana/pierde en 0
     expect(find.text('100.0%'), findsOneWidget); // empatás siempre
   });
 
-  testWidgets('notación de mano inválida muestra el error y no rompe',
-      (tester) async {
-    await tester.pumpWidget(_harness());
-    await tester.pumpAndSettle();
+  group('precarga desde otra herramienta', () {
+    testWidgets('mano + rango rival -> arranca en modo mano vs rango y '
+        'calcula solo', (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: EquityCalculatorScreen(
+          initialHeroHand: HoleCards.parse('AhKd'),
+          initialVillainRangeTokens: const ['QQ+', 'AKs', 'AKo'],
+          initialBoard: const [
+            Card(Rank.two, Suit.clubs),
+            Card(Rank.seven, Suit.diamonds),
+            Card(Rank.nine, Suit.hearts),
+          ],
+        ),
+      ));
+      // Un solo `pump` (no `pumpAndSettle`): el cálculo arranca solo
+      // desde el `postFrameCallback` y corre en un isolate aparte —
+      // `pumpAndSettle` no puede destrabar ese `Future` real, hace falta
+      // `_waitForIsolate` (mismo motivo que el flujo con botón).
+      await tester.pump();
+      await _waitForIsolate(tester);
 
-    final fields = find.byType(TextField);
-    await tester.enterText(fields.at(0), 'xyz');
-    await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.text(AppStrings.equityModeHandVsRangeLabel), findsOneWidget);
+      // Ya calculado sin tocar "Calcular equity".
+      expect(find.text(AppStrings.toolsResultPrincipal.toUpperCase()), findsOneWidget);
+      expect(find.text(AppStrings.equityScenariosLabel.toUpperCase()), findsOneWidget);
+    });
 
-    expect(tester.takeException(), isNull);
-    expect(find.text(AppStrings.equityInvalidInput), findsOneWidget);
-  });
+    testWidgets('dos rangos -> arranca en modo rango vs rango, campos '
+        'listos pero sin calcular solo (costo real, requiere el botón)',
+        (tester) async {
+      await tester.pumpWidget(const MaterialApp(
+        home: EquityCalculatorScreen(
+          initialHeroRangeTokens: ['AA', 'KK'],
+          initialVillainRangeTokens: ['QQ', 'JJ'],
+          initialBoard: [
+            Card(Rank.two, Suit.clubs),
+            Card(Rank.seven, Suit.diamonds),
+            Card(Rank.nine, Suit.hearts),
+          ],
+        ),
+      ));
+      await tester.pumpAndSettle();
 
-  testWidgets('board con largo inválido (ni 3, 4 ni 5 cartas) muestra el '
-      'error', (tester) async {
-    await tester.pumpWidget(_harness());
-    await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.text(AppStrings.equityModeRangeVsRangeLabel), findsOneWidget);
+      // Rango vs rango nunca calcula solo (puede ser costoso con rangos
+      // reales anchos) — hace falta tocar "Calcular equity" a propósito.
+      expect(find.text(AppStrings.toolsResultPrincipal.toUpperCase()), findsNothing);
 
-    final fields = find.byType(TextField);
-    await tester.enterText(fields.at(2), '2c7d');
-    await tester.pumpAndSettle();
+      await _tapCalculateAndWaitForIsolate(tester);
 
-    expect(tester.takeException(), isNull);
-    expect(find.text(AppStrings.equityInvalidInput), findsOneWidget);
-  });
+      expect(tester.takeException(), isNull);
+      expect(find.text(AppStrings.toolsResultPrincipal.toUpperCase()), findsOneWidget);
+    });
 
-  testWidgets('carta repetida entre hero y villain muestra el error',
-      (tester) async {
-    await tester.pumpWidget(_harness());
-    await tester.pumpAndSettle();
+    testWidgets('dos manos concretas -> arranca en modo mano vs mano con '
+        'resultado en vivo', (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: EquityCalculatorScreen(
+          initialHeroHand: HoleCards.parse('AhKd'),
+          initialVillainHand: HoleCards.parse('QhQc'),
+          initialBoard: const [
+            Card(Rank.two, Suit.clubs),
+            Card(Rank.seven, Suit.diamonds),
+            Card(Rank.nine, Suit.hearts),
+          ],
+        ),
+      ));
+      await tester.pumpAndSettle();
 
-    final fields = find.byType(TextField);
-    await tester.enterText(fields.at(0), 'AhKd');
-    await tester.enterText(fields.at(1), 'AhQd');
-    await tester.pumpAndSettle();
-
-    expect(tester.takeException(), isNull);
-    expect(find.text(AppStrings.equityInvalidInput), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      expect(find.text(AppStrings.equityModeHandVsHandLabel), findsOneWidget);
+      expect(find.text(AppStrings.toolsResultPrincipal.toUpperCase()), findsOneWidget);
+    });
   });
 
   testWidgets('el botón de volver hace pop', (tester) async {
@@ -156,7 +258,7 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.text('EQUITY'), findsNWidgets(2));
-      expect(find.text(AppStrings.equityScenariosLabel), findsOneWidget);
+      expect(find.text(AppStrings.equityScenariosLabel.toUpperCase()), findsOneWidget);
       expect(find.text(AppStrings.equityRangeModeHint), findsNothing);
     }, timeout: const Timeout(Duration(minutes: 2)));
 
@@ -168,30 +270,14 @@ void main() {
       await tester.tap(find.text(AppStrings.equityModeHandVsRangeLabel));
       await tester.pumpAndSettle();
 
-      final fields = find.byType(TextField);
-      await tester.enterText(fields.at(1), 'not a range');
+      // En este modo el único TextField real es el rango del rival —
+      // hero y board se eligen con el picker de cartas.
+      await tester.enterText(find.byType(TextField), 'not a range');
       await tester.tap(find.text(AppStrings.equityCalculateButtonLabel));
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
       expect(find.text(AppStrings.equityRangeInvalidInput), findsOneWidget);
-    });
-
-    testWidgets('mano del héroe inválida muestra el error genérico',
-        (tester) async {
-      await tester.pumpWidget(_harness());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text(AppStrings.equityModeHandVsRangeLabel));
-      await tester.pumpAndSettle();
-
-      final fields = find.byType(TextField);
-      await tester.enterText(fields.at(0), 'xyz');
-      await tester.tap(find.text(AppStrings.equityCalculateButtonLabel));
-      await tester.pumpAndSettle();
-
-      expect(tester.takeException(), isNull);
-      expect(find.text(AppStrings.equityInvalidInput), findsOneWidget);
     });
   });
 
@@ -208,7 +294,7 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.text('EQUITY'), findsNWidgets(2));
-      expect(find.text(AppStrings.equityScenariosLabel), findsOneWidget);
+      expect(find.text(AppStrings.equityScenariosLabel.toUpperCase()), findsOneWidget);
     }, timeout: const Timeout(Duration(minutes: 2)));
 
     testWidgets('rango del héroe con notación inválida muestra el error '
@@ -226,23 +312,6 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.text(AppStrings.equityRangeInvalidInput), findsOneWidget);
-    });
-
-    testWidgets('board con largo inválido muestra el error genérico',
-        (tester) async {
-      await tester.pumpWidget(_harness());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text(AppStrings.equityModeRangeVsRangeLabel));
-      await tester.pumpAndSettle();
-
-      final fields = find.byType(TextField);
-      await tester.enterText(fields.at(2), '2c7d');
-      await tester.tap(find.text(AppStrings.equityCalculateButtonLabel));
-      await tester.pumpAndSettle();
-
-      expect(tester.takeException(), isNull);
-      expect(find.text(AppStrings.equityInvalidInput), findsOneWidget);
     });
   });
 

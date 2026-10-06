@@ -1,5 +1,4 @@
 import 'mentor_lesson.dart';
-import 'mentor_lessons_n1.dart';
 import 'mentor_pilot_lessons.dart';
 
 /// Registro de **clases de mentor** por id de teoría (`"T020"`).
@@ -21,22 +20,20 @@ class AcademyMentorLessons {
   static bool has(String theoryId) => _byId.containsKey(theoryId);
 
   static final Map<String, MentorLesson> _byId = {
-    // --- N1 "Cómo funciona una mano" (7/25) ---
-    // T001-T005 (1.1), T008-T010 (1.2) y T033-T042 (1.3) migraron al piloto
-    // de 3 bloques (teoría escrita + ejemplo de mesa + ejercicios, ver
-    // `academy_closing_examples.dart` / `scripts/n1_pilot_exercises.dart`):
-    // ya no tienen clase de mentor, así que 1.1/1.2/1.3 usan
-    // `WrittenTheoryView` igual que cualquier teoría sin migrar (mismo
-    // patrón que 4.1).
-    'T043': MentorLessonsN1.elPreflop(),
-    'T044': MentorLessonsN1.elFlop(),
-    'T045': MentorLessonsN1.elTurn(),
-    'T046': MentorLessonsN1.elRiver(),
-    'T047': MentorLessonsN1.laRondaDeApuestas(),
-    'T048': MentorLessonsN1.cambioDeInformacion(),
-    'T049': MentorLessonsN1.elFinDeLaMano(),
-
-    'T051': MentorPilotLessons.pareja(),
+    // --- N1 "Cómo funciona una mano" ---
+    // T001-T005 (1.1), T008-T010 (1.2), T033-T042 (1.3) y T043-T049 (1.4)
+    // migraron al piloto de 3 bloques (teoría escrita + ejemplo de mesa +
+    // ejercicios, ver `academy_closing_examples.dart` /
+    // `scripts/n1_pilot_exercises.dart`): ninguna tiene ya clase de mentor,
+    // así que 1.1/1.2/1.3/1.4 usan `WrittenTheoryView` igual que cualquier
+    // teoría sin migrar (mismo patrón que 4.1). `MentorLessonsN1` (las 7
+    // clases que tenía 1.4) queda sin uso — no se borró, ver el archivo.
+    //
+    // --- N2 2.1 "Ranking de manos" ---
+    // T051 (Pareja) migró al mismo patrón: la ficha escrita ya tiene todo
+    // el contenido redactado y el closing example de 2.1 sirve como
+    // demostración en mesa. Idem N1: la clase de mentor queda en
+    // `MentorPilotLessons.pareja()` sin uso.
     'T020': MentorPilotLessons.estarEnPosicion(),
     'T073': MentorPilotLessons.manoDominada(),
     'T139': MentorPilotLessons.rfi(),

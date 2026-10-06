@@ -358,7 +358,13 @@ class SvCalloutAccent extends StatelessWidget {
                       Icon(icon, size: 14, color: color),
                       const SizedBox(width: 6),
                     ],
-                    Text(eyebrow, style: SalaVerdeType.label(color: color)),
+                    Flexible(
+                      child: Text(
+                        eyebrow,
+                        style: SalaVerdeType.label(color: color),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),

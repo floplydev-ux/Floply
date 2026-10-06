@@ -225,7 +225,12 @@ class TableLayout {
   }
 
   // Un empujón "de costado" (afinado a mano) además del t genérico.
-  Offset bet(int slot) => _toward(slot, 0.53) + _tangent(slot) * (15 * scale);
+  // Slot superior (_topSlot): +20 hacia arriba para alejarse del board.
+  Offset bet(int slot) {
+    final base = _toward(slot, 0.53) + _tangent(slot) * (15 * scale);
+    if (slot == _topSlot) return base.translate(0, -22 * scale);
+    return base;
+  }
 
   /// Cuánto se separa el botón de dealer de su panel: [_dealerToward] hacia
   /// el centro de la mesa (para caer sobre el paño, no sobre el panel) y
@@ -316,6 +321,6 @@ class TableLayout {
 
   /// Board arriba del centro y bote debajo del board — el orden real de
   /// una mesa de casino (antes estaba invertido) — afinado a mano.
-  Offset get board => feltCentre.translate(0, feltRect.height * -0.33);
-  Offset get pot => feltCentre.translate(0, feltRect.height * 0.07);
+  Offset get board => feltCentre.translate(0, feltRect.height * -0.33 + 40 * scale);
+  Offset get pot => feltCentre.translate(0, feltRect.height * 0.07 + 15 * scale);
 }

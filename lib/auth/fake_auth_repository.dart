@@ -73,6 +73,34 @@ class FakeAuthRepository implements AuthRepository {
       _consume();
 
   @override
+  Future<AuthAttemptResult> signInWithEmailPassword(
+    String email,
+    String password,
+  ) async =>
+      _consume();
+
+  String? _pendingVerificationId;
+
+  void queueVerificationId(String? id) => _pendingVerificationId = id;
+
+  @override
+  Future<String?> sendSmsVerificationCode(String phoneNumber) async {
+    final id = _pendingVerificationId;
+    _pendingVerificationId = null;
+    return id;
+  }
+
+  @override
+  Future<AuthAttemptResult> createAccountWithPhone({
+    required String name,
+    required String email,
+    required String password,
+    required String phoneVerificationId,
+    required String smsCode,
+  }) async =>
+      _consume();
+
+  @override
   Future<AuthAttemptResult> linkGoogle() async => _consume();
 
   @override
@@ -122,6 +150,15 @@ class FakeAuthRepository implements AuthRepository {
     _current = null;
     _controller.add(null);
   }
+
+  bool _isReviewer = false;
+
+  /// Permite que los tests simulen una cuenta reviewer. Por defecto `false`.
+  // ignore: avoid_setters_without_getters
+  set reviewerForTest(bool value) => _isReviewer = value;
+
+  @override
+  Future<bool> isReviewerAccount() async => _isReviewer;
 
   /// El último email para el que se mandó un link (sign-in o linking),
   /// para que los tests lo puedan leer sin repetirlo aparte.

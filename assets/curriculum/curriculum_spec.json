@@ -99,16 +99,7 @@
      "conceptos_clave": [
       "rules"
      ],
-     "legacy": {
-      "table_scripts": [
-       "1.1",
-       "1.3"
-      ],
-      "exercise_sets": [
-       "1.4",
-       "1.5"
-      ]
-     }
+     "legacy": null
     }
    ]
   },
@@ -513,11 +504,7 @@
      "conceptos_clave": [
       "open_sizing"
      ],
-     "legacy": {
-      "text_theory": [
-       "5.3"
-      ]
-     }
+     "legacy": null
     },
     {
      "code": "5.5",
@@ -544,9 +531,6 @@
        "4.4",
        "4.5",
        "5.5"
-      ],
-      "text_theory": [
-       "4.3"
       ]
      }
     },
@@ -8226,16 +8210,16 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Es la primera pregunta que te hacés cuando alguien abrió antes que vos: ¿tu mano alcanza para seguir en la mano, o te conviene retirarte?",
-    "por_que_importa": "Hasta ahora veníamos pensando 'abrir o no abrir' (N5). Ahora aparece la otra mitad del juego preflop: responder cuando OTRO ya abrió. Es una decisión distinta, con su propio rango.",
-    "como_funciona": "Juntás dos cosas que ya sabés: tu rango de defensa (N5, T138) contra el rango de apertura de esa posición (N5,\nT137), y las pot odds (N6) que te da ese open concreto.",
-    "cuando_lo_uso": "Cada vez que alguien abre antes de que te toque actuar a vos.",
-    "ejemplo": "El CO abre. Te llega a vos en el botón con K♠J♠: tu mano entra cómoda en tu rango de defensa contra un open del CO — alcanza para seguir.",
-    "error_comun": "Evaluar la mano sola, sin comparar contra el rango de apertura de quien abrió. La misma mano puede alcanzar contra un open del botón y no alcanzar contra un open de UTG.",
-    "idea_clave": "Antes de responder a un open, comparás tu mano contra SU rango de apertura — no la evaluás en el aire."
+    "que_es": "Hasta acá veníamos pensando en abrir vos primero. Ahora te toca la otra mitad de la historia: alguien más abrió antes que vos, y tenés que decidir qué hacer con eso. La pregunta de fondo es siempre la misma: ¿tu mano alcanza para seguir en la mano, o te conviene retirarte acá mismo?",
+    "por_que_importa": "Fijate que esto es un tipo de decisión distinto al que veníamos viendo en N5. Ahí pensabas 'abro o no abro'. Acá pensás 'alguien ya movió una ficha antes que yo, ¿qué hago con eso?' — y esa decisión tiene su propio rango, no la misma regla de siempre.",
+    "como_funciona": "Para responder bien, juntás dos cosas que ya tenés: tu rango de defensa contra la posición que abrió (eso lo viste en N5, con T137 y T138), y las pot odds que te está dejando ese open puntual (N6). Ninguna de las dos alcanza sola — las usás juntas.",
+    "cuando_lo_uso": "Cada vez que alguien abre antes de que llegue tu turno de actuar.",
+    "ejemplo": "Pensemos en un caso concreto: el CO abre. A vos te llega el turno en el botón con K♠J♠. Esa mano entra cómoda en tu rango de defensa contra un open del CO — alcanza para seguir.",
+    "error_comun": "El error típico acá es mirar la mano sola, como si valiera lo mismo siempre. No es así: la misma mano puede alcanzar perfecto contra un open del botón, y no alcanzar ni cerca contra un open de UTG. Lo que cambia es contra quién estás respondiendo.",
+    "idea_clave": "Antes de responder a un open, comparás tu mano contra SU rango de apertura — nunca la evaluás en el aire."
    },
    "pasos_mesa": null,
-   "idea_clave": "Antes de responder a un open, comparás tu mano contra SU rango de apertura — no la evaluás en el aire.",
+   "idea_clave": "Antes de responder a un open, comparás tu mano contra SU rango de apertura — nunca la evaluás en el aire.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -8270,12 +8254,12 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Pagar (call) el open del rival, en vez de subir o retirarte, con una mano que juega bien después del flop.",
-    "por_que_importa": "No toda mano que 'alcanza' conviene subirla: algunas manos ganan más jugando el flop en vez de agrandando el bote de entrada.",
-    "como_funciona": "El call preflop funciona mejor con manos que mejoran mucho al ver más cartas (parejas chicas buscando trío, conectores suited) y que preferís jugar con el bote más chico, no manos que ya son fuertes de por sí.",
+    "que_es": "Pagar el open del rival, sin subir ni retirarte: eso es lo que hacés cuando tu mano prefiere ver más cartas antes de comprometer más fichas.",
+    "por_que_importa": "No toda mano que 'alcanza' para seguir conviene subirla. Fijate en esto: algunas manos ganan más jugando el flop tranquilas, con el bote todavía chico, que agrandando el bote ya desde preflop.",
+    "como_funciona": "El call preflop le queda mejor a manos que mejoran mucho cuando ves más cartas —pensá en una pareja chica buscando trío, o dos cartas conectadas del mismo palo— y que preferís jugar con el bote chico. No es la herramienta para tus manos que ya son fuertes de por sí: esas prefieren agrandar el bote, y eso lo vemos en la próxima teoría.",
     "cuando_lo_uso": "Con una mano jugable que preferís desarrollar en el flop antes que agrandar el bote ahí mismo.",
-    "ejemplo": "El botón abre y estás en la BB con 6♠6♦: no es mano para 3-betear, pero paga bien buscando ligar un trío en el flop.",
-    "error_comun": "Pagar con cualquier mano jugable sin pensar si en realidad convendría más subir (T157) con esa mano en particular.",
+    "ejemplo": "El botón abre y estás en la BB con 6♠6♦. No es mano para subir, pero paga bien: buscás ligar un trío en el flop.",
+    "error_comun": "Ojo con pagar cualquier mano jugable en piloto automático, sin preguntarte si en realidad no te convendría más subir con esa mano en particular.",
     "idea_clave": "El call preflop es para manos que prefieren ver el flop con el bote chico, no para todo lo que 'alcanza'."
    },
    "pasos_mesa": null,
@@ -8314,12 +8298,12 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Retirarte frente al open del rival porque tu mano no entra en tu rango de defensa para esa situación.",
-    "por_que_importa": "Así como en N5 la mayoría de tus manos se foldeaban al abrir, acá pasa lo mismo respondiendo: la mayoría de las manos, la mayoría de las veces, no alcanzan para seguir.",
-    "como_funciona": "Si tu mano no entra ni en tu rango de call ni en tu rango de 3-bet (T161) para esa situación puntual, foldeás.",
+    "que_es": "Retirarte frente al open del rival porque tu mano, lisa y llanamente, no entra en tu rango de defensa para esa situación.",
+    "por_que_importa": "Acordate de N5: ahí la mayoría de tus manos se foldeaban al abrir. Bueno, acá pasa exactamente lo mismo del otro lado — respondiendo, la mayoría de las manos, la mayoría de las veces, tampoco alcanzan para seguir.",
+    "como_funciona": "Es simple: si tu mano no entra ni en tu rango de call ni en tu rango de 3-bet (un término que vas a conocer en la próxima sección) para esa situación puntual, foldeás. Sin drama.",
     "cuando_lo_uso": "Cada vez que tu mano no entra en tu rango de defensa contra ese open concreto.",
-    "ejemplo": "UTG abre y estás en la BB con 9♠4♦: no entra en tu rango de defensa contra un open tan fuerte y tan temprano — foldeás.",
-    "error_comun": "'Defender' la ciega grande con cualquier cosa solo porque 'ya pusiste esa ficha'. Esa ficha ya está en el bote pase lo que pase: no es un motivo para pagar.",
+    "ejemplo": "UTG abre y estás en la BB con 9♠4♦. Esa mano no entra en tu rango de defensa contra un open tan fuerte y tan temprano en la mesa — foldeás.",
+    "error_comun": "Un clásico: 'defender' la ciega grande con cualquier cosa solo porque 'ya pusiste esa ficha'. Pero esa ficha ya está en el bote pase lo que pase — no es un motivo para pagar de más.",
     "idea_clave": "Foldear contra un open sigue siendo, con diferencia, la decisión más frecuente."
    },
    "pasos_mesa": null,
@@ -8358,16 +8342,16 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tu posición RELATIVA a quien abrió (delante o detrás de él en el resto de la mano) cambia qué tan ancho podés defender.",
-    "por_que_importa": "No es lo mismo pagar un open estando en posición sobre el que abrió (vas a actuar último en las calles siguientes) que pagar estando fuera de posición.",
-    "como_funciona": "Si vas a jugar el resto de la mano EN posición sobre el abridor, podés defender más ancho: vas a tener más información en cada calle. Si vas a jugar fuera de posición, conviene ser más selectivo.",
-    "cuando_lo_uso": "Al construir tu rango de defensa: no solo importa quién abrió, importa desde dónde respondés vos.",
-    "ejemplo": "El CO abre. Si respondés desde el botón, vas a estar en posición todo el resto de la mano: podés defender más ancho que si respondieras desde la BB, fuera de posición.",
-    "error_comun": "Usar el mismo rango de defensa sin importar si vas a quedar en posición o no en las calles siguientes.",
-    "idea_clave": "Defender en posición permite un rango más ancho que defender fuera de posición, con la misma mano del rival."
+    "que_es": "Tu posición RELATIVA a quien abrió —si vas a actuar delante o detrás de él en el resto de la mano— cambia qué tan ancho podés defender.",
+    "por_que_importa": "No es lo mismo pagar un open estando en posición sobre el que abrió, donde vas a actuar último en cada calle que sigue, que pagar estando fuera de posición, actuando siempre primero y a ciegas de lo que haga él.",
+    "como_funciona": "Si vas a jugar el resto de la mano EN posición sobre el abridor, podés defender más ancho: vas a tener más información en cada calle antes de decidir. Si vas a jugar fuera de posición, te conviene ser más selectivo — vas a estar decidiendo con menos datos.",
+    "cuando_lo_uso": "Al armar tu rango de defensa: no alcanza con mirar quién abrió, también importa desde dónde le vas a responder vos.",
+    "ejemplo": "El CO abre. Si le respondés desde el botón, vas a estar en posición todo el resto de la mano y podés defender más ancho. Si le respondés desde la BB, fuera de posición, te conviene ser más selectivo con la misma mano del rival.",
+    "error_comun": "Usar el mismo rango de defensa sin fijarte si vas a terminar en posición o no en las calles que siguen.",
+    "idea_clave": "Defender en posición permite un rango más ancho que defender fuera de posición, con la misma mano del rival enfrente."
    },
    "pasos_mesa": null,
-   "idea_clave": "Defender en posición permite un rango más ancho que defender fuera de posición, con la misma mano del rival.",
+   "idea_clave": "Defender en posición permite un rango más ancho que defender fuera de posición, con la misma mano del rival enfrente.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -8403,11 +8387,11 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "Ajustar tu rango de defensa según cuánto subió el rival: un open a 2x no se responde igual que uno a 3x.",
-    "por_que_importa": "El tamaño del open (N5, T142-145) cambia el precio que te están cobrando por seguir: un open más grande te da peores pot odds, así que necesitás una mano mejor para justificar seguir.",
-    "como_funciona": "Contra un open más chico, tu rango de defensa puede ser un poco más ancho (mejor precio). Contra un open más grande, conviene ser más selectivo.",
-    "cuando_lo_uso": "Al leer el tamaño del open antes de decidir con qué manos vas a responder.",
-    "ejemplo": "Un open a 2x te deja mejores pot odds que uno a 3x: con la misma mano, seguir puede ser correcto contra el primero y incorrecto contra el segundo.",
-    "error_comun": "Ignorar el tamaño del open y responder siempre con el mismo rango, sin importar cuánto te está costando seguir.",
+    "por_que_importa": "El tamaño del open, que ya viste en N5, cambia el precio que te están cobrando por seguir. Un open más grande te deja peores pot odds, así que necesitás una mano mejor para justificar seguir.",
+    "como_funciona": "Contra un open más chico, tu rango de defensa puede ser un poco más ancho, porque el precio es mejor. Contra un open más grande, conviene achicar el rango y ser más selectivo.",
+    "cuando_lo_uso": "Al leer el tamaño del open, antes de decidir con qué manos vas a responder.",
+    "ejemplo": "Un open a 2x te deja mejores pot odds que uno a 3x. Con la misma mano en la mano, seguir puede ser correcto contra el primero e incorrecto contra el segundo.",
+    "error_comun": "Ignorar el tamaño del open y responder siempre con el mismo rango, sin fijarte cuánto te está costando realmente seguir.",
     "idea_clave": "Open más grande = peor precio para vos = rango de defensa más angosto."
    },
    "pasos_mesa": null,
@@ -8446,12 +8430,12 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El enfrentamiento entre la ciega chica (SB) y la ciega grande (BB) cuando todos los demás se retiraron: ambos con rangos más anchos que en cualquier otra situación.",
-    "por_que_importa": "Es un caso especial: la SB abre contra un solo rival (nadie más queda por detrás), así que su rango de apertura ahí es más ancho de lo normal; y la BB, al defender, también puede ser más ancha, porque recibe un precio mejor.",
-    "como_funciona": "La SB, al tener solo a la BB detrás, puede abrir mucho más ancho que en cualquier otra posición. La BB, sabiendo que el rango de apertura de la SB ahí es más amplio y flojo, defiende también más ancho de lo habitual.",
-    "cuando_lo_uso": "Cada vez que la acción llega limpia hasta la SB: es una situación con su propia lógica, distinta a las demás aperturas.",
-    "ejemplo": "Con una mano que foldearías si UTG hubiera abierto, la SB puede abrirla sin problema contra la BB — y la BB, del otro lado, puede defenderla también.",
-    "error_comun": "Jugar blind vs blind con el mismo rango angosto que usarías en cualquier otra posición, desaprovechando que ahí solo hay un rival.",
+    "que_es": "Cuando todos los demás se retiraron y quedan solo la ciega chica (SB) y la ciega grande (BB) enfrentadas, entrás en un terreno distinto: los dos juegan con rangos mucho más anchos que en cualquier otra situación de la mesa.",
+    "por_que_importa": "Es un caso especial y vale la pena que lo tengas marcado aparte: la SB, ahí, abre contra un solo rival —nadie más queda por detrás—, así que su rango de apertura se ensancha bastante. Y la BB, sabiendo eso, también puede defender más ancho, porque el precio que recibe es mejor.",
+    "como_funciona": "La SB, al tener solo a la BB detrás, puede abrir mucho más ancho que en cualquier otra posición de la mesa. La BB, sabiendo que el rango de apertura de la SB ahí es más amplio y más flojo que de costumbre, defiende también más ancho de lo habitual.",
+    "cuando_lo_uso": "Cada vez que la acción llega limpia hasta la SB, sin que nadie más haya entrado antes: es una situación con lógica propia, distinta a cualquier otra apertura.",
+    "ejemplo": "Una mano que foldearías sin dudar si UTG hubiera abierto, la SB puede abrirla sin problema contra la BB — y la BB, del otro lado, también puede defenderla.",
+    "error_comun": "Jugar blind vs blind con el mismo rango angosto que usarías en cualquier otra posición, desperdiciando que ahí enfrente solo hay un rival.",
     "idea_clave": "Blind vs blind = rangos más anchos de los dos lados, porque solo hay un jugador enfrentado."
    },
    "pasos_mesa": null,
@@ -8490,16 +8474,16 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Subir por encima del open del rival (3-bet), en vez de pagar o retirarte. Se llama '3-bet' porque es la tercera subida de fichas en la mano (la ciega grande cuenta como la primera, el open del rival como la segunda).",
-    "por_que_importa": "Es la tercera opción, además de call y fold: agrandar el bote ahí mismo, en vez de solo seguir o irte.",
-    "como_funciona": "3-beteás con manos que quieren un bote más grande (porque son fuertes) o con manos que se benefician de que el rival se retire (farol). Las próximas dos teorías desarrollan cada caso.",
-    "cuando_lo_uso": "Frente al open de un rival, cuando tu mano se beneficia más de agrandar el bote que de solo pagar.",
-    "ejemplo": "El CO abre. Con A♠A♦, 3-betear (en vez de solo pagar) empieza a construir un bote grande con la mejor mano posible.",
-    "error_comun": "Pensar que 3-betear es 'siempre agresivo' o 'siempre arriesgado' sin distinguir por qué se está haciendo en cada caso.",
-    "idea_clave": "3-bet = subir sobre el open del rival. Se hace por valor o como farol — las próximas dos teorías."
+    "que_es": "Hay una tercera opción, además de pagar o retirarte: subir por encima del open del rival. Eso es un 3-bet. Se llama así porque es la tercera subida de fichas de la mano — contás la ciega grande como la primera, el open del rival como la segunda, y tu subida como la tercera.",
+    "por_que_importa": "Quedate con esto: ya no elegís solamente entre seguir o irte. Ahora también podés agrandar el bote ahí mismo, en tu propio turno.",
+    "como_funciona": "3-beteás por dos motivos bien distintos, que vas a ver en detalle en las próximas dos teorías: con manos que quieren un bote más grande porque son fuertes (valor), o con manos que se benefician de que el rival se retire (farol).",
+    "cuando_lo_uso": "Frente al open de un rival, cuando tu mano se beneficia más de agrandar el bote que de solo pagarlo.",
+    "ejemplo": "El CO abre. Con A♠A♦ en la mano, 3-betear en vez de solo pagar empieza a construir un bote grande con la mejor mano posible en la mesa.",
+    "error_comun": "Pensar el 3-bet como 'siempre agresivo' o 'siempre arriesgado', sin distinguir por qué lo estás haciendo en cada caso puntual.",
+    "idea_clave": "3-bet = subir sobre el open del rival. Se hace por valor o como farol — eso es lo que viene ahora."
    },
    "pasos_mesa": null,
-   "idea_clave": "3-bet = subir sobre el open del rival. Se hace por valor o como farol — las próximas dos teorías.",
+   "idea_clave": "3-bet = subir sobre el open del rival. Se hace por valor o como farol — eso es lo que viene ahora.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -8535,12 +8519,12 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "3-betear con una mano fuerte, buscando construir un bote más grande porque creés que tu mano está mejor parada que el rango del rival.",
-    "por_que_importa": "Con tus mejores manos, un bote más grande es bueno para vos: cuanta más plata entre con la mejor mano, mejor.",
-    "como_funciona": "Elegís tus manos más fuertes (las que le ganan cómodo al rango de apertura del rival) y subís, en vez de solo pagar, para meter más fichas mientras estás adelante.",
+    "que_es": "3-betear con una mano fuerte, buscando construir un bote más grande porque creés que tu mano está mejor parada que todo el rango de apertura del rival.",
+    "por_que_importa": "Pensalo así: con tus mejores manos, un bote más grande te conviene a vos. Cuanta más plata entre en el medio mientras tenés la mejor mano, mejor para tu bolsillo.",
+    "como_funciona": "Elegís tus manos más fuertes —las que le ganan cómodo al rango de apertura del rival— y en vez de solo pagar, subís, para meter más fichas mientras estás adelante.",
     "cuando_lo_uso": "Con manos que le ganan claramente al rango de apertura del rival y que quieren jugar un bote grande.",
-    "ejemplo": "El CO abre. Con K♠K♦, 3-betear por valor: es una mano que le gana a casi todo el rango de apertura del CO, así que conviene meter más fichas ahí mismo.",
-    "error_comun": "Solo pagar con tus mejores manos 'para no espantar' al rival, dejando pasar la chance de meter más fichas mientras estás claramente adelante.",
+    "ejemplo": "El CO abre. Con K♠K♦ en la mano, 3-betear por valor tiene sentido: es una mano que le gana a casi todo el rango de apertura del CO, así que conviene meter más fichas ahí mismo.",
+    "error_comun": "Solo pagar con tus mejores manos 'para no espantar' al rival. Ahí estás dejando pasar la chance de meter más fichas justo cuando estás claramente adelante.",
     "idea_clave": "3-bet por valor = con tu mejor mano, agrandás el bote porque estás mejor parado."
    },
    "pasos_mesa": null,
@@ -8581,13 +8565,13 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "3-betear con una mano que no es fuerte, buscando que el rival se retire — ganando el bote gracias a la fold equity (N6, TN13), no porque tu mano sea mejor.",
-    "por_que_importa": "No solo tus mejores manos pueden 3-betear: algunas manos flojas también se benefician de subir, si el rival se retira lo suficientemente seguido.",
-    "como_funciona": "Elegís manos que no ganan mucho solo pagando (no juegan bien el flop en un bote chico), pero que sí ganan cuando el rival se retira frente a tu 3-bet.",
+    "que_es": "3-betear con una mano que no es fuerte, buscando que el rival se retire. Acá ganás el bote gracias a la fold equity que ya viste en N6 — no porque tu mano sea mejor.",
+    "por_que_importa": "Esto suele sorprender: no son solo tus mejores manos las que pueden 3-betear. Algunas manos flojas también se benefician de subir, siempre que el rival se retire lo suficientemente seguido.",
+    "como_funciona": "Elegís manos que no ganan mucho solo pagando —no juegan bien el flop con el bote chico— pero que sí ganan cuando el rival se retira frente a tu 3-bet.",
     "cuando_lo_uso": "Con manos que se benefician más de que el rival foldee que de ver un flop con el bote chico.",
-    "cuando_no": "Contra un rival que casi nunca foldea frente a una 3-bet: ahí falta la fold equity que hace funcionar el farol.",
-    "ejemplo": "El CO abre. Con A♠5♠, una mano floja para solo pagar pero con algo de potencial, 3-betear como farol busca que el CO se retire ahí mismo.",
-    "error_comun": "3-betear como farol con cualquier mano floja, sin pensar si el rival realmente foldea lo suficiente frente a una 3-bet.",
+    "cuando_no": "Contra un rival que casi nunca foldea frente a una 3-bet. Ahí te falta la fold equity que hace funcionar el farol — y sin eso, el farol no tiene sentido.",
+    "ejemplo": "El CO abre. Con A♠5♠ —una mano floja para solo pagar, pero con algo de potencial— 3-betear como farol busca que el CO se retire ahí mismo.",
+    "error_comun": "3-betear como farol con cualquier mano floja, sin pararte a pensar si el rival realmente foldea lo suficiente frente a una 3-bet.",
     "idea_clave": "3-bet como farol = gana por fold equity, no por tener la mejor mano."
    },
    "pasos_mesa": null,
@@ -8627,12 +8611,12 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El conjunto de manos con las que elegís PAGAR un open, en vez de subirlo o retirarte.",
-    "por_que_importa": "Ya viste con qué tipo de mano conviene pagar (T155). Ahora se trata de construir ese rango completo: no una mano puntual, sino todas las que van a entrar en 'pago, no subo'.",
-    "como_funciona": "Tu rango de call suele quedar formado por manos que juegan bien con el bote chico (conectores, parejas medias-chicas), dejando las manos más fuertes y algunos faroles para tu rango de 3-bet.",
-    "cuando_lo_uso": "Al planificar, de antemano, qué manos vas a pagar contra un open de determinada posición.",
-    "ejemplo": "Contra un open del botón, tu rango de call puede incluir manos como conectores medios y parejas chicas — manos que prefieren desarrollarse en el flop antes que agrandar el bote.",
-    "error_comun": "No tener un rango de call definido y decidir mano por mano sin ningún criterio consistente.",
+    "que_es": "El rango de call es el conjunto completo de manos con las que elegís pagar un open, en vez de subirlo o retirarte.",
+    "por_que_importa": "Ya viste con qué tipo de mano conviene pagar. Ahora el trabajo es otro: armar ese rango entero, de antemano — no decidir mano por mano en el momento, sino saber ya qué entra en 'pago, no subo'.",
+    "como_funciona": "Tu rango de call suele quedar formado por manos que juegan bien con el bote chico —conectores, parejas medias o chicas—, dejando tus manos más fuertes y algunos faroles para el rango de 3-bet.",
+    "cuando_lo_uso": "Al planificar, antes de sentarte a jugar, qué manos vas a pagar contra un open de determinada posición.",
+    "ejemplo": "Contra un open del botón, tu rango de call puede incluir manos como conectores medios y parejas chicas: manos que prefieren desarrollarse en el flop antes que agrandar el bote.",
+    "error_comun": "No tener un rango de call definido de antemano, y terminar decidiendo mano por mano sin ningún criterio consistente.",
     "idea_clave": "Rango de call = las manos con las que elegís pagar, no subir ni foldear, contra un open concreto."
    },
    "pasos_mesa": null,
@@ -8672,16 +8656,16 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El conjunto de manos con las que elegís 3-betear un open — combinando tus manos de valor (T158) y tus manos de farol (T159).",
-    "por_que_importa": "Un rango de 3-bet bien armado mezcla ambos tipos: si solo 3-beteás con manos fuertes, un rival atento va a notar que cada vez que subís tenés lo mejor, y va a dejar de pagarte.",
-    "como_funciona": "Juntás tus mejores manos (valor) con algunas manos flojas con potencial (farol), dejando afuera el resto — que va a tu rango de call (T160) o directo al fold.",
+    "que_es": "El rango de 3-bet es el conjunto de manos con las que elegís subir un open — combinando tus manos de valor con tus manos de farol.",
+    "por_que_importa": "Fijate por qué importa mezclarlos: si solo 3-beteás con manos fuertes, un rival atento se va a dar cuenta de que cada vez que subís tenés lo mejor, y va a dejar de pagarte nunca.",
+    "como_funciona": "Juntás tus mejores manos (valor) con algunas manos flojas que tienen potencial (farol), y dejás afuera el resto — eso va a tu rango de call o directo al fold.",
     "cuando_lo_uso": "Al planificar, de antemano, qué manos vas a 3-betear contra un open de determinada posición.",
-    "ejemplo": "Tu rango de 3-bet contra un open del CO puede combinar manos como AA-QQ y AK (valor) con algunas manos como A5s (farol), dejando afuera el resto de tus manos jugables.",
-    "error_comun": "3-betear solo con manos de valor, sin ningún farol mezclado — un rango así se vuelve predecible.",
-    "idea_clave": "Rango de 3-bet = valor + farol combinados, no solo uno de los dos."
+    "ejemplo": "Tu rango de 3-bet contra un open del CO puede combinar manos como AA-QQ y AK (valor) con alguna mano como A5s (farol), dejando afuera el resto de tus manos jugables.",
+    "error_comun": "3-betear solo con manos de valor, sin ningún farol mezclado. Un rango así se vuelve predecible enseguida.",
+    "idea_clave": "Rango de 3-bet = valor + farol combinados, nunca solo uno de los dos."
    },
    "pasos_mesa": null,
-   "idea_clave": "Rango de 3-bet = valor + farol combinados, no solo uno de los dos.",
+   "idea_clave": "Rango de 3-bet = valor + farol combinados, nunca solo uno de los dos.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -8719,12 +8703,12 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un squeeze es 3-betear cuando ya hay un open Y alguien más que pagó ese open antes que vos — apretando a los dos a la vez.",
-    "por_que_importa": "Con dos jugadores ya comprometidos con fichas en el bote, tu 3-bet tiene que ser más grande que una 3-bet normal: hay más gente que podría tener algo, pero también más gente que puede estar foldeando algo flojo.",
-    "como_funciona": "El que abrió puede tener un rango amplio y flojo; el que solo pagó, generalmente, tiene una mano que no era lo bastante fuerte como para subir. Un squeeze bien armado aprovecha que ninguno de los dos mostró demasiada fuerza.",
+    "que_es": "Un squeeze es 3-betear cuando ya hay un open Y alguien más pagó ese open antes de que te toque a vos — apretás a los dos jugadores a la vez.",
+    "por_que_importa": "Con dos rivales ya comprometidos con fichas en el bote, tu 3-bet tiene que ser más grande que una normal: hay más gente que podría tener algo bueno, pero también más gente que puede estar sentada con algo flojo.",
+    "como_funciona": "Pensalo así: el que abrió puede tener un rango amplio y flojo, y el que solo pagó, en general, tiene una mano que no era lo bastante fuerte como para subir él mismo. Un squeeze bien armado aprovecha que ninguno de los dos mostró demasiada fuerza todavía.",
     "cuando_lo_uso": "Cuando hay un open y al menos un caller antes de que te toque a vos, y tu mano se presta para presionar a los dos.",
-    "ejemplo": "El HJ abre, el CO paga, y en el botón subís con una mano fuerte o un buen farol: un squeeze, apuntando a que uno de los dos (o los dos) se retire.",
-    "error_comun": "Usar el mismo tamaño de una 3-bet normal para un squeeze. Con más jugadores en la mano, conviene subir más grande.",
+    "ejemplo": "El HJ abre, el CO paga, y en el botón subís con una mano fuerte o un buen farol: eso es un squeeze, apuntando a que uno de los dos —o los dos— se retire.",
+    "error_comun": "Usar el mismo tamaño de una 3-bet normal para un squeeze. Con más jugadores metidos en la mano, te conviene subir más grande.",
     "idea_clave": "Squeeze = 3-bet sobre un open Y un caller, con un tamaño más grande de lo habitual."
    },
    "pasos_mesa": null,
@@ -8758,12 +8742,12 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un bote 3-bet es un bote que llegó al flop después de que alguien 3-beteó preflop y el otro pagó — se juega distinto a un bote 'normal' (single-raised).",
-    "por_que_importa": "La cantidad de fichas que ya entraron preflop cambia todo lo que viene después: el bote es más grande desde el arranque, y los stacks que quedan, relativamente, son más chicos.",
-    "como_funciona": "En vez de una sola subida preflop, hubo dos (el open y la 3-bet). Eso deja un bote de partida mucho más grande al llegar al flop.",
-    "cuando_lo_uso": "Al reconocer que la mano llegó al flop con una 3-bet de por medio: te avisa que hay que pensar distinto que en un bote normal.",
-    "ejemplo": "Un open a 2.5 BB y una 3-bet a 9 BB dejan un bote de partida de 18-20 BB al llegar al flop, comparado con los 5-6 BB típicos de un bote sin 3-bet.",
-    "error_comun": "Jugar un bote 3-bet con la misma cabeza que un bote normal, sin ajustar tamaños ni decisiones al bote ya más grande.",
+    "que_es": "Un bote 3-bet es un bote que llega al flop después de que alguien 3-beteó preflop y el otro pagó. Se juega distinto a un bote 'normal' — lo que vas a empezar a llamar single-raised.",
+    "por_que_importa": "La cantidad de fichas que ya entraron preflop cambia todo lo que viene después: el bote arranca más grande, y los stacks que quedan, en relación a ese bote, son más chicos.",
+    "como_funciona": "En vez de una sola subida preflop, hubo dos —el open y la 3-bet—. Eso deja, al llegar al flop, un bote de partida bastante más grande que de costumbre.",
+    "cuando_lo_uso": "Al reconocer que la mano llegó al flop con una 3-bet de por medio: eso te avisa que hay que pensar distinto que en un bote normal.",
+    "ejemplo": "Un open a 2.5 BB y una 3-bet a 9 BB dejan un bote de partida de 18-20 BB al llegar al flop — comparado con los 5-6 BB típicos de un bote sin 3-bet.",
+    "error_comun": "Jugar un bote 3-bet con la misma cabeza que un bote normal, sin ajustar tamaños ni decisiones a que el bote ya arrancó más grande.",
     "idea_clave": "Bote 3-bet = llegó al flop con una 3-bet de por medio. Más grande de entrada, se juega distinto."
    },
    "pasos_mesa": null,
@@ -8798,12 +8782,12 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Leer específicamente cuánto quedó en el bote después de la secuencia de apuestas preflop (open + 3-bet + call).",
-    "por_que_importa": "Antes de decidir cualquier cosa en el flop, necesitás saber con cuánto estás jugando: un bote 3-bet chico se juega distinto a uno grande.",
-    "como_funciona": "Sumás lo que puso cada jugador durante el preflop: la 3-bet, más lo que pagó el otro para igualarla, más lo que ya había de las ciegas.",
-    "cuando_lo_uso": "Al llegar al flop de un bote 3-bet, como primer dato antes de cualquier decisión.",
-    "ejemplo": "Open a 2.5 BB, 3-bet a 9 BB, call de 9 BB: el bote que llega al flop es de aproximadamente 19,5 BB (9 BB del 3-bettor + 9 BB de quien pagó + 1,5 BB de las dos ciegas que ya estaban perdidas en el medio).",
-    "error_comun": "Llegar al flop de un bote 3-bet sin haber sumado cuánto hay realmente en el medio.",
+    "que_es": "Se trata de leer, específicamente, cuánto quedó en el bote después de toda la secuencia de apuestas preflop: el open, la 3-bet, y el call.",
+    "por_que_importa": "Antes de decidir cualquier cosa en el flop, necesitás saber con cuánto estás jugando de verdad. Un bote 3-bet chico se juega distinto a uno grande.",
+    "como_funciona": "Sumás lo que puso cada jugador durante el preflop: la 3-bet, más lo que pagó el otro para igualarla, más lo que ya había de las ciegas antes de que arrancara todo esto.",
+    "cuando_lo_uso": "Al llegar al flop de un bote 3-bet, como primer dato antes de cualquier otra decisión.",
+    "ejemplo": "Open a 2.5 BB, 3-bet a 9 BB, call de 9 BB: el bote que llega al flop es de aproximadamente 19,5 BB — 9 BB del que hizo la 3-bet, más 9 BB de quien la pagó, más 1,5 BB de las dos ciegas que ya estaban puestas en el medio.",
+    "error_comun": "Llegar al flop de un bote 3-bet sin haber sumado, ni siquiera de forma aproximada, cuánto hay realmente en el medio.",
     "idea_clave": "El tamaño del bote 3-bet es el primer dato concreto para jugar bien el resto de la mano."
    },
    "pasos_mesa": null,
@@ -8838,16 +8822,16 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El SPR (stack-to-pot ratio, 'relación stack-bote') es cuántas veces entra el bote en el stack EFECTIVO — el más chico entre tu stack y el del rival, porque eso es lo máximo que realmente puede terminar en el medio —: stack efectivo ÷ bote.",
-    "por_que_importa": "Un SPR bajo (poco stack en relación al bote) te acerca rápido a jugarte todo el stack; un SPR alto te deja más margen para decisiones más finas en varias calles.",
-    "como_funciona": "Dividís el stack efectivo (el más chico entre el tuyo y el del rival) por el tamaño del bote. Si ambos tienen el mismo stack, listo, ese número alcanza; si son distintos, siempre se usa el más chico. Los botes 3-bet, al ser más grandes de entrada con los mismos stacks, dejan un SPR más bajo que un bote normal.",
-    "cuando_lo_uso": "Al llegar al flop, para entender qué tan 'comprometido' vas a estar con el resto de tu stack en esa mano.",
-    "ejemplo": "Los dos jugadores tienen 100 BB de stack efectivo y el bote es de aproximadamente 19,5 BB (T165): el SPR es aproximadamente 5 (100÷19,5 ≈ 5,1) — bastante más bajo que en un bote normal de 6 BB con el mismo stack (SPR ≈ 16,6).",
-    "error_comun": "Ignorar el SPR y jugar un bote 3-bet (SPR bajo) con la misma cautela que un bote de SPR alto, donde hay mucho más margen para maniobrar.",
-    "idea_clave": "SPR = stack ÷ bote. Más bajo en botes 3-bet: te acerca más rápido a jugarte todo el stack."
+    "que_es": "El SPR —stack-to-pot ratio, o 'relación stack-bote'— te dice cuántas veces entra el bote en el stack efectivo. Y el stack efectivo es el más chico entre el tuyo y el del rival, porque eso es lo máximo que realmente puede terminar en el medio.",
+    "por_que_importa": "Un SPR bajo —poco stack en relación al bote— te acerca rápido a jugarte todo el stack en la mano. Un SPR alto te deja mucho más margen para decisiones finas en varias calles.",
+    "como_funciona": "Dividís el stack efectivo por el tamaño del bote. Si los dos tienen el mismo stack, ese número te alcanza tal cual; si son distintos, siempre usás el más chico de los dos. Y ojo con esto: los botes 3-bet, al ser más grandes de entrada con los mismos stacks, dejan un SPR más bajo que un bote normal.",
+    "cuando_lo_uso": "Al llegar al flop, para entender qué tan 'comprometido' vas a estar con el resto de tu stack en esa mano puntual.",
+    "ejemplo": "Los dos jugadores tienen 100 BB de stack efectivo, y el bote es de aproximadamente 19,5 BB. El SPR es aproximadamente 5 (100÷19,5 ≈ 5,1) — bastante más bajo que en un bote normal de 6 BB con el mismo stack, donde el SPR sería como 16,6.",
+    "error_comun": "Ignorar el SPR y jugar un bote 3-bet, de SPR bajo, con la misma cautela que un bote de SPR alto, donde hay mucho más margen para maniobrar.",
+    "idea_clave": "SPR = stack ÷ bote. Más bajo en los botes 3-bet: te acerca más rápido a jugarte todo el stack."
    },
    "pasos_mesa": null,
-   "idea_clave": "SPR = stack ÷ bote. Más bajo en botes 3-bet: te acerca más rápido a jugarte todo el stack.",
+   "idea_clave": "SPR = stack ÷ bote. Más bajo en los botes 3-bet: te acerca más rápido a jugarte todo el stack.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -8878,16 +8862,16 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Estimar el conjunto de manos con las que el rival, probablemente, 3-beteó.",
-    "por_que_importa": "Saber leer ese rango te permite jugar mejor el resto de la mano: un rango de 3-bet (T161) combina valor y farol, y eso te da información concreta para trabajar.",
-    "como_funciona": "Pensá en lo que ya sabés de rangos de 3-bet (T161): manos fuertes de valor combinadas con algunos faroles, según la posición y el estilo del rival.",
+    "que_es": "Se trata de estimar el conjunto de manos con las que el rival, probablemente, te 3-beteó.",
+    "por_que_importa": "Saber leer ese rango te permite jugar mucho mejor el resto de la mano. Ya viste que un rango de 3-bet combina valor y farol — y eso te da información concreta para trabajar, no una adivinanza.",
+    "como_funciona": "Pensá en lo que ya sabés de rangos de 3-bet: manos fuertes de valor combinadas con algunos faroles, según la posición desde la que 3-beteó y el estilo del rival.",
     "cuando_lo_uso": "Al enfrentar una 3-bet, antes de decidir tu respuesta.",
     "ejemplo": "Un rival 3-betea desde el botón contra tu open del CO: su rango probablemente combina manos fuertes con algunos faroles — más amplio que si el mismo 3-bet viniera de la ciega grande, fuera de posición.",
-    "error_comun": "Asumir que cualquier 3-bet significa automáticamente una mano premium, ignorando que los rangos de 3-bet incluyen faroles.",
-    "idea_clave": "El rango del 3-bettor combina valor y farol — no asumas que siempre es lo mejor posible."
+    "error_comun": "Asumir que cualquier 3-bet significa automáticamente una mano premium. Te olvidás de que los rangos de 3-bet, bien armados, incluyen faroles.",
+    "idea_clave": "El rango del 3-bettor combina valor y farol — no des por sentado que siempre es lo mejor posible."
    },
    "pasos_mesa": null,
-   "idea_clave": "El rango del 3-bettor combina valor y farol — no asumas que siempre es lo mejor posible.",
+   "idea_clave": "El rango del 3-bettor combina valor y farol — no des por sentado que siempre es lo mejor posible.",
    "estado_redaccion": "listo",
    "ejercicios_relacionados": []
   },
@@ -8918,12 +8902,12 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Estimar el conjunto de manos con las que el rival, probablemente, pagó tu 3-bet (en vez de subir o retirarse).",
-    "por_que_importa": "Pagar una 3-bet (en vez de subir a una 4-bet o foldear) suele filtrar bastante el rango: la mayoría de las manos flojas se van, y muchas de las más fuertes prefieren resubir.",
-    "como_funciona": "El rango de quien paga una 3-bet suele quedar compuesto por manos buenas pero no tan fuertes como para 4-betear: parejas medias, broadways decentes, algunas manos especulativas con buen potencial postflop.",
+    "que_es": "Acá estimás el conjunto de manos con las que el rival, probablemente, pagó tu 3-bet en vez de subir o retirarse.",
+    "por_que_importa": "Pagar una 3-bet, en vez de subir a una 4-bet o foldear, suele filtrar bastante el rango del rival: la mayoría de las manos flojas se van, y muchas de las más fuertes prefieren resubir en vez de solo pagar.",
+    "como_funciona": "El rango de quien paga una 3-bet suele quedar compuesto por manos buenas, pero no tan fuertes como para 4-betear: parejas medias, broadways decentes, y alguna mano especulativa con buen potencial para el postflop.",
     "cuando_lo_uso": "Al jugar un flop de un bote 3-bet donde vos fuiste quien 3-beteó, para leer qué tipo de mano trae el rival que pagó.",
-    "ejemplo": "3-beteás y el rival paga: ese rango, en general, no tiene tus manos más débiles posibles ya filtradas — está compuesto por manos que juegan bien un bote de SPR bajo.",
-    "error_comun": "Tratar el rango de un caller de 3-bet como si fuera tan amplio y flojo como un rango de defensa normal (T138).",
+    "ejemplo": "3-beteás y el rival paga. Ese rango, en general, ya viene con sus manos más débiles filtradas afuera — está compuesto por manos que juegan bien un bote de SPR bajo.",
+    "error_comun": "Tratar el rango de quien paga una 3-bet como si fuera tan amplio y flojo como un rango de defensa normal. No lo es: ya pasó un filtro más.",
     "idea_clave": "Pagar una 3-bet filtra el rango: suele quedar compuesto por manos razonablemente buenas, no cualquier cosa."
    },
    "pasos_mesa": null,
@@ -8958,12 +8942,12 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "En un bote 3-bet, con SPR más bajo (T166) y menos margen para maniobrar en las calles que faltan, la posición pesa todavía más que en un bote normal.",
-    "por_que_importa": "Con menos margen de maniobra (SPR bajo), cada decisión vale más: tener información extra por estar en posición se vuelve más valioso, no menos.",
-    "como_funciona": "Repasá lo que ya sabés de la posición (N3, N5): actuar último te da información antes de decidir. En un bote 3-bet, con el bote ya grande desde el arranque, esa ventaja se nota más rápido.",
+    "que_es": "En un bote 3-bet, con SPR más bajo y menos margen para maniobrar en las calles que faltan, la posición pesa todavía más que en un bote normal.",
+    "por_que_importa": "Pensalo así: con menos margen de maniobra, cada decisión vale más. Tener información extra por estar en posición se vuelve más valioso, no menos.",
+    "como_funciona": "Repasá lo que ya sabés de la posición, de N3 y N5: actuar último te da información antes de decidir. En un bote 3-bet, con el bote ya grande desde el arranque, esa ventaja se nota mucho más rápido.",
     "cuando_lo_uso": "Al planear cómo vas a jugar un bote 3-bet, según si vas a estar en posición o fuera de ella.",
-    "ejemplo": "Con la misma mano, jugar un bote 3-bet en posición te permite tomar decisiones más finas (pot control, ver una calle más barata) que jugarlo fuera de posición con el mismo SPR bajo.",
-    "error_comun": "Subestimar cuánto pesa la posición en un bote 3-bet, pensando que 'total el SPR es bajo, da lo mismo'.",
+    "ejemplo": "Con la misma mano, jugar un bote 3-bet en posición te permite tomar decisiones más finas —controlar el tamaño del bote, ver una calle más barata— que jugarlo fuera de posición con ese mismo SPR bajo.",
+    "error_comun": "Subestimar cuánto pesa la posición en un bote 3-bet, pensando 'total el SPR ya es bajo, da lo mismo'. No da lo mismo.",
     "idea_clave": "Con SPR bajo, la posición pesa más, no menos: hay menos margen para equivocarse."
    },
    "pasos_mesa": null,
@@ -8996,12 +8980,12 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Una 4-bet es subir por encima de una 3-bet — la cuarta subida de fichas de la secuencia (ciega grande, open, 3-bet, 4-bet).",
-    "por_que_importa": "Es el siguiente escalón de la guerra preflop: cuando abriste, te 3-betearon, y tu mano es lo bastante fuerte (o estratégica) como para seguir subiendo en vez de solo pagar o foldear.",
-    "como_funciona": "Aparece cuando vos abriste, el rival te 3-beteó, y decidís responder con una subida en vez de call o fold.",
+    "que_es": "Una 4-bet es subir por encima de una 3-bet — la cuarta subida de fichas de la secuencia: ciega grande, open, 3-bet, y ahora tu 4-bet.",
+    "por_que_importa": "Es el siguiente escalón de esta guerra preflop que venimos viendo: abriste, te 3-betearon, y tu mano es lo bastante fuerte —o estratégica— como para seguir subiendo en vez de solo pagar o foldear.",
+    "como_funciona": "Aparece cuando vos abriste, el rival te 3-beteó, y decidís responder con una subida en vez de un call o un fold.",
     "cuando_lo_uso": "Al enfrentar una 3-bet con una mano que quiere seguir subiendo en vez de solo pagar.",
-    "ejemplo": "Abrís desde el CO, el botón te 3-betea, y con A♠A♦ subís de nuevo: eso es una 4-bet.",
-    "error_comun": "Confundir cualquier subida preflop con una 4-bet. Es específicamente la subida que responde a una 3-bet.",
+    "ejemplo": "Abrís desde el CO, el botón te 3-betea, y con A♠A♦ en la mano subís de nuevo: eso es una 4-bet.",
+    "error_comun": "Confundir cualquier subida preflop con una 4-bet. Es, específicamente, la subida que responde a una 3-bet — ni antes, ni en otro contexto.",
     "idea_clave": "4-bet = subir sobre una 3-bet. El siguiente escalón después del open y la 3-bet."
    },
    "pasos_mesa": null,
@@ -9035,12 +9019,12 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Retirarte cuando abriste, te 3-betearon, y tu mano no alcanza para pagar ni para 4-betear.",
-    "por_que_importa": "Así como la mayoría de las manos se foldean al abrir y al defender, también la mayoría se foldean frente a una 3-bet: es una subida grande, con un rango del rival ya bastante fuerte de por sí.",
-    "como_funciona": "Si tu mano no entra en tu rango de call ni en tu rango de 4-bet contra esa 3-bet, foldeás — sin arrepentimiento: abriste con una mano razonable, esto es parte normal del juego.",
+    "que_es": "Retirarte cuando abriste, te 3-betearon, y tu mano no alcanza ni para pagar ni para 4-betear.",
+    "por_que_importa": "Ya viste que la mayoría de las manos se foldean al abrir y al defender. Bueno, acá pasa lo mismo frente a una 3-bet: es una subida grande, contra un rango del rival que ya viene bastante fuerte de por sí.",
+    "como_funciona": "Si tu mano no entra en tu rango de call ni en tu rango de 4-bet contra esa 3-bet puntual, foldeás — y sin arrepentimiento: abriste con una mano razonable, esto es parte normal del juego.",
     "cuando_lo_uso": "Cada vez que abrís, te 3-betean, y tu mano no alcanza para seguir.",
-    "ejemplo": "Abrís con K♠9♦ desde el CO y el botón te 3-betea: esa mano no entra ni en tu rango de call ni de 4-bet contra una 3-bet — foldeás.",
-    "error_comun": "Sentir que 'ya invertiste' con el open y por eso tenés que pagar la 3-bet. El open ya está hecho; la decisión de acá en más se toma con la información nueva.",
+    "ejemplo": "Abrís con K♠9♦ desde el CO y el botón te 3-betea. Esa mano no entra ni en tu rango de call ni en tu rango de 4-bet contra esa 3-bet — foldeás.",
+    "error_comun": "Sentir que 'ya invertiste' con el open, y por eso tenés que pagar la 3-bet. Ese open ya está hecho y ya es pasado: la decisión de acá en más se toma con la información nueva que tenés ahora.",
     "idea_clave": "Foldear contra una 3-bet sigue siendo, con diferencia, la respuesta más frecuente."
    },
    "pasos_mesa": null,
@@ -9075,11 +9059,11 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "Pagar la 3-bet del rival, en vez de foldear o 4-betear, con una mano que juega bien un bote 3-bet.",
-    "por_que_importa": "Al igual que con el call preflop (T155), no toda mano que 'alcanza' conviene 4-betearla: algunas prefieren ver el flop con el bote ya grande, en vez de agrandarlo todavía más.",
-    "como_funciona": "Pagás con manos buenas que no ganan lo suficiente 4-beteando (perderías valor si el rival foldea sus manos más flojas de 3-bet) y que juegan bien un flop de SPR bajo.",
+    "por_que_importa": "Pasa lo mismo que con el call preflop que ya viste: no toda mano que 'alcanza' conviene 4-betearla. Algunas prefieren ver el flop con el bote ya grande, en vez de agrandarlo todavía más.",
+    "como_funciona": "Pagás con manos buenas que no ganan lo suficiente 4-beteando —ahí perderías el valor de las manos más flojas del rival, que se retirarían frente a una 4-bet— y que juegan bien un flop de SPR bajo.",
     "cuando_lo_uso": "Con una mano sólida, con posición favorable, que prefiere jugar el flop antes que seguir agrandando el bote preflop.",
-    "ejemplo": "Abrís con A♠Q♠ desde el botón, el rival te 3-betea: pagar (en vez de 4-betear) mantiene en el bote a manos más flojas de su rango de 3-bet que foldearían frente a una 4-bet.",
-    "error_comun": "4-betear con cualquier mano que 'alcanza' contra una 3-bet, sin pensar si en realidad conviene más pagar.",
+    "ejemplo": "Abrís con A♠Q♠ desde el botón y el rival te 3-betea. Pagar, en vez de 4-betear, mantiene en el bote a las manos más flojas de su rango de 3-bet — las que foldearían frente a una 4-bet.",
+    "error_comun": "4-betear con cualquier mano que 'alcanza' contra una 3-bet, sin pararte a pensar si en realidad conviene más pagar.",
     "idea_clave": "Pagar una 3-bet es para manos buenas que prefieren jugar el flop, no agrandar más el bote todavía."
    },
    "pasos_mesa": null,
@@ -9114,11 +9098,11 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "4-betear con tus manos más fuertes, buscando meter más fichas mientras estás mejor parado que el rango de 3-bet del rival.",
-    "por_que_importa": "Con tus manos más fuertes de todas, conviene seguir agrandando el bote: es la misma lógica de la 3-bet por valor (T158), un escalón más arriba.",
-    "como_funciona": "Elegís las manos que le ganan cómodo incluso al rango de 3-bet del rival (que ya es, en promedio, más fuerte que un rango de apertura) y subís de nuevo.",
+    "por_que_importa": "Con tus manos más fuertes de todas, conviene seguir agrandando el bote — es la misma lógica que ya viste con la 3-bet por valor, un escalón más arriba.",
+    "como_funciona": "Elegís las manos que le ganan cómodo incluso al rango de 3-bet del rival —que ya es, en promedio, más fuerte que un rango de apertura común— y subís de nuevo.",
     "cuando_lo_uso": "Con tus manos más fuertes, frente a una 3-bet.",
-    "ejemplo": "Abrís y te 3-betean. Con K♠K♦, 4-betear por valor: le ganás cómodo a la inmensa mayoría del rango de 3-bet del rival — solo un As-As lo supera de entrada.",
-    "error_comun": "Solo pagar con tus manos más fuertes por miedo a que el rival se retire, dejando de construir el bote más grande posible cuando estás claramente adelante.",
+    "ejemplo": "Abrís y te 3-betean. Con K♠K♦ en la mano, 4-betear por valor tiene sentido: le ganás cómodo a la inmensa mayoría del rango de 3-bet del rival — solo un As-As te supera de entrada.",
+    "error_comun": "Solo pagar con tus manos más fuertes por miedo a que el rival se retire. Ahí dejás de construir el bote más grande posible justo cuando estás claramente adelante.",
     "idea_clave": "4-bet por valor = con tu mano más fuerte, seguís agrandando el bote."
    },
    "pasos_mesa": null,
@@ -9153,12 +9137,12 @@
    "visualizacion_mesa": true,
    "contenido": {
     "que_es": "4-betear con una mano que no es de valor, usando una carta que el rival necesitaría para tener sus propias manos más fuertes de 3-bet.",
-    "por_que_importa": "Igual que con la 3-bet (T159), no solo tus mejores manos pueden 4-betear: algunas manos flojas, pero con la carta correcta en la mano, también funcionan como farol.",
-    "como_funciona": "Elegís una mano que, además de tener algo de potencial, reduce las combinaciones de las manos MÁS fuertes que el rival podría tener en su rango de 3-bet — porque una de esas cartas ya está en tu mano, no en el mazo.",
+    "por_que_importa": "Pasa lo mismo que con la 3-bet: no son solo tus mejores manos las que pueden 4-betear. Algunas manos flojas, pero con la carta correcta en la mano, también funcionan como farol.",
+    "como_funciona": "Elegís una mano que, además de tener algo de potencial, hace un poco menos probable que el rival tenga las manos MÁS fuertes de su rango de 3-bet — porque una de esas cartas ya está en tu mano, no dando vueltas en el mazo.",
     "cuando_lo_uso": "Con una mano floja que, sin embargo, hace un poco menos probable que el rival tenga sus combos más fuertes.",
-    "cuando_no": "Contra un rival que casi nunca foldea frente a una 4-bet: ahí falta la fold equity que hace funcionar el farol.",
-    "ejemplo": "Abrís, te 3-betean, y tenés A♠5♦. Ese As en tu mano hace un poco menos probable que el rival tenga AA o AK en su rango de 3-bet — 4-betear ahí busca que el resto de su rango se retire.",
-    "error_comun": "4-betear como farol con cualquier mano floja, sin elegir una que además reste combos fuertes al rango del rival.",
+    "cuando_no": "Contra un rival que casi nunca foldea frente a una 4-bet. Ahí te falta la fold equity que hace funcionar el farol.",
+    "ejemplo": "Abrís, te 3-betean, y tenés A♠5♦ en la mano. Ese As hace un poco menos probable que el rival tenga AA o AK en su rango de 3-bet. 4-betear ahí busca que el resto de su rango se retire.",
+    "error_comun": "4-betear como farol con cualquier mano floja, sin elegir una que además le reste combos fuertes al rango del rival.",
     "idea_clave": "4-bet como farol = elegís una mano cuya carta hace un poco menos probable que el rival tenga sus manos más fuertes."
    },
    "pasos_mesa": null,
@@ -9193,12 +9177,12 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tener la iniciativa es haber sido el último en apostar o subir en la mano: el resto de los jugadores tiene que reaccionar a lo que hiciste vos, no al revés.",
-    "por_que_importa": "El jugador con la iniciativa arrastra una ventaja que no depende de sus cartas: los demás llegan a la calle siguiente teniendo que decidir frente a SU apuesta, no proponiendo ellos la acción.",
-    "como_funciona": "Si abriste preflop y nadie volvió a subir, tenés la iniciativa al llegar al flop. Si 3-beteaste y te pagaron, también. La iniciativa se mantiene mientras seas vos quien hizo la última subida.",
+    "que_es": "Vamos con un concepto que vas a usar todo el tiempo de acá en adelante: tener la iniciativa es haber sido el último en apostar o subir en la mano. El resto de los jugadores tiene que reaccionar a lo que hiciste vos, no al revés.",
+    "por_que_importa": "El jugador con la iniciativa arrastra una ventaja que no depende de sus cartas: los demás llegan a la calle siguiente teniendo que decidir frente a SU apuesta, en vez de proponer ellos la acción.",
+    "como_funciona": "Si abriste preflop y nadie volvió a subir, tenés la iniciativa al llegar al flop. Si 3-beteaste y te pagaron, también. La regla es siempre la misma: la iniciativa se mantiene mientras seas vos quien hizo la última subida.",
     "cuando_lo_uso": "Para identificar, en cualquier punto de la mano, quién 'lleva la voz cantante' y quién tiene que reaccionar.",
     "ejemplo": "Abrís desde el CO, el botón paga: llegan al flop con vos teniendo la iniciativa (fuiste el último en subir) y el botón teniendo que reaccionar a lo que hagas.",
-    "error_comun": "Confundir iniciativa con 'tener la mejor mano'. Son cosas distintas: podés tener la iniciativa con una mano floja, y el rival puede tener la mejor mano sin tener la iniciativa.",
+    "error_comun": "Ojo con confundir iniciativa con 'tener la mejor mano'. Son cosas distintas: podés tener la iniciativa con una mano floja, y el rival puede tener la mejor mano sin tener la iniciativa.",
     "idea_clave": "Iniciativa = fuiste el último en subir. El resto reacciona a vos."
    },
    "pasos_mesa": null,
@@ -9236,9 +9220,9 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La continuation bet (c-bet) es apostar el flop siendo el jugador que tenía la iniciativa desde preflop — 'continuás' la agresión que ya venías mostrando.",
+    "que_es": "Ahora que ya sabés qué es tener la iniciativa, viene la jugada que más la usa: la continuation bet, o c-bet, es apostar el flop siendo el jugador que tenía la iniciativa desde preflop — 'continuás' la agresión que ya venías mostrando.",
     "por_que_importa": "Es la decisión postflop más frecuente del juego: cada vez que abrís y te pagan, o 3-beteás y te pagan, te vas a enfrentar a esta decisión en el flop.",
-    "como_funciona": "Si tenías la iniciativa (T227) al llegar al flop, c-betear es simplemente apostar vos primero, antes de que el rival tenga la chance de mostrar qué hizo con esa carta.",
+    "como_funciona": "Si tenías la iniciativa al llegar al flop, c-betear es simplemente apostar vos primero, antes de que el rival tenga la chance de mostrar qué hizo con esa carta.",
     "cuando_lo_uso": "Cada vez que llegás al flop con la iniciativa y te toca decidir si apostás.",
     "ejemplo": "Abrís desde el CO, el botón paga, sale el flop: c-betear ahí es apostar como el jugador que llevaba la iniciativa.",
     "error_comun": "Pensar que 'c-bet' es cualquier apuesta en el flop. Es específicamente la apuesta del jugador que tenía la iniciativa desde antes.",
@@ -9277,9 +9261,9 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La c-bet funciona por dos motivos que se combinan: tenés la iniciativa (el rival reacciona a vos) y tu rango de apertura, en promedio, suele estar mejor parado que lo que el rival defendió.",
-    "por_que_importa": "Entender POR QUÉ funciona te permite decidir cuándo sigue funcionando y cuándo no, en vez de c-betear en piloto automático.",
-    "como_funciona": "Tu rango de apertura (N5) incluye manos fuertes y también manos que, la mayoría de las veces, terminan sin conectar el flop. Lo mismo el rango de defensa del rival. Pero como el rango del que abrió suele estar, en conjunto, un poco mejor parado en la mayoría de los boards, apostar ahí de entrada tiene sentido más seguido de lo que parece.",
+    "que_es": "Quiero que entiendas POR QUÉ funciona la c-bet, no que la uses de memoria. Funciona por dos motivos que se combinan: tenés la iniciativa (el rival reacciona a vos) y tu rango de apertura, en promedio, suele estar mejor parado que lo que el rival defendió.",
+    "por_que_importa": "Entender esto te permite decidir cuándo la c-bet sigue funcionando y cuándo no, en vez de apostarla en piloto automático.",
+    "como_funciona": "Tu rango de apertura (N5) incluye manos fuertes y también manos que, la mayoría de las veces, terminan sin conectar el flop. Lo mismo pasa con el rango de defensa del rival. Pero como el rango del que abrió suele estar, en conjunto, un poco mejor parado en la mayoría de los boards, apostar ahí de entrada tiene sentido más seguido de lo que parece.",
     "cuando_lo_uso": "Como marco general para entender la lógica detrás de la c-bet, antes de ver los casos concretos (por valor, farol, proyecto) en 8.2.",
     "ejemplo": "Abrís con tu rango de apertura del CO y el botón paga con su rango de defensa: en la mayoría de los flops, tu rango en conjunto está un poco mejor parado — eso, sumado a la iniciativa, es la base de la c-bet.",
     "error_comun": "Pensar que la c-bet funciona 'porque el rival probablemente falló el flop, nomás'. También importa que tu propio rango, en conjunto, suele estar mejor parado en ese board.",
@@ -9317,8 +9301,8 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "C-betear con una mano ya hecha y fuerte, buscando que el rival pague con algo peor.",
-    "por_que_importa": "Es el caso más simple de c-bet: tenés una buena mano, querés que te paguen. La misma lógica de la value bet (N6, T125), aplicada específicamente al flop.",
+    "que_es": "La primera de tres razones para c-betear, y la más directa: c-betear con una mano ya hecha y fuerte, buscando que el rival pague con algo peor.",
+    "por_que_importa": "Tenés una buena mano y querés que te paguen — es la misma lógica de la value bet que ya viste en N6, aplicada puntualmente al flop.",
     "como_funciona": "Con una mano que le gana a buena parte del rango de defensa del rival en ese board, apostás buscando cobrar valor.",
     "cuando_lo_uso": "Con una mano hecha y fuerte en el flop, contra un rango del rival que puede tener manos peores dispuestas a pagar.",
     "ejemplo": "Tenés top pair con buen kicker en un board seco: c-betear por valor busca que manos peores del rango del rival paguen.",
@@ -9358,8 +9342,8 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "C-betear con una mano floja, sin proyecto ni mano hecha, buscando que el rival se retire.",
-    "por_que_importa": "Gracias a la fold equity (N6), no necesitás la mejor mano para que apostar tenga sentido: alcanza con que el rival se retire lo suficientemente seguido.",
+    "que_es": "La segunda razón: c-betear con una mano floja, sin proyecto ni mano hecha, buscando que el rival se retire.",
+    "por_que_importa": "Acordate de la fold equity que ya viste en N6: gracias a eso, no necesitás la mejor mano para que apostar tenga sentido. Alcanza con que el rival se retire lo suficientemente seguido.",
     "como_funciona": "En boards donde tu rango (el que abrió) suele estar mejor parado y el rival falló seguido, una c-bet con nada puede ganar el bote ahí mismo sin necesidad de mejorar.",
     "cuando_lo_uso": "Con una mano sin ningún valor real ni proyecto, en un board donde el rival tiene buenos motivos para foldear seguido.",
     "cuando_no": "Contra un rival que paga cualquier c-bet sin importar el board: ahí falta la fold equity que hace funcionar el farol.",
@@ -9400,7 +9384,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "C-betear con un proyecto (un semi-farol): todavía no tenés la mejor mano, pero podés ganar de dos formas — que el rival se retire ahora, o que completes tu proyecto si te paga.",
+    "que_es": "Y la tercera razón, que combina las dos anteriores: c-betear con un proyecto — lo que se llama un semi-farol. Todavía no tenés la mejor mano, pero podés ganar de dos formas: que el rival se retire ahora, o que completes tu proyecto si te paga.",
     "por_que_importa": "Es distinta a un farol puro (T178): incluso si te pagan, todavía tenés chances reales de terminar ganando la mano en las calles siguientes.",
     "como_funciona": "Elegís un proyecto con buenos outs (N6) y apostás: si el rival se retira, ganás ahí mismo; si paga, seguís con equity real para completar tu mano.",
     "cuando_lo_uso": "Con un proyecto de varios outs (color, escalera) en el flop, contra un rival que puede retirarse o pagar.",
@@ -9440,7 +9424,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "En un board seco (N4: pocas cartas conectadas, sin proyectos obvios), la c-bet se puede hacer con más frecuencia.",
+    "que_es": "Ahora que ya viste las tres razones para c-betear, pensemos en el board. En un board seco —pocas cartas conectadas, sin proyectos obvios, algo que ya viste en N4— la c-bet se puede hacer con más frecuencia.",
     "por_que_importa": "Un board seco favorece al rango del que tenía la iniciativa: hay pocas manos que realmente hayan conectado algo fuerte del lado del defensor.",
     "como_funciona": "Con menos proyectos y menos chances de que el rival haya mejorado, apostar seguido en un board seco cuesta poco y gana seguido — tanto por valor como por fold equity.",
     "cuando_lo_uso": "Al llegar a un flop claramente seco, como parte de tu plan de c-bet.",
@@ -9481,7 +9465,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "En un board coordinado (N4: cartas conectadas, proyectos posibles), conviene ser más selectivo con la c-bet.",
+    "que_es": "Del otro lado, en un board coordinado —cartas conectadas, proyectos posibles, otra vez de N4— conviene ser más selectivo con la c-bet.",
     "por_que_importa": "Un board coordinado favorece más al rango del defensor: hay más manos y proyectos posibles que pueden haber conectado, así que apostar a ciegas cuesta más caro cuando el rival responde.",
     "como_funciona": "En vez de c-betear con cualquier cosa, elegís más puntualmente: manos de valor real, proyectos con buenos outs (T179), y menos farol puro.",
     "cuando_lo_uso": "Al llegar a un flop claramente coordinado, como parte de tu plan de c-bet.",
@@ -9523,7 +9507,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un bote multiway es un bote con TRES o más jugadores viendo el flop, no solo vos y un rival. La c-bet ahí se ajusta todavía más.",
+    "que_es": "Hay una variable más para tener en cuenta: un bote multiway es un bote con TRES o más jugadores viendo el flop, no solo vos y un rival. La c-bet ahí se ajusta todavía más.",
     "por_que_importa": "Con más jugadores en la mano, hay más chances de que ALGUNO de ellos haya conectado algo — aunque cada rival individual siga teniendo la misma chance de siempre.",
     "como_funciona": "Bajás todavía más la frecuencia de farol puro y apostás con manos más concretas: valor real o proyectos con buenos outs, porque necesitás que TODOS los rivales se retiren, no solo uno.",
     "cuando_lo_uso": "Cada vez que llegás al flop con dos o más rivales todavía en la mano.",
@@ -9561,7 +9545,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Aprovechar que vas a actuar último en el resto de la mano para c-betear con más margen: vas a ver la reacción del rival antes de la próxima decisión.",
+    "que_es": "Además del board, importa desde dónde apostás. Estar en posición significa que vas a actuar último en el resto de la mano — y eso te deja c-betear con más margen, porque vas a ver la reacción del rival antes de la próxima decisión.",
     "por_que_importa": "Estar en posición (N3) te deja tomar decisiones con más información en cada calle que sigue — eso hace que apostar el flop en posición sea, en general, más cómodo.",
     "como_funciona": "Al actuar último, si el rival paga, vas a ver qué hace en el turn antes de decidir vos. Eso te permite planear la mano con más flexibilidad.",
     "cuando_lo_uso": "Al c-betear desde una posición donde vas a actuar después del rival el resto de la mano.",
@@ -9600,7 +9584,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "C-betear teniendo que actuar primero en las calles siguientes: sin ver antes qué hace el rival.",
+    "que_es": "Y al revés: c-betear fuera de posición significa que vas a tener que actuar primero en las calles siguientes, sin ver antes qué hace el rival.",
     "por_que_importa": "Fuera de posición tenés menos información para las decisiones que vienen: hay que ser un poco más selectivo y pensar con más anticipación qué vas a hacer según lo que pase.",
     "como_funciona": "Como no vas a ver la reacción del rival antes de tu próxima decisión, conviene c-betear con manos que sepas cómo seguir jugando (valor claro o proyecto con buenos outs) en vez de faroles sueltos difíciles de continuar.",
     "cuando_lo_uso": "Al c-betear desde una posición donde vas a actuar antes que el rival el resto de la mano.",
@@ -9637,7 +9621,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La frecuencia de c-bet es qué tan seguido apostás el flop cuando tenés la iniciativa — no es 'siempre' ni 'nunca', es una proporción que depende del board, la posición y si el bote es multiway.",
+    "que_es": "Juntemos todo lo que viste en esta sección: la frecuencia de c-bet es qué tan seguido apostás el flop cuando tenés la iniciativa. No es 'siempre' ni 'nunca' — es una proporción que depende del board, la posición y si el bote es multiway.",
     "por_que_importa": "C-betear el 100% de las veces te vuelve predecible (el rival sabe que siempre vas a apostar, así que puede jugar en consecuencia); no c-betear casi nunca desperdicia todo lo que trabajaste en 8.1-8.4.",
     "como_funciona": "Juntá todo lo que ya viste: boards secos y en posición empujan la frecuencia hacia arriba; boards coordinados, multiway y fuera de posición la empujan hacia abajo.",
     "cuando_lo_uso": "Como resumen práctico antes de decidir si apostás este flop puntual: no es una decisión aislada, es parte de un patrón.",
@@ -9675,7 +9659,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Elegir cuánto apostar en la c-bet, según el board y lo que buscás con esa apuesta puntual.",
+    "que_es": "Además de con qué frecuencia apostás, falta una pieza: cuánto apostás. El tamaño de la c-bet se elige según el board y lo que buscás con esa apuesta puntual.",
     "por_que_importa": "Igual que con el tamaño de apertura (N5), el tamaño de la c-bet no es un número fijo: cumple un objetivo distinto según la situación.",
     "como_funciona": "En boards secos, un tamaño más chico ya cumple su función (el rival tiene pocos motivos para pagar con algo mejor). En boards coordinados o multiway, un tamaño más grande cobra mejor valor y cobra más caro a los proyectos del rival.",
     "cuando_lo_uso": "Cada vez que decidís c-betear: además de con qué mano, definís cuánto apostar.",
@@ -9714,7 +9698,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Del otro lado de la mesa: decidir entre foldear, pagar o subir cuando el rival (con la iniciativa) te c-betea a vos.",
+    "que_es": "Demos vuelta la mesa. Todo lo que viste hasta acá fue desde el lugar del agresor. Ahora te toca el otro lado: decidir entre foldear, pagar o subir cuando el rival, con la iniciativa, te c-betea a vos.",
     "por_que_importa": "Todo lo que viste en 8.1-8.5 fue desde el punto de vista del agresor. Ahora te toca ser el que responde — la otra mitad de cada mano postflop.",
     "como_funciona": "Juntás lo que ya sabés: tu mano y tus proyectos (N4), el rango probable del rival según el board (8.1-8.4), y pot odds/equity necesaria (N6) para decidir entre las tres opciones.",
     "cuando_lo_uso": "Cada vez que el rival, con la iniciativa, te apuesta el flop.",
@@ -9794,7 +9778,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Check-raisear con un proyecto (semi-farol): igual que la c-bet con proyecto (T179), ganás de dos formas — que el rival se retire frente a tu subida, o que completes tu proyecto si paga.",
+    "que_es": "Check-raisear con un proyecto —un semi-farol— funciona igual que la c-bet con proyecto que ya viste: todavía no tenés la mejor mano, pero ganás de dos formas — que el rival se retire frente a tu subida, o que completes tu proyecto si paga.",
     "por_que_importa": "No hace falta tener la mejor mano para check-raisear: un proyecto con buenos outs te deja jugar agresivo incluso pasando primero.",
     "como_funciona": "Pasás con tu proyecto, el rival c-betea, y subís: si se retira, ganás el bote ahí mismo; si paga, seguís con chances reales de completar tu mano en las calles que siguen.",
     "cuando_lo_uso": "Con un proyecto de varios outs, contra un rival que c-betea seguido y que a veces se retira frente a presión.",
@@ -9834,7 +9818,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El float es pagar la c-bet del rival sin tener mano hecha, con el plan de apostar vos en el turn si el rival muestra debilidad (por ejemplo, si pasa).",
+    "que_es": "El float es pagar la c-bet del rival sin tener mano hecha, con el plan de apostar vos en el turn si el rival muestra debilidad — por ejemplo, si pasa.",
     "por_que_importa": "Es una forma de aprovechar la posición: en vez de responder a la c-bet foldeando, pagás una vez, planeando llevarte el bote más adelante si el rival no vuelve a apostar.",
     "como_funciona": "Pagás la c-bet del flop sin mano real. En el turn, si el rival pasa (mostrando que no tiene ganas de seguir apostando), apostás vos y buscás que se retire ahí.",
     "cuando_lo_uso": "Estando en posición, contra un rival que suele c-betear una vez en el flop pero no siempre sigue apostando en el turn sin una mano real.",
@@ -9875,7 +9859,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Dos formas de apostar 'fuera del orden esperado': el probe bet es apostar el turn cuando el agresor (quien tenía la iniciativa) pasó el flop; el donk bet es apostar el flop siendo el defensor, antes de que el agresor tenga la chance de c-betear.",
+    "que_es": "Para cerrar el nivel, dos formas de apostar 'fuera del orden esperado': el probe bet es apostar el turn cuando el agresor (quien tenía la iniciativa) pasó el flop; el donk bet es apostar el flop siendo el defensor, antes de que el agresor tenga la chance de c-betear.",
     "por_que_importa": "Ambas rompen el patrón habitual (agresor apuesta, defensor reacciona), así que son señales que vale la pena reconocer, tanto para usarlas vos como para leerlas del rival.",
     "como_funciona": "Probe bet: el agresor pasó el flop (mostrando poco interés), y vos, como defensor, apostás el turn aprovechando esa debilidad. Donk bet: apostás el flop siendo el defensor, sin esperar a ver si el agresor c-betea.",
     "cuando_lo_uso": "Probe bet: cuando el agresor pasó el flop y el board o la situación te da motivos para pensar que se retira frente a presión. Donk bet: en situaciones puntuales donde apostar primero vos, como defensor, tiene una razón concreta (por ejemplo, una carta del turn que te favorece mucho más a vos que al agresor).",
@@ -9915,7 +9899,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La segunda decisión postflop es volver a evaluar toda la mano cuando aparece la carta del turn: lo que sabías con el flop puede cambiar, para bien o para mal.",
+    "que_es": "Ya viste la primera gran decisión postflop, la c-bet, en N8. Ahora viene la segunda: volver a evaluar toda la mano cuando aparece la carta del turn. Lo que sabías con el flop puede cambiar, para bien o para mal.",
     "por_que_importa": "El turn no es 'una carta más': es información nueva que puede completar proyectos, parear el board, o no cambiar casi nada. Tratarlo como un trámite es un error caro.",
     "como_funciona": "Volvés a mirar tu mano, el board completo (ahora con cuatro cartas) y el rango probable del rival, exactamente como hiciste en el flop — pero con una carta más de información.",
     "cuando_lo_uso": "Cada vez que aparece la carta del turn, antes de decidir cualquier acción.",
@@ -9956,7 +9940,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Una carta del turn que mejora tu situación: completa tu proyecto, te da una mano mejor, o empeora las chances del rival.",
+    "que_es": "Empecemos por lo más simple: una carta buena para vos es una carta del turn que mejora tu situación — completa tu proyecto, te da una mano mejor, o empeora las chances del rival.",
     "por_que_importa": "Reconocerla te dice que podés jugar más agresivo de lo que venías jugando en el flop — tu equity subió.",
     "como_funciona": "Comparás tu mano antes y después de esa carta: si mejoró tu fuerza real (no solo 'se ve mejor'), es una carta buena para vos.",
     "cuando_lo_uso": "Al revisar el turn, como primera pregunta: ¿esta carta me ayudó a mí?",
@@ -9997,7 +9981,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Una carta del turn que mejora la situación del rival: completa sus proyectos posibles, o empareja el board de una forma que lo favorece más a él que a vos.",
+    "que_es": "Ahora date vuelta y mirá el otro lado: una carta buena para el rival es una carta del turn que mejora SU situación — completa sus proyectos posibles, o empareja el board de una forma que lo favorece más a él que a vos.",
     "por_que_importa": "Así como hay cartas que te ayudan, hay cartas que ayudan al rival: reconocerlas te dice cuándo conviene frenar en vez de seguir apostando igual que antes.",
     "como_funciona": "Pensá en el rango probable del rival (según su acción en el flop) y preguntate si esa carta del turn completa algo de ese rango con más frecuencia de la que te ayuda a vos.",
     "cuando_lo_uso": "Al revisar el turn, como segunda pregunta: ¿esta carta ayudó más al rival que a mí?",
@@ -10038,7 +10022,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un blank es una carta del turn que casi no cambia nada: no completa proyectos obvios, no empareja el board, no mejora claramente a ninguno de los dos.",
+    "que_es": "Hay un tercer caso, el más común de los tres: un blank es una carta del turn que casi no cambia nada. No completa proyectos obvios, no empareja el board, no mejora claramente a ninguno de los dos.",
     "por_que_importa": "Reconocer un blank te dice que la situación sigue prácticamente igual que en el flop — tu plan no debería cambiar mucho.",
     "como_funciona": "Preguntate si esa carta completa algún proyecto visible en el board o empareja alguna carta ya existente. Si la respuesta es no a las dos, probablemente sea un blank.",
     "cuando_lo_uso": "Al revisar el turn y notar que, en principio, no cambió gran cosa respecto al flop.",
@@ -10079,7 +10063,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Una scare card ('carta que asusta') es una carta del turn que completa visiblemente un proyecto posible en el board — aunque ninguno de los dos jugadores lo haya completado en realidad.",
+    "que_es": "Y hay un cuarto caso, más sutil: una scare card ('carta que asusta') es una carta del turn que completa visiblemente un proyecto posible en el board — aunque ninguno de los dos jugadores lo haya completado en realidad.",
     "por_que_importa": "Estas cartas cambian cómo se juega la mano incluso cuando tu mano real no cambió: tanto vos como el rival tienen que tener en cuenta que el OTRO podría haber completado algo ahí.",
     "como_funciona": "Mirá el board: si la carta del turn completa la cuarta de un mismo palo, o la carta que cierra una escalera visible, es una scare card — asusta, exista o no exista realmente esa mano del lado del rival.",
     "cuando_lo_uso": "Al revisar el turn, para anticipar que tanto vos como el rival van a jugar con más cautela, aunque ninguno haya completado nada en verdad.",
@@ -10120,8 +10104,8 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Con cada carta que sale, la equity (N6) de cada mano en juego cambia — a veces poco, a veces por completo.",
-    "por_que_importa": "Formaliza lo que ya veníamos viendo con ejemplos concretos (carta buena, mala, blank, scare card): todo eso son formas distintas de decir 'la equity de cada uno cambió'.",
+    "que_es": "Fijate que lo que acabamos de ver —carta buena, mala, blank, scare card— son todas formas distintas de decir lo mismo: con cada carta que sale, la equity de cada mano en juego cambia, a veces poco, a veces por completo.",
+    "por_que_importa": "Ponerle un nombre común a esas cuatro situaciones te ayuda a no tratarlas como casos sueltos: todas responden a la misma pregunta — ¿cómo cambió la equity con esta carta?",
     "como_funciona": "Antes del turn, cada mano tenía una equity según sus outs. Con la carta nueva, esos outs se resuelven (para bien o para mal) y la equity de cada mano se recalcula desde cero.",
     "cuando_lo_uso": "Como marco general para entender por qué revisás la mano completa en cada calle nueva, en vez de seguir con la lectura del flop.",
     "ejemplo": "Tu proyecto de color tenía cierta equity en el flop. Si el turn lo completa, tu equity salta a un porcentaje mucho más alto; si no lo completa, tu equity baja porque te quedó una sola carta para el river.",
@@ -10159,7 +10143,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un barrel es seguir apostando en el turn después de haber c-beteado el flop — mantener la presión en vez de frenar.",
+    "que_es": "Vamos a la acción del turn. Un barrel es seguir apostando después de haber c-beteado el flop — mantener la presión en vez de frenar.",
     "por_que_importa": "Muchas manos que fallaron el flop siguen fallando el turn: seguir apostando aprovecha que el rival, con un rango más flojo, tiene motivos para retirarse de nuevo.",
     "como_funciona": "Si tenías la iniciativa (N8) y c-beteaste el flop, apostar otra vez en el turn es hacer un barrel — sostener la misma presión una calle más.",
     "cuando_lo_uso": "Después de c-betear el flop, cuando el turn (revisado con T187-190) sigue favoreciendo que apuestes de nuevo.",
@@ -10199,7 +10183,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El double barrel es el nombre específico para la SEGUNDA apuesta consecutiva: c-bet en el flop + apuesta en el turn.",
+    "que_es": "Este término le pone nombre preciso a esa secuencia: el double barrel es la SEGUNDA apuesta consecutiva — c-bet en el flop más apuesta en el turn.",
     "por_que_importa": "Te da un vocabulario preciso para hablar de esta secuencia concreta, distinta de seguir apostando en el río también (esa tercera apuesta seguida se suele llamar triple barrel, aunque acá no la desarrollamos como concepto aparte).",
     "como_funciona": "Es simplemente el barrel (T191) nombrado por su posición en la secuencia: la segunda apuesta seguida del mismo jugador.",
     "cuando_lo_uso": "Para nombrar con precisión la secuencia c-bet + apuesta en el turn, y pensar en ella como un plan de dos calles, no como dos decisiones sueltas.",
@@ -10239,7 +10223,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Pasar en el turn: decidir no apostar, después de haber (o no) apostado el flop.",
+    "que_es": "Del otro lado del barrel está la otra opción: pasar en el turn, decidir no apostar, después de haber (o no) apostado el flop.",
     "por_que_importa": "No todo turn conviene apostarlo. A veces el board cambió en tu contra, o tu mano no gana lo suficiente apostando de nuevo.",
     "como_funciona": "Si la carta del turn favoreció al rango del rival (T188), o si tu mano es media y preferís ver el river sin arriesgar más fichas, pasar es la decisión correcta.",
     "cuando_lo_uso": "Cuando el turn no te da motivos para seguir apostando con confianza.",
@@ -10279,7 +10263,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Apostar el turn, ya sea por valor (tenés una mano buena que busca pago) o como segundo farol (buscás que el rival se retire con la presión sostenida).",
+    "que_es": "Juntemos las dos razones para apostar el turn: por valor, con una mano buena que busca pago, o como segundo farol, buscando que el rival se retire con la presión sostenida.",
     "por_que_importa": "Es la decisión contraria a T193: juntá lo que ya sabés del barrel (T191) para decidir cuándo apostar en vez de pasar.",
     "como_funciona": "Con una mano fuerte que quiere pago, o con un farol que sigue teniendo buenos motivos para funcionar (el rival tiene motivos para retirarse), apostás de nuevo.",
     "cuando_lo_uso": "Después de revisar el turn (T187-190), cuando la situación sigue favoreciendo que apuestes.",
@@ -10319,7 +10303,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El pot control es pasar (o apostar chico) a propósito con una mano media, para no inflar el bote en una mano que no aguanta mucha presión.",
+    "que_es": "Hay una tercera forma de jugar el turn que todavía no vimos: el pot control es pasar (o apostar chico) a propósito con una mano media, para no inflar el bote en una mano que no aguanta mucha presión.",
     "por_que_importa": "No toda mano decente quiere un bote grande. Con una mano media, mantener el bote chico limita cuánto podés perder si el rival en realidad tiene algo mejor.",
     "como_funciona": "Con una mano que le gana a parte del rango del rival pero no a todo, pasar en el turn (en vez de apostar) evita construir un bote grande que te obligue a tomar una decisión más difícil y más cara en el river.",
     "cuando_lo_uso": "Con una mano media, cuando apostar de más te expone a perder un bote grande contra las manos que sí te ganan.",
@@ -10359,7 +10343,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Distinguir, en el turn, qué proyectos siguen vivos (todavía tienen outs reales para el river) de los que ya se murieron (fallaron sin ninguna chance más).",
+    "que_es": "Cerremos esta sección con algo puntual: distinguir, en el turn, qué proyectos siguen vivos —todavía tienen outs reales para el river— de los que ya se murieron, fallaron sin ninguna chance más.",
     "por_que_importa": "Un proyecto vivo sigue teniendo equity real, aunque sea con una sola carta por venir (regla del 2, N6). Un proyecto muerto ya no tiene ningún valor futuro — solo cuenta lo que tenga hecho, si tiene algo.",
     "como_funciona": "Mirá tus outs originales del flop: si ninguna de esas cartas salió en el turn, tu proyecto sigue vivo, con una carta menos por venir. Si el board ya cerró esa posibilidad (por ejemplo, ya no hay forma de completar esa escalera), está muerto.",
     "cuando_lo_uso": "Al revisar el turn, para saber si todavía te queda equity de proyecto para el river.",
@@ -10398,7 +10382,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "En el river ya salieron las cinco cartas del board: no hay más cartas por venir. La mano de cada jugador está completamente definida.",
+    "que_es": "Llegamos a la última calle. En el river ya salieron las cinco cartas del board: no hay más cartas por venir. La mano de cada jugador está completamente definida.",
     "por_que_importa": "Cambia el tipo de pensamiento: en el flop y el turn pensabas en outs y equity futura; en el río, ya no hay futuro — solo importa quién tiene la mejor mano AHORA.",
     "como_funciona": "Ya no hay proyectos vivos (T196): o completaste, o no. Toda decisión en el river se basa en comparar tu mano final contra el rango final del rival, sin ningún 'todavía puede mejorar'.",
     "cuando_lo_uso": "Al llegar al river, como primer paso: entender que la pregunta cambió por completo respecto al flop y al turn.",
@@ -10438,7 +10422,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Apostar por valor en el river: con una mano fuerte, buscando que el rival pague con algo peor.",
+    "que_es": "Empecemos por lo más directo: apostar por valor en el río es apostar con una mano fuerte, buscando que el rival pague con algo peor.",
     "por_que_importa": "Es el caso más limpio de apostar por valor (ya visto en N6, T125): sin más cartas por venir, es pura comparación entre tu mano final y lo que el rival podría tener.",
     "como_funciona": "Con una mano que le gana a buena parte del rango final del rival, apostás buscando cobrar de las manos peores que todavía están dispuestas a pagar.",
     "cuando_lo_uso": "En el river, con una mano fuerte, contra un rango del rival que puede incluir manos peores dispuestas a pagar.",
@@ -10478,7 +10462,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un value bet fino es apostar una mano que gana, pero por poco margen: no es obviamente la mejor mano, pero igual le gana a una porción razonable del rango del rival.",
+    "que_es": "Hay una versión más sutil de esto: un value bet fino es apostar una mano que gana, pero por poco margen. No es obviamente la mejor mano, pero igual le gana a una porción razonable del rango del rival.",
     "por_que_importa": "Muchas apuestas de valor rentables no vienen de manos espectaculares: vienen de manos medias que, bien leídas, siguen ganando más seguido de lo que parece.",
     "como_funciona": "Antes de descartar apostar 'porque mi mano no es tan buena', preguntate específicamente qué manos peores del rango del rival te seguirían pagando (esto se desarrolla en T209).",
     "cuando_lo_uso": "Con una mano media-fuerte, cuando dudás si apostar por no sentirla lo bastante buena.",
@@ -10518,7 +10502,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Antes de apostar por valor en el river, preguntarte concretamente: de todas las manos que el rival podría tener, ¿cuáles son PEORES que la mía Y además pagarían mi apuesta?",
+    "que_es": "Antes de apostar por valor en el río, quiero que te hagas una pregunta muy concreta: de todas las manos que el rival podría tener, ¿cuáles son PEORES que la mía Y además pagarían mi apuesta?",
     "por_que_importa": "Tener la mejor mano no alcanza: si ninguna mano peor del rango del rival va a pagar (todas se retiran, o todas te ganan), apostar por valor no suma nada.",
     "como_funciona": "Pensá en el rango del rival y filtralo dos veces: primero, ¿qué manos son peores que la mía? Segundo, de esas, ¿cuáles pagarían esta apuesta en particular (y no se retirarían)?",
     "cuando_lo_uso": "Cada vez que pensás en apostar por valor en el río, antes de decidir el tamaño.",
@@ -10558,7 +10542,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Farolear el river es apostar con una mano floja, buscando que el rival se retire con manos MEJORES que la tuya.",
+    "que_es": "Del otro lado de la moneda: farolear el río es apostar con una mano floja, buscando que el rival se retire con manos MEJORES que la tuya.",
     "por_que_importa": "En el río, un farol es la forma más pura de fold equity (N6): no hay ninguna carta futura que te vaya a salvar, así que todo el valor del farol viene de que el rival se retire ahora mismo.",
     "como_funciona": "Elegís una mano sin valor de showdown y apostás, buscando que el rival, con una mano mejor que la tuya, decida retirarse igual.",
     "cuando_lo_uso": "Con una mano floja en el río, contra un rival que tiene motivos reales para retirarse frente a tu apuesta.",
@@ -10602,7 +10586,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Usar tu mano como bluff catcher (N4, T100): decidir si pagar una apuesta en el río con una mano que solo le gana a un farol.",
+    "que_es": "Ahora ponete en el lugar de quien recibe esa apuesta: usar tu mano como bluff catcher —ese término ya lo viste en N4— es decidir si pagar una apuesta en el río con una mano que solo le gana a un farol.",
     "por_que_importa": "Es una de las decisiones más difíciles del póker: estás apostando sobre el rival, no sobre tus cartas — ¿creés que está faroleando o no?",
     "como_funciona": "Juntás todo: la línea completa de la mano (¿tiene sentido que tenga una mano de valor ahí?), pot odds y equity necesaria (N6) contra la frecuencia con la que creés que está faroleando.",
     "cuando_lo_uso": "En el río, con una mano que solo le gana a un farol, frente a una apuesta del rival.",
@@ -10643,7 +10627,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Antes de farolear en el river, preguntarte concretamente: de todas las manos que el rival podría tener, ¿cuáles son MEJORES que la mía Y además se retirarían frente a mi apuesta?",
+    "que_es": "Y ahora la misma pregunta que te hiciste para el valor, pero del lado del farol: antes de farolear en el river, preguntate concretamente: de todas las manos que el rival podría tener, ¿cuáles son MEJORES que la mía Y además se retirarían frente a mi apuesta?",
     "por_que_importa": "Así como con la value bet (T209), un farol solo funciona si existe una porción real del rango del rival que sea mejor que tu mano pero igual se retire.",
     "como_funciona": "Pensá en el rango del rival: si sus manos mejores que la tuya son del tipo que nunca se retira (por ejemplo, manos muy fuertes que van a pagar cualquier cosa), tu farol no tiene con qué ganar.",
     "cuando_lo_uso": "Cada vez que pensás en farolear en el río, antes de decidir el tamaño.",
@@ -10684,8 +10668,8 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Check back es pasar en el río sin apostar, cuando tenías la opción de hacerlo — normalmente con una mano media que no quiere apostar ni tiene motivos para foldear si el rival ya había pasado antes.",
-    "por_que_importa": "No todo river se apuesta. Con una mano media, a veces lo mejor es simplemente ir al showdown sin arriesgar fichas de más ni exponerte a un check-raise.",
+    "que_es": "No todo river se apuesta. Check back es pasar en el río sin apostar, cuando tenías la opción de hacerlo — normalmente con una mano media que no quiere apostar ni tiene motivos para foldear si el rival ya había pasado antes.",
+    "por_que_importa": "A veces lo mejor, con una mano media, es simplemente ir al showdown sin arriesgar fichas de más ni exponerte a un check-raise.",
     "como_funciona": "Con una mano que no gana lo suficiente como para apostar por valor (T209) ni tiene sentido farolear (T210), pasás y vas directo a mostrar las cartas.",
     "cuando_lo_uso": "Con una mano media en el river, cuando ni apostar por valor ni farolear tienen un motivo real detrás.",
     "ejemplo": "Tenés una pareja media contra un rango donde casi no hay manos peores dispuestas a pagar (T209) ni manos mejores dispuestas a foldear (T210): check back y listo.",
@@ -10726,7 +10710,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Check/fold es la línea completa de pasar en el río y, si el rival apuesta, retirarte — con una mano que no aguanta ni para pagar.",
+    "que_es": "Hay una línea parecida pero distinta: check/fold es la línea completa de pasar en el río y, si el rival apuesta, retirarte — con una mano que no aguanta ni para pagar.",
     "por_que_importa": "Es distinta del check back (T203): ahí pasabas porque tu mano no tenía motivo para apostar, pero SÍ iba al showdown si el rival también pasaba. Acá, directamente no tenés intención de pagar si te apuestan.",
     "como_funciona": "Con una mano floja que no le gana a casi nada del rango del rival, pasás sabiendo que, si apuestan, vas a retirarte.",
     "cuando_lo_uso": "Con una mano floja en el river, cuando ni siquiera tenés intención de pagar una apuesta del rival.",
@@ -10768,7 +10752,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Bet/fold es apostar el río con tu mano, pero con la intención de retirarte si el rival responde subiendo tu apuesta.",
+    "que_es": "Y una tercera línea, esta vez apostando: bet/fold es apostar el río con tu mano, pero con la intención de retirarte si el rival responde subiendo tu apuesta.",
     "por_que_importa": "Apostar no siempre significa estar dispuesto a pagar cualquier cosa después: con ciertas manos, la apuesta tiene sentido, pero una subida cambia completamente el panorama.",
     "como_funciona": "Apostás con una mano de valor razonable, pero si el rival responde con un raise (algo que no haría con manos medias, solo con las más fuertes), te retirás en vez de pagar.",
     "cuando_lo_uso": "Con una mano que gana contra la mayoría del rango del rival, pero pierde contra las pocas manos que responderían con un raise.",
@@ -10810,7 +10794,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un rango polarizado está compuesto casi por completo por dos extremos: manos muy fuertes (valor) y faroles — con muy poco en el medio.",
+    "que_es": "Juntemos las líneas que acabamos de ver para llegar a una idea central: un rango polarizado está compuesto casi por completo por dos extremos — manos muy fuertes (valor) y faroles — con muy poco en el medio.",
     "por_que_importa": "Entender la forma de tu rango (o el del rival) te ayuda a leer o construir apuestas grandes en el río: una apuesta grande con un rango polarizado tiene sentido porque combina 'gano mucho' con 'gano por fold equity'.",
     "como_funciona": "Pensá en las líneas de esta lección: check back (T203) y check/fold (T204) sacan las manos medias del rango que apuesta; lo que queda apostando en el río tiende a ser valor fuerte o farol — un rango polarizado.",
     "cuando_lo_uso": "Al leer una apuesta grande del rival en el río, o al construir la tuya propia.",
@@ -10852,7 +10836,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tu rango de valor en el río es el conjunto de manos con las que apostás buscando que te paguen — la mitad 'fuerte' de un rango polarizado (T206).",
+    "que_es": "Pensemos en la mitad fuerte de ese rango polarizado: tu rango de valor en el río es el conjunto de manos con las que apostás buscando que te paguen.",
     "por_que_importa": "Definirlo de antemano te ayuda a mantener consistencia: no cada mano suelta, sino un conjunto pensado de manos que realmente ganan lo suficiente como para apostar por valor.",
     "como_funciona": "Juntás las manos que, según T209, tienen suficientes manos peores del rival dispuestas a pagar.",
     "cuando_lo_uso": "Al planificar, de antemano, con qué manos vas a apostar por valor en un río determinado.",
@@ -10894,7 +10878,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tu rango de farol en el río es el conjunto de manos con las que apostás sin valor real, buscando que el rival se retire — la mitad 'floja' de un rango polarizado (T206).",
+    "que_es": "Y la otra mitad: tu rango de farol en el río es el conjunto de manos con las que apostás sin valor real, buscando que el rival se retire.",
     "por_que_importa": "Un rango de farol bien pensado hace que tu rango de apuesta completo (valor + farol) sea difícil de leer para el rival: no puede asumir que siempre tenés lo mejor.",
     "como_funciona": "Elegís, de las manos que se quedaron sin valor de showdown, las que mejor cumplen T210 (que el rival tenga manos mejores dispuestas a retirarse) para incluirlas en tu rango de farol.",
     "cuando_lo_uso": "Al planificar, de antemano, con qué manos vas a farolear en un río determinado.",
@@ -10934,7 +10918,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Cada acción del rival — abrir, pagar, subir, pasar — es una pista sobre su mano. Juntando todas las pistas de la mano, podés reconstruir un rango cada vez más ajustado.",
+    "que_es": "Vamos a juntar algo que venías usando por separado en cada nivel: cada acción del rival —abrir, pagar, subir, pasar— es una pista sobre su mano. Juntando todas las pistas de la mano, podés reconstruir un rango cada vez más ajustado.",
     "por_que_importa": "Ya veníamos usando esta idea por separado en cada nivel (rango de apertura en N5, rango después de una c-bet en N8...). Acá se formaliza como un proceso único que se repite en cada acción de toda la mano.",
     "como_funciona": "Después de cada acción del rival, actualizás mentalmente su rango: sacás las manos que no encajan con lo que acaba de hacer, y te quedás con las que sí.",
     "cuando_lo_uso": "Después de CADA acción del rival, en cualquier punto de la mano — no solo al final.",
@@ -10975,7 +10959,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El primer paso de esa reconstrucción: el rango del rival después de abrir es, simplemente, su rango de apertura (N5) para esa posición.",
+    "que_es": "Empecemos por el principio: el rango del rival después de abrir es, simplemente, su rango de apertura que ya conocés de N5, para esa posición.",
     "por_que_importa": "Es el punto de partida de toda lectura: antes de cualquier otra acción, ya tenés una primera estimación basada en dónde estaba sentado cuando abrió.",
     "como_funciona": "Usás lo que ya sabés (N5, 5.5): UTG angosto y fuerte, botón ancho, y así con cada posición.",
     "cuando_lo_uso": "Como primer paso de la lectura, apenas el rival hace su primera acción de la mano.",
@@ -11016,7 +11000,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El rango del rival después de pagar (en vez de subir) tiende a quedar compuesto por manos que juegan bien con el bote chico — ni tan fuertes como para subir, ni tan flojas como para foldear.",
+    "que_es": "El siguiente paso: el rango del rival después de pagar, en vez de subir, tiende a quedar compuesto por manos que juegan bien con el bote chico — ni tan fuertes como para subir, ni tan flojas como para foldear.",
     "por_que_importa": "Un call es una pista distinta a un raise: te dice que el rival, con esa mano, prefirió no agrandar el bote — algo que ya viste con el rango de call (N7, T160).",
     "como_funciona": "Sacás del rango de apertura las manos que, con esa acción, más probablemente hubieran subido en vez de pagar (las más fuertes de valor y los faroles) y te quedás con lo que suele pagar: manos medias con buen potencial.",
     "cuando_lo_uso": "Cada vez que el rival responde con un call en vez de una subida.",
@@ -11057,7 +11041,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El rango del rival después de subir postflop (un check-raise, por ejemplo) tiende a estar más polarizado: manos fuertes de valor o proyectos con buenos outs jugados como semi-farol, y poco en el medio.",
+    "que_es": "Y del otro lado: el rango del rival después de subir postflop —un check-raise, por ejemplo— tiende a estar más polarizado: manos fuertes de valor o proyectos con buenos outs jugados como semi-farol, y poco en el medio.",
     "por_que_importa": "Subir cuesta más fichas que pagar: los jugadores suelen reservar esa jugada para sus mejores manos o sus mejores semi-faroles, no para cualquier mano media.",
     "como_funciona": "Pensá en lo que ya sabés del check-raise (N8, TN06-TN07): valor o semi-farol. Ese mismo patrón aplica a cualquier raise postflop.",
     "cuando_lo_uso": "Cada vez que el rival sube una apuesta en el flop, turn o river.",
@@ -11098,7 +11082,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El rango del rival después de pasar no es 'nada': puede incluir manos medias (algunas de ellas jugando pot control, N9: pasan a propósito para no inflar el bote) y proyectos. Pero SÍ suele quedar sin sus manos MÁS fuertes, porque esas suelen preferir apostar.",
+    "que_es": "Falta una pieza más: el rango del rival después de pasar no es 'nada'. Puede incluir manos medias —algunas de ellas jugando pot control, que ya viste en N9: pasan a propósito para no inflar el bote— y proyectos. Pero SÍ suele quedar sin sus manos MÁS fuertes, porque esas suelen preferir apostar.",
     "por_que_importa": "Leer bien un check evita dos errores opuestos: pensar que 'pasó, seguro no tiene nada' (falso: puede tener pot control) o 'pasó, puede tener cualquier cosa' (tampoco: sus manos más fuertes suelen apostar).",
     "como_funciona": "Un check saca del rango, sobre todo, las manos que casi siempre apostarían solas (los value bets más claros). Deja manos medias -algunas jugando pot control (N9)- y proyectos.",
     "cuando_lo_uso": "Cada vez que el rival pasa en vez de apostar, en cualquier calle.",
@@ -11133,7 +11117,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El rango del rival después de 3-betear (N7): combina sus manos de valor más fuertes con algunos faroles elegidos (T161).",
+    "que_es": "Ahora sumemos algo que ya conocés de otro nivel: el rango del rival después de 3-betear, que viste en N7, combina sus manos de valor más fuertes con algunos faroles elegidos.",
     "por_que_importa": "Ya lo estudiaste como concepto en N7 (T167); acá lo sumás al proceso general de leer TODA la línea de la mano, junto con las acciones que vengan después.",
     "como_funciona": "Repasás lo que ya sabés: un rango de 3-bet mezcla valor y farol, ajustado por posición y por si fue una 3-bet simple o un squeeze (N7, TN17).",
     "cuando_lo_uso": "Como uno de los pasos de la línea completa: cada vez que el rival 3-beteó en algún momento de la mano.",
@@ -11169,7 +11153,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El rango del rival después de c-betear (N8): puede ser por valor, farol o proyecto, según el board, la posición y si el bote es multiway.",
+    "que_es": "Y lo mismo con la c-bet: el rango del rival después de c-betear, que viste en N8, puede ser por valor, farol o proyecto, según el board, la posición y si el bote es multiway.",
     "por_que_importa": "Igual que con la 3-bet, ya estudiaste esto en N8; acá se convierte en otro paso más dentro de la línea completa que vas armando mano tras mano.",
     "como_funciona": "Repasás lo que ya sabés: c-bet por valor, farol o proyecto (N8, 8.2), ajustado por el tipo de board (8.3) y la posición (8.4).",
     "cuando_lo_uso": "Como uno de los pasos de la línea completa: cada vez que el rival c-beteó en algún momento de la mano.",
@@ -11208,7 +11192,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Estrechar el rango es el proceso de ir sacando manos del rango posible del rival, calle a calle, a medida que actúa.",
+    "que_es": "Ahora unamos todas las piezas en una sola idea, la más importante del nivel: estrechar el rango es el proceso de ir sacando manos del rango posible del rival, calle a calle, a medida que actúa.",
     "por_que_importa": "Es la idea central de todo el nivel: no leés el rango del rival una sola vez al final, lo vas recortando en cada acción, desde el open hasta el río.",
     "como_funciona": "Empezás con el rango más amplio posible (su rango de apertura) y, con cada acción nueva (T212-T217), sacás las manos que ya no son compatibles con lo que hizo.",
     "cuando_lo_uso": "A lo largo de toda la mano, actualizando tu estimación después de cada acción del rival.",
@@ -11248,7 +11232,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Usar el conteo de combos (N5, T133) para saber cuántas combinaciones concretas de cada mano le quedan al rival, después de estrechar su rango.",
+    "que_es": "Una vez que estrechaste el rango, hay un paso más fino: usar el conteo de combos que ya viste en N5, para saber cuántas combinaciones concretas de cada mano le quedan al rival.",
     "por_que_importa": "No alcanza con decir 'todavía puede tener X': contar cuántos combos reales le quedan te dice qué tan probable es cada posibilidad, en vez de tratarlas todas por igual.",
     "como_funciona": "Para cada clase de mano que sigue en su rango después de estrechar (T218), contás cuántos combos reales representa (6 para una pareja, 4 suited + 12 offsuit para una no pareada) y comparás.",
     "cuando_lo_uso": "Al querer precisar qué tan probable es que el rival tenga una mano puntual, dentro de todo lo que su rango estrechado todavía permite.",
@@ -11288,7 +11272,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La línea de juego es la secuencia COMPLETA de acciones del rival en toda la mano, leída como una sola historia — no acción por acción por separado.",
+    "que_es": "Démosle nombre a todo este proceso junto: la línea de juego es la secuencia COMPLETA de acciones del rival en toda la mano, leída como una sola historia — no acción por acción por separado.",
     "por_que_importa": "Una acción sola puede significar varias cosas. La secuencia completa, en cambio, suele contar una historia mucho más clara.",
     "como_funciona": "En vez de preguntarte '¿qué significa esta apuesta?', preguntate '¿qué mano jugaría exactamente así, desde el principio hasta acá?'.",
     "cuando_lo_uso": "Al llegar a una decisión importante (normalmente el river), mirando toda la mano de punta a punta.",
@@ -11328,7 +11312,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Evaluar si esa historia completa (T220) tiene sentido para una mano de valor, para un farol, o si hay algo que no encaja.",
+    "que_es": "Y el paso que le da sentido a esa historia: evaluar si esa historia completa tiene sentido para una mano de valor, para un farol, o si hay algo que no encaja.",
     "por_que_importa": "Es el paso que te permite finalmente decidir: una línea coherente con valor te dice 'cuidado, probablemente tiene lo que representa'; una línea que no encaja bien puede ser un farol.",
     "como_funciona": "Preguntate: ¿qué mano jugaría CADA UNA de estas acciones, en este orden, en estos boards? Si hay una mano de valor real que encaja perfecto con toda la secuencia, la línea es coherente con valor. Si es difícil encontrar una mano de valor que jugaría exactamente así, puede ser un farol.",
     "cuando_lo_uso": "Después de reconstruir la línea completa (T220), como paso final antes de decidir.",
@@ -11363,7 +11347,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Reconocer cuándo la línea completa del rival representa valor: encaja con una mano real que quiere pago, en cada paso de la secuencia.",
+    "que_es": "Llegamos a la conclusión práctica de todo el nivel. Primer caso: reconocer cuándo la línea completa del rival representa valor — encaja con una mano real que quiere pago, en cada paso de la secuencia.",
     "por_que_importa": "Es la conclusión práctica de todo el nivel: juntar el rango estrechado (T218), los combos (T219) y la coherencia de la línea (T221) para decidir 'esto probablemente es valor'.",
     "como_funciona": "Si la secuencia de acciones coincide con lo que una mano fuerte haría en cada calle, y el rango estrechado todavía deja bastantes combos de esas manos fuertes, la conclusión es valor.",
     "cuando_lo_uso": "Al llegar a la decisión final del río, para decidir si foldear o pagar contra una apuesta que parece de valor.",
@@ -11399,7 +11383,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Reconocer cuándo la línea completa del rival representa un farol: no encaja bien con ninguna mano de valor real en alguno de los pasos de la secuencia.",
+    "que_es": "Y el segundo caso, el espejo del anterior: reconocer cuándo la línea completa del rival representa un farol — no encaja bien con ninguna mano de valor real en alguno de los pasos de la secuencia.",
     "por_que_importa": "Es la otra cara de T222: te da la confianza para pagar como bluff catcher (N9, T202) cuando la línea, bien leída, no cuenta una historia creíble de valor.",
     "como_funciona": "Buscá el paso de la secuencia que 'no cierra': una apuesta en un board que no cambió nada, un tamaño raro para una mano de valor, una línea que no coincide con ninguna mano fuerte razonable.",
     "cuando_lo_uso": "Al llegar a la decisión final del río, para decidir si pagar contra una apuesta que parece un farol.",
@@ -11442,7 +11426,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tener ventaja de rango es que TODO tu rango, en promedio, esté mejor parado que todo el rango del rival en un board concreto — no una mano puntual, el conjunto completo.",
+    "que_es": "Vamos a ponerle nombre a algo que ya usaste sin saberlo: tener ventaja de rango es que TODO tu rango, en promedio, esté mejor parado que todo el rango del rival en un board concreto — no una mano puntual, el conjunto completo.",
     "por_que_importa": "Ya usaste esta idea de forma intuitiva al estudiar por qué funciona la c-bet (N8, T176): 'tu rango en promedio suele estar mejor parado'. Acá le ponés nombre.",
     "como_funciona": "Comparás los dos rangos completos (rango contra rango, N6, T135) sobre ese board puntual: si el tuyo gana más seguido en promedio, tenés ventaja de rango ahí.",
     "cuando_lo_uso": "Al decidir cuánto podés presionar en un board determinado, más allá de tu mano puntual.",
@@ -11486,7 +11470,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tener ventaja de nuts es tener más combinaciones de las manos MÁS fuertes posibles (o su potencial) que el rival en ese board — un caso más específico que la ventaja de rango.",
+    "que_es": "Hay una versión más específica de esa misma idea: tener ventaja de nuts es tener más combinaciones de las manos MÁS fuertes posibles (o su potencial) que el rival en ese board.",
     "por_que_importa": "Podés tener ventaja de rango sin tener ventaja de nuts, o al revés. Distinguirlas te dice qué tipo de apuestas podés hacer con confianza: la ventaja de nuts es lo que te permite apostar grande sin miedo a que te resuban con algo mejor.",
     "como_funciona": "Contás, en cada rango, cuántos combos llegan a la combinación más fuerte posible en ese board (o tienen chance real de llegar). El que tenga más, tiene ventaja de nuts.",
     "cuando_lo_uso": "Al decidir si conviene apostar tamaños grandes: la ventaja de nuts es lo que sostiene una apuesta grande sin miedo.",
@@ -11531,7 +11515,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La realización de equity es cuánto de tu equity 'cruda' (N6) terminás cobrando de verdad — porque no siempre se cobra toda: la posición, las decisiones futuras y la habilidad influyen.",
+    "que_es": "Ahora viene una idea que te va a cambiar cómo pensás la equity de acá en adelante: la realización de equity es cuánto de tu equity 'cruda', la que ya conocés de N6, terminás cobrando de verdad — porque no siempre se cobra toda.",
     "por_que_importa": "Dos manos con la misma equity en el papel no ganan siempre lo mismo en la práctica: una mano fácil de jugar en cualquier calle suele cobrar casi toda su equity, mientras que otra, con la misma equity cruda pero complicada de jugar postflop, suele terminar cobrando bastante menos.",
     "como_funciona": "Tu equity cruda es un número fijo en el momento del flop. Lo que pasa después — si estás en posición o no, qué tan fácil es tomar buenas decisiones con esa mano en cada calle, y tu propia habilidad para jugarla — determina si terminás cobrando toda esa equity, una parte, o incluso más (si además ganás fichas extra con faroles bien elegidos).",
     "cuando_lo_uso": "Para entender por qué dos manos con la misma equity cruda no valen exactamente lo mismo en la práctica: una se juega fácil, la otra no.",
@@ -11575,7 +11559,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La ventaja posicional estratégica es, específicamente, cuánto mejora la posición tu realización de equity (TN15) — el nombre formal para 'la posición vale más de lo que parece'.",
+    "que_es": "Juntemos esto con algo que venís escuchando desde N3: la ventaja posicional estratégica es, específicamente, cuánto mejora la posición tu realización de equity — el nombre formal para 'la posición vale más de lo que parece'.",
     "por_que_importa": "Junta todo lo que veníamos viendo de la posición desde N3: no es solo 'ver la reacción del rival antes', es que esa información extra te permite cobrar una porción mayor de tu equity en cada mano.",
     "como_funciona": "Al estar en posición, tenés más chances de: pot control con manos medias (N9), farolear con más criterio (viendo debilidad primero), y evitar decisiones difíciles a ciegas.",
     "cuando_lo_uso": "Como resumen estratégico de por qué jugar en posición es, en conjunto, más rentable que jugar fuera de ella con la misma mano.",
@@ -11611,7 +11595,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La profundidad de stack (medida en BB) cambia qué manos son más o menos jugables: con stacks profundos, algunas manos ganan valor; con stacks cortos, otras.",
+    "que_es": "Cambiemos de tema: la profundidad de stack, medida en BB, cambia qué manos son más o menos jugables. Con stacks profundos, algunas manos ganan valor; con stacks cortos, otras.",
     "por_que_importa": "Las mismas dos cartas no valen igual con 40 BB que con 200 BB: cuánto stack hay detrás cambia cuánto podés ganar (o perder) si tu mano se desarrolla bien.",
     "como_funciona": "Con stacks profundos, manos especulativas (conectores suited, parejas chicas) ganan valor: si conectan fuerte, hay mucho stack detrás para ganar con implied odds (N6, TN10). Con stacks cortos, ese potencial vale menos, y pesan más las manos con fuerza inmediata.",
     "cuando_lo_uso": "Al evaluar qué tan jugable es una mano especulativa, según cuánto stack tenés (y tiene el rival) detrás.",
@@ -11648,7 +11632,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Usar el SPR (N7, T166) para decidir si tu mano quiere jugarse por todo el stack o no: con SPR bajo, hace falta menos fuerza para comprometerte; con SPR alto, hace falta más.",
+    "que_es": "Ya sabés calcular el SPR desde N7. Ahora lo usamos para algo más concreto: decidir si tu mano quiere jugarse por todo el stack o no. Con SPR bajo, hace falta menos fuerza para comprometerte; con SPR alto, hace falta más.",
     "por_que_importa": "Ya sabés calcular el SPR (stack ÷ bote); ahora lo usás para tomar una decisión concreta: ¿esta mano, en este SPR, quiere ir por todo el stack?",
     "como_funciona": "Con SPR bajo (poco stack en relación al bote), incluso una mano 'buena pero no la mejor posible' (como top pair) puede ir por todo el stack, porque queda poco margen para protegerse. Con SPR alto, hace falta una mano mucho más fuerte para sentirte cómodo jugándote todo.",
     "cuando_lo_uso": "Al decidir si tu mano actual quiere comprometer todo el stack en esa situación puntual.",
@@ -11686,7 +11670,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Decidir, a propósito, cuándo conviene polarizar tu propio rango de apuesta (N9, T206): combinar valor muy fuerte y faroles, dejando afuera las manos medias.",
+    "que_es": "Volvamos a la polarización, pero esta vez como decisión propia: decidir, a propósito, cuándo conviene polarizar tu rango de apuesta — combinar valor muy fuerte y faroles, dejando afuera las manos medias.",
     "por_que_importa": "Ya sabés qué es un rango polarizado; acá lo elegís como estrategia: con tamaños de apuesta grandes, polarizar es lo que mejor sostiene esa apuesta, porque combina 'gano mucho si me pagan' con 'gano por fold equity si se retiran'.",
     "como_funciona": "Con tamaños de apuesta grandes, conviene polarizar: metés tus mejores manos (que quieren pago) y tus mejores faroles (que quieren que se retiren), dejando las manos medias para tamaños más chicos o directamente para pasar.",
     "cuando_lo_uso": "Al elegir un tamaño de apuesta grande, pensando en qué tipo de rango lo sostiene.",
@@ -11725,7 +11709,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un rango condensado (lo opuesto a polarizado) está compuesto sobre todo por manos medias — sin extremos marcados de muy fuerte o muy flojo.",
+    "que_es": "Y ahora lo opuesto: un rango condensado está compuesto sobre todo por manos medias — sin extremos marcados de muy fuerte o muy flojo.",
     "por_que_importa": "No todo momento de la mano pide un rango polarizado: a veces, por cómo se jugó la mano hasta ahí, lo que te queda es naturalmente un montón de manos parecidas entre sí.",
     "como_funciona": "Pensá en el pot control (N9, T195): cuando pasás tus manos más fuertes y también tus manos más flojas, lo que te queda apostando (o pagando) son mayormente manos medias — un rango condensado.",
     "cuando_lo_uso": "Al reconocer situaciones donde tu rango (o el del rival) quedó compuesto mayormente por manos parecidas, sin extremos.",
@@ -11762,7 +11746,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un bloqueador (blocker) es una carta en tu propia mano que reduce la cantidad de combos que el rival puede tener de una mano concreta — porque esa carta ya está en tu mano, no en el mazo.",
+    "que_es": "Acá le ponemos nombre a algo que ya usaste sin saberlo, en N7: un bloqueador (blocker) es una carta en tu propia mano que reduce la cantidad de combos que el rival puede tener de una mano concreta — porque esa carta ya está en tu mano, no en el mazo.",
     "por_que_importa": "Ya usaste esta idea sin nombrarla (N7, T174: 'una carta que el rival necesitaría para sus manos más fuertes'). Acá le ponés el término formal y lo aplicás con más precisión.",
     "como_funciona": "Si tenés un As en la mano, hay un As menos disponible para que el rival tenga AA, AK, AQ, etc. — cada combo que necesita esa carta se vuelve menos probable.",
     "cuando_lo_uso": "Al elegir con qué mano farolear o al leer qué tan probable es que el rival tenga cierta mano, considerando qué cartas tenés vos.",
@@ -11800,7 +11784,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El efecto de remoción (removal) es cómo cambia la probabilidad de cada mano del rival cuando 'sacás' del cálculo los combos que usan las cartas que vos ya tenés.",
+    "que_es": "Y ahora llevemos los bloqueadores un paso más al detalle: el efecto de remoción (removal) es cómo cambia la probabilidad de cada mano del rival cuando 'sacás' del cálculo los combos que usan las cartas que vos ya tenés.",
     "por_que_importa": "Conecta el conteo de combos (N5, T133; N10, T219) con los bloqueadores (T232): no solo importa cuántos combos hay en total, importa cuántos siguen siendo POSIBLES dado lo que vos ya tenés en la mano.",
     "como_funciona": "Contás los combos de una mano como siempre, pero restás los que usan cartas que ya están en tu mano — esos combos, literalmente, no pueden existir en la mano del rival.",
     "cuando_lo_uso": "Al contar combos con precisión (N10, T219), teniendo en cuenta tus propias cartas.",
@@ -11836,7 +11820,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La relación farol/valor es la proporción entre manos de valor y faroles en tu rango de apuesta, elegida para que el rival no pueda explotarte sin importar qué haga.",
+    "que_es": "Cambiemos de tema otra vez: la relación farol/valor es la proporción entre manos de valor y faroles en tu rango de apuesta, elegida para que el rival no pueda explotarte sin importar qué haga.",
     "por_que_importa": "Si apostás solo con valor, un rival atento deja de pagarte; si apostás con demasiado farol, un rival atento te paga siempre. Hay una proporción intermedia que hace tu apuesta difícil de explotar en cualquiera de los dos sentidos.",
     "como_funciona": "Cuanto más grande el tamaño de tu apuesta, más faroles podés incluir en tu rango de apuesta (relativo al valor) sin volverte explotable — porque el rival necesita ganar una porción mayor de las veces para que pagarte sea rentable.",
     "cuando_lo_uso": "Al pensar en la composición de tu rango de apuesta (T207, T208), no solo en manos individuales sueltas.",
@@ -11874,7 +11858,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La frecuencia mínima de defensa (MDF) es, de forma intuitiva, la idea de que si foldeás demasiado seguido frente a una apuesta, el rival puede farolearte con cualquier mano y ganar igual.",
+    "que_es": "Esto conecta directo con lo anterior: la frecuencia mínima de defensa (MDF) es, de forma intuitiva, la idea de que si foldeás demasiado seguido frente a una apuesta, el rival puede farolearte con cualquier mano y ganar igual.",
     "por_que_importa": "Conecta directo con la relación farol/valor (T235): si el rival sabe que vas a foldear más de la cuenta, cualquier farol le funciona, sin importar su mano — te está regalando el bote gratis.",
     "como_funciona": "Cuanto más grande la apuesta del rival en relación al bote, MENOS necesitás defender (foldear más es tolerable) para que un farol con cualquier mano no le sea automáticamente rentable. Cuanto más chica la apuesta, MÁS necesitás defender.",
     "cuando_lo_uso": "Como marco intuitivo: 'si foldeo casi siempre contra esta apuesta, estoy regalando farol gratis' — sin necesitar el cálculo exacto para entender la idea.",
@@ -11911,7 +11895,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": false,
    "contenido": {
-    "que_es": "Empezar a pensar las decisiones como frecuencias ('esta mano la juego así el 70% de las veces, y de esta otra forma el 30%') en vez de como blanco o negro ('siempre pago' o 'siempre foldeo').",
+    "que_es": "Quiero que te quedes con un cambio de mentalidad, no solo un concepto más: empezar a pensar las decisiones como frecuencias —'esta mano la juego así el 70% de las veces, y de esta otra forma el 30%'— en vez de como blanco o negro ('siempre pago' o 'siempre foldeo').",
     "por_que_importa": "Casi ninguna decisión de póker de nivel avanzado es 100%-0%: jugar SIEMPRE igual con una mano te vuelve predecible y explotable, sin importar qué tan 'correcta' te parezca esa decisión en promedio.",
     "como_funciona": "En vez de preguntarte '¿pago o foldeo?', pensá '¿con qué frecuencia conviene cada una?'. Esto es una forma de razonar, no todavía un cálculo exacto: la idea es soltar el hábito de decidir todo en blanco o negro.",
     "cuando_lo_uso": "Como cambio general de mentalidad, sobre todo en decisiones cercanas donde tanto pagar como foldear tienen sentido según lo que traiga el rival.",
@@ -11950,7 +11934,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Jugar equilibrado (GTO, 'game theory optimal') es jugar de forma que ningún rival, sin importar cómo juegue, pueda explotarte. Explotar es, en cambio, desviarte a propósito de eso para castigar un error concreto del rival.",
+    "que_es": "Y esto nos lleva a la gran distinción de esta sección: jugar equilibrado (GTO, 'game theory optimal') es jugar de forma que ningún rival, sin importar cómo juegue, pueda explotarte. Explotar es, en cambio, desviarte a propósito de eso para castigar un error concreto del rival.",
     "por_que_importa": "Son dos formas distintas de ganar: jugar equilibrado te protege de cualquier rival; explotar gana más fichas contra un rival concreto que comete errores identificables — pero te expone si te equivocás en la lectura.",
     "como_funciona": "Jugar equilibrado significa mantener las proporciones de T235-T236 sin importar el rival. Explotar significa romper esas proporciones a propósito: si un rival foldea demasiado, farolear más de lo 'equilibrado'; si paga demasiado, farolear menos y apostar más valor.",
     "cuando_lo_uso": "Al decidir si mantenés un juego equilibrado (contra rivales desconocidos o muy buenos) o explotás una tendencia concreta que ya identificaste en un rival.",
@@ -11990,7 +11974,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Adaptarse al rival es ajustar tu estrategia a las tendencias concretas que ya observaste en él, en vez de jugar siempre de la misma forma sin importar el rival.",
+    "que_es": "Para cerrar el nivel, la aplicación práctica de todo esto: adaptarse al rival es ajustar tu estrategia a las tendencias concretas que ya observaste en él, en vez de jugar siempre de la misma forma sin importar quién tenés enfrente.",
     "por_que_importa": "Es la aplicación práctica de explotar (T237): necesitás primero observar al rival para saber en qué sentido conviene desviarte.",
     "como_funciona": "Prestá atención a patrones que se repiten: ¿foldea demasiado? ¿paga demasiado? ¿c-betea siempre? ¿nunca farolea el río? Cada patrón real te da una forma concreta de ajustar tu juego contra ÉL en particular.",
     "cuando_lo_uso": "A lo largo de una sesión, a medida que juntás información real sobre cómo juega cada rival.",
@@ -12030,7 +12014,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El primer paso de cualquier decisión: identificar dónde estás sentado en la mesa en este momento de la mano.",
+    "que_es": "Ya tenés todas las piezas sueltas de N1 a N11. Ahora vamos a armar con ellas un checklist que podés usar en cualquier mesa. El primer paso de cualquier decisión: identificar dónde estás sentado en la mesa en este momento de la mano.",
     "por_que_importa": "Toda la Academia, desde N3, viene mostrando que la posición cambia todo lo demás. Por eso es la primera pregunta del checklist, no una más.",
     "como_funciona": "Antes de pensar en tu mano o en cualquier otra cosa, identificá tu posición (UTG, HJ, CO, BTN, SB, BB) y si vas a quedar en posición o no en las calles que siguen.",
     "cuando_lo_uso": "Al arrancar cualquier decisión, como primer paso automático.",
@@ -12321,7 +12305,7 @@
    ],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "El primer paso de 'tomar la decisión': estimar tu equity (N6) contra el rango del rival (T256), usando lo que tenés hecho (T258) y tus proyectos (T259).",
+    "que_es": "Ya leíste el spot completo con las siete preguntas de 12.1. Ahora pasamos a la segunda mitad del checklist: tomar la decisión. El primer paso acá es estimar tu equity (N6) contra el rango del rival (T256), usando lo que tenés hecho (T258) y tus proyectos (T259).",
     "por_que_importa": "Es donde el 'leer el spot' (12.1) se convierte en un número concreto con el que trabajar.",
     "como_funciona": "Combiná tu mano hecha y tus outs contra el rango del rival: usá la regla del 2 o del 4 (N6) si tenés proyecto, o una estimación más directa si tu mano ya está hecha.",
     "cuando_lo_uso": "Como primer paso de tomar la decisión, con todo lo que ya juntaste en 12.1.",
@@ -12774,7 +12758,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Aplicar el checklist completo (12.1-12.2) a la decisión de abrir (RFI, N5): posición, mano, rango de apertura, y la acción que corresponde.",
+    "que_es": "Ya tenés el checklist completo armado. Ahora vamos a probarlo en situaciones reales, empezando por el preflop: aplicarlo a la decisión de abrir (RFI, N5) — posición, mano, rango de apertura, y la acción que corresponde.",
     "por_que_importa": "Es la primera aplicación práctica de todo lo que veníamos armando por separado: acá se ve cómo el checklist resuelve una decisión real de punta a punta.",
     "como_funciona": "Posición (T253) → mano (T254) → ¿llegó limpio? (T255) → tu rango de apertura para esa posición (N5) → abrís o foldeás.",
     "cuando_lo_uso": "Cada vez que te toca decidir si abrís, aplicando el checklist en vez de decidir 'a ojo'.",
@@ -12933,7 +12917,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Aplicar el checklist completo a jugar el flop de un bote 3-bet (N7): con SPR bajo y el rango de ambos ya más acotado.",
+    "que_es": "Ya viste el checklist aplicado al preflop. Pasemos al postflop, empezando por el caso con menos margen: aplicar el checklist completo a jugar el flop de un bote 3-bet (N7), con SPR bajo y el rango de ambos ya más acotado.",
     "por_que_importa": "Un bote 3-bet se juega distinto (N7, T164-T169): el checklist tiene que reflejar ese SPR bajo y esos rangos más concentrados.",
     "como_funciona": "Aplicás el checklist completo (12.1-12.2), teniendo en cuenta que el SPR bajo acerca las decisiones a 'ir por todo el stack o no' (N11, T229) más rápido que en un bote normal.",
     "cuando_lo_uso": "Cada vez que llegás al flop de una mano donde hubo una 3-bet preflop.",
@@ -13270,7 +13254,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "NL2 es el nivel de dinero real más bajo de nomenclatura común (no-limit con ciega grande de 2 centavos): el punto de partida típico para jugar con dinero de verdad.",
+    "que_es": "Llegaste al último nivel de la Academia. Antes de la síntesis final, quiero ubicarte en el terreno real donde vas a aplicar todo esto: NL2 es el nivel de dinero real más bajo de nomenclatura común (no-limit con ciega grande de 2 centavos) — el punto de partida típico para jugar con dinero de verdad.",
     "por_que_importa": "Es un entorno particular: lleno de jugadores que recién empiezan o juegan por diversión, con errores mucho más grandes y frecuentes que en niveles más altos.",
     "como_funciona": "Todo lo que aprendiste en N1-N12 sigue aplicando igual — la diferencia es contra quién lo aplicás: rivales que se equivocan más seguido y de forma más obvia que un jugador avanzado.",
     "cuando_lo_uso": "Como marco general antes de sentarte a jugar con dinero real por primera vez.",
@@ -13307,7 +13291,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Jugar con 100 BB de profundidad (el estándar típico en NL2) define qué manos son rentables y cuáles no, según todo lo que ya sabés de profundidad de stack (N11, T228).",
+    "que_es": "Empecemos por un dato concreto de ese entorno: jugar con 100 BB de profundidad, el estándar típico en NL2, define qué manos son rentables y cuáles no, según todo lo que ya sabés de profundidad de stack (N11, T228).",
     "por_que_importa": "100 BB es lo bastante profundo como para que las manos especulativas (parejas chicas, conectores suited) tengan buen potencial de implied odds (N6), pero no tan profundo como para que la teoría cambie radicalmente.",
     "como_funciona": "Aplicás lo que ya sabés de profundidad de stack: con 100 BB, tanto la fuerza inmediata como el potencial especulativo tienen su lugar en tu rango jugable.",
     "cuando_lo_uso": "Como referencia estándar al sentarte en una mesa de NL2 con el buy-in típico.",
@@ -13344,7 +13328,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": false,
    "contenido": {
-    "que_es": "El rake es la comisión que se queda la casa de cada bote — un costo fijo que reduce, un poco, la ganancia de cada mano jugada.",
+    "que_es": "Y hay un costo que siempre está presente y que conviene tener metido en la cabeza: el rake es la comisión que se queda la casa de cada bote — un costo fijo que reduce, un poco, la ganancia de cada mano jugada.",
     "por_que_importa": "El rake hace que decisiones muy cercanas (que serían apenas rentables sin él) dejen de serlo: obliga a jugar un poco más ajustado de lo que la teoría 'pura' sugeriría.",
     "como_funciona": "En cada bote, la casa se queda un pequeño porcentaje antes de repartirlo al ganador. Es un costo constante que afecta más a los botes chicos y a las decisiones marginales.",
     "cuando_lo_uso": "Como ajuste general: con decisiones muy cerradas (donde el EV calculado da apenas positivo), el rake puede inclinar la balanza hacia foldear.",
@@ -13388,7 +13372,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "En NL2, la mayor parte de tu ganancia viene de jugar bien tus manos fuertes — no de jugadas complicadas ni faroles elaborados.",
+    "que_es": "Ahora la pregunta central de esta sección: ¿de dónde sale realmente la plata en NL2? En gran parte, de jugar bien tus manos fuertes — no de jugadas complicadas ni faroles elaborados.",
     "por_que_importa": "Contra rivales que pagan de más (T247), sacarle todo el valor posible a tus mejores manos rinde más que cualquier otra estrategia sofisticada.",
     "como_funciona": "Priorizá apostar por valor con tus manos fuertes, con buen tamaño, en vez de jugarlas con miedo a 'espantar' al rival — en NL2, ese miedo suele ser injustificado.",
     "cuando_lo_uso": "Como principio general al jugar en este entorno: priorizar el valor por sobre la sofisticación.",
@@ -13433,7 +13417,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Un hero call es pagar una apuesta grande con una mano que solo le gana a un farol — y en NL2, donde los rivales farolean poco, conviene evitarlos.",
+    "que_es": "Empecemos por algo que conviene evitar: un hero call es pagar una apuesta grande con una mano que solo le gana a un farol — y en NL2, donde los rivales farolean poco, conviene evitarlos.",
     "por_que_importa": "En niveles altos, farolear seguido es parte del juego y los hero calls a veces se justifican (N9, T202). En NL2, la mayoría de las apuestas grandes representan mano de verdad.",
     "como_funciona": "Antes de un hero call, preguntate (N9, T210) si el rival realmente tiene manos mejores dispuestas a foldear — en NL2, la respuesta suele ser que no.",
     "cuando_lo_uso": "Al enfrentar una apuesta grande en NL2, con una mano que solo le gana a un farol.",
@@ -13478,7 +13462,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Pagar de menos con manos marginales (sobre todo fuera de posición) es más rentable en NL2 que intentar 'ver flops baratos' con cualquier cosa.",
+    "que_es": "Y hay otra costumbre cara que conviene cortar: pagar de menos con manos marginales (sobre todo fuera de posición) es más rentable en NL2 que intentar 'ver flops baratos' con cualquier cosa.",
     "por_que_importa": "Cada call marginal fuera de posición te pone en decisiones difíciles calle tras calle, contra rivales que, además, suelen apostar sin mucha estructura.",
     "como_funciona": "Aplicá tu rango de call (N7, T160) con criterio: si la mano no juega claramente bien fuera de posición, mejor foldearla que 'verla barata'.",
     "cuando_lo_uso": "Al decidir si pagar un open con una mano marginal, especialmente fuera de posición.",
@@ -13523,7 +13507,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Jugar menos manos preflop, con más disciplina, rinde más que entrar en cualquier mano jugable solo por estar en la mesa.",
+    "que_es": "Sumemos una tercera: jugar menos manos preflop, con más disciplina, rinde más que entrar en cualquier mano jugable solo por estar en la mesa.",
     "por_que_importa": "Cada mano marginal que jugás de más te expone a decisiones difíciles postflop sin suficiente ventaja para compensar el riesgo.",
     "como_funciona": "Respetá tus rangos de apertura y defensa (N5, N7) con disciplina, sin ampliarlos 'porque hace rato no juego una mano'.",
     "cuando_lo_uso": "Como hábito general de mesa: jugar menos manos, mejor elegidas.",
@@ -13568,7 +13552,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Aprender a reconocer los errores típicos de NL2 (jugar de más, pagar de más, no farolear) te permite adaptar tu juego (N11, T238) para castigarlos directamente.",
+    "que_es": "Ahora demos vuelta la moneda: aprender a reconocer los errores típicos de NL2 —jugar de más, pagar de más, no farolear— te permite adaptar tu juego (N11, T238) para castigarlos directamente.",
     "por_que_importa": "No alcanza con jugar 'correcto en el vacío': la ganancia real en NL2 viene de identificar y explotar patrones concretos de cada rival.",
     "como_funciona": "Observá cómo juega cada rival (¿paga de más? ¿nunca farolea? ¿juega demasiadas manos?) y ajustá tu estrategia específicamente contra él.",
     "cuando_lo_uso": "A lo largo de la sesión, sumando información real sobre cada rival.",
@@ -13613,7 +13597,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "En NL2, conviene apostar tamaños más grandes por valor de lo que harías contra rivales más avanzados, porque ahí te pagan de más.",
+    "que_es": "Una consecuencia directa de todo esto: en NL2 conviene apostar tamaños más grandes por valor de lo que harías contra rivales más avanzados, porque ahí te pagan de más.",
     "por_que_importa": "Si los rivales pagan con manos peores incluso con apuestas grandes, dejar plata en la mesa apostando chico es un error caro y muy frecuente en principiantes.",
     "como_funciona": "Con tus manos de valor claro, probá tamaños más grandes de lo habitual: en NL2, muchas veces te siguen pagando igual.",
     "cuando_lo_uso": "Con manos de valor fuerte, contra rivales que ya mostraron que pagan de más.",
@@ -13658,7 +13642,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "En NL2, farolear rinde mucho menos que en niveles más altos: conviene hacerlo poco, y solo con buenos motivos (bloqueadores, N11, y una línea que realmente tenga sentido).",
+    "que_es": "Y la otra cara de esa misma moneda: en NL2, farolear rinde mucho menos que en niveles más altos. Conviene hacerlo poco, y solo con buenos motivos: bloqueadores (N11), y una línea que realmente tenga sentido.",
     "por_que_importa": "Como los rivales de NL2 pagan de más (T247) y farolean poco (T243), tu fold equity (N6) contra ellos es menor de lo habitual.",
     "como_funciona": "Reservá tus faroles para las mejores situaciones: buenos bloqueadores, una línea coherente (N10), y rivales que ya demostraron que sí pueden foldear.",
     "cuando_lo_uso": "Al considerar farolear en NL2: con mucho más criterio que en niveles avanzados, no menos.",
@@ -13704,7 +13688,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Priorizar jugar manos en posición (N3, N11) es una de las fuentes de ganancia más confiables y consistentes en NL2.",
+    "que_es": "Vamos con otra fuente de ganancia, esta vez estructural: priorizar jugar manos en posición (N3, N11) es una de las fuentes más confiables y consistentes de ganancia en NL2.",
     "por_que_importa": "La ventaja posicional (N11, T226) funciona igual en cualquier nivel: en NL2, sumada a rivales que juegan peor fuera de posición todavía, rinde todavía más.",
     "como_funciona": "Priorizá tus manos jugables en posiciones tardías sobre las tempranas, y aprovechá cada mano donde jugás en posición para extraer el máximo valor posible.",
     "cuando_lo_uso": "Como criterio general de selección de manos y de estilo de juego en NL2.",
@@ -13749,7 +13733,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Sostener la disciplina preflop (rangos de apertura y defensa, N5 y N7) mano tras mano, sesión tras sesión, sin aflojar por aburrimiento o mala racha.",
+    "que_es": "Todo lo anterior no sirve de nada sin esto: sostener la disciplina preflop —tus rangos de apertura y defensa, de N5 y N7— mano tras mano, sesión tras sesión, sin aflojar por aburrimiento o mala racha.",
     "por_que_importa": "Es fácil sostener la disciplina en la teoría; sostenerla en la práctica, mano 200 de una sesión larga, es lo que realmente separa el resultado a largo plazo.",
     "como_funciona": "Repetí los mismos rangos (N5, N7) sin importar cuántas manos llevás foldeadas seguidas ni cómo viene la sesión.",
     "cuando_lo_uso": "A lo largo de toda una sesión, como hábito constante.",
@@ -13794,7 +13778,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Elegir bien qué manos jugar, combinando posición y acción previa (N5, N7) — el resumen práctico de todo lo aprendido sobre rangos.",
+    "que_es": "Juntemos lo anterior en una sola habilidad: elegir bien qué manos jugar, combinando posición y acción previa (N5, N7), es el resumen práctico de todo lo aprendido sobre rangos.",
     "por_que_importa": "Es la aplicación final de todo el trabajo de N5 y N7: no una regla nueva, sino la ejecución consistente de lo que ya sabés.",
     "como_funciona": "Combinás posición + acción previa + tu rango correspondiente (apertura, defensa, 3-bet) para cada mano que te toca decidir.",
     "cuando_lo_uso": "En cada decisión preflop, como síntesis de todo lo aprendido en N5-N7.",
@@ -13839,7 +13823,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Reconocer los spots (situaciones concretas) donde un rival de NL2 casi siempre se equivoca — la habilidad final que combina todo lo anterior de 13.2.",
+    "que_es": "Y para cerrar esta sección, la habilidad que las combina todas: reconocer los spots —situaciones concretas— donde un rival de NL2 casi siempre se equivoca.",
     "por_que_importa": "Es el resumen práctico de todo el subnivel: observar, reconocer patrones y aprovecharlos activamente, en vez de jugar 'correcto en el vacío'.",
     "como_funciona": "Juntá lo que ya sabés: valor de manos fuertes (T242), hero calls a evitar (T243), errores del rival (T246), tamaños de valor (T247) y faroles selectivos (T248) — y aplicalo a cada situación concreta que reconozcas.",
     "cuando_lo_uso": "A lo largo de toda tu sesión en NL2, como el criterio final que junta todo el subnivel.",
@@ -13890,7 +13874,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Jugar más manos de las que tu rango (N5, N7) permite para esa posición y situación.",
+    "que_es": "Arranquemos el repaso de los 18 errores que más fichas cuestan. Error 1: jugar más manos de las que tu rango (N5, N7) permite para esa posición y situación.",
     "por_que_importa": "Es, probablemente, el error más caro y más común de todo el juego — cada mano de más jugada es fichas que se pierden a la larga.",
     "como_funciona": "Se corrige volviendo a T245 y T250: disciplina sostenida, sin excepciones por aburrimiento.",
     "cuando_lo_uso": "Como primer chequeo de autocontrol antes de cada mano.",
@@ -13941,7 +13925,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Entrar en manos fuera de posición sin un motivo real que lo justifique.",
+    "que_es": "Error 2: entrar en manos fuera de posición sin un motivo real que lo justifique.",
     "por_que_importa": "Fuera de posición jugás con menos información toda la mano (N3, N11) — hacerlo sin necesidad regala esa desventaja gratis.",
     "como_funciona": "Se corrige aplicando T244 (evitar calls marginales OOP) y T249 (priorizar la posición).",
     "cuando_lo_uso": "Al evaluar cualquier mano donde vas a jugar fuera de posición.",
@@ -13992,7 +13976,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Pagar una apuesta solo porque ya pusiste fichas antes en la mano — el error del costo hundido.",
+    "que_es": "Error 3: pagar una apuesta solo porque ya pusiste fichas antes en la mano — el error del costo hundido.",
     "por_que_importa": "Las fichas que ya pusiste no vuelven, ganes o pierdas la decisión de ahora: no son parte del cálculo de EV hacia adelante (N6, T124).",
     "como_funciona": "Se corrige recordando T124 (el EV del fold): cada decisión se evalúa desde cero, mirando solo hacia adelante.",
     "cuando_lo_uso": "Cada vez que sentís la tentación de pagar 'porque ya invertiste' en la mano.",
@@ -14043,7 +14027,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Pagar apuestas con manos que no alcanzan la equity necesaria (N6) para que ese call sea rentable.",
+    "que_es": "Error 4: pagar apuestas con manos que no alcanzan la equity necesaria (N6) para que ese call sea rentable.",
     "por_que_importa": "Es directamente lo opuesto a un call rentable (N6, T118): pagar de más con manos marginales es, en números, perder fichas a la larga.",
     "como_funciona": "Se corrige volviendo al checklist de N6: comparar tu equity real contra la equity necesaria antes de pagar.",
     "cuando_lo_uso": "Cada vez que dudás si pagar una apuesta con una mano que 'no está tan mal'.",
@@ -14094,7 +14078,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tratar cualquier top pair (N4) como si fuera siempre una mano fuerte, sin importar el kicker, el board ni el tamaño del bote.",
+    "que_es": "Error 5: tratar cualquier top pair (N4) como si fuera siempre una mano fuerte, sin importar el kicker, el board ni el tamaño del bote.",
     "por_que_importa": "Un top pair con kicker débil, en un board peligroso, en un bote grande, no vale lo mismo que un top pair con kicker fuerte en un board seco.",
     "como_funciona": "Se corrige aplicando el checklist de N12 (T297): clasificar la mano con precisión y compararla contra el rango real del rival, no contra 'top pair es fuerte' como regla fija.",
     "cuando_lo_uso": "Cada vez que tenés top pair y estás por comprometer muchas fichas.",
@@ -14145,7 +14129,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "No darte cuenta de que tu mano está dominada (N4, T073): misma categoría de mano que el rival, pero peor kicker o peor versión.",
+    "que_es": "Error 6: no darte cuenta de que tu mano está dominada (N4, T073) — misma categoría de mano que el rival, pero peor kicker o peor versión.",
     "por_que_importa": "Una mano dominada pierde casi siempre contra la que la domina — jugarla como si fuera pareja, sin reconocer eso, cuesta fichas grandes.",
     "como_funciona": "Se corrige volviendo a T073: comparar tu mano contra el rango del rival, no solo contra la categoría general.",
     "cuando_lo_uso": "Cada vez que tenés una pareja o mano hecha y el rival muestra fuerza también.",
@@ -14196,7 +14180,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Pagar para completar un proyecto sin que tu equity supere la equity necesaria (N6, T116-T119).",
+    "que_es": "Error 7: pagar para completar un proyecto sin que tu equity supere la equity necesaria (N6, T116-T119).",
     "por_que_importa": "Un proyecto que no tiene el precio correcto es un call perdedor (T119), aunque a veces termine completando.",
     "como_funciona": "Se corrige aplicando el cálculo completo de N6: outs, equity (regla del 2 o del 4), y comparación contra la equity necesaria.",
     "cuando_lo_uso": "Cada vez que tenés un proyecto y estás por pagar una apuesta.",
@@ -14247,7 +14231,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tratar la cantidad de outs (N6, T101) como si fuera directamente el porcentaje de equity, sin aplicar la regla del 2 o del 4.",
+    "que_es": "Error 8: tratar la cantidad de outs (N6, T101) como si fuera directamente el porcentaje de equity, sin aplicar la regla del 2 o del 4.",
     "por_que_importa": "9 outs no son '9% de equity': son aproximadamente 18% (regla del 2, una carta) o 36% (regla del 4, dos cartas). Confundir ambas cosas lleva a subestimar tu equity real.",
     "como_funciona": "Se corrige recordando N6, T108-T109: siempre multiplicar los outs por 2 o por 4 según cuántas cartas quedan por venir.",
     "cuando_lo_uso": "Cada vez que contás outs, como recordatorio de convertirlos correctamente en un porcentaje.",
@@ -14298,7 +14282,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Decidir mirando solo tu propia mano, sin construir el rango probable del rival (N5-N10).",
+    "que_es": "Error 9: decidir mirando solo tu propia mano, sin construir el rango probable del rival (N5-N10).",
     "por_que_importa": "Es el error más básico de todos los que se corrigen con el checklist de N12: toda decisión buena compara tu mano contra un rango, no contra el aire.",
     "como_funciona": "Se corrige volviendo al checklist completo (N12, 12.1): posición, acción previa, y rango del rival, antes de decidir.",
     "cuando_lo_uso": "Como chequeo constante: '¿ya pensé en lo que él podría tener?'.",
@@ -14349,7 +14333,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Concentrarte únicamente en tus dos cartas privadas, sin prestar atención al resto del contexto de la mano (board, posición, acción).",
+    "que_es": "Error 10: concentrarte únicamente en tus dos cartas privadas, sin prestar atención al resto del contexto de la mano (board, posición, acción).",
     "por_que_importa": "Tus cartas son solo una de las siete preguntas del checklist (N12, T254) — el resto importa igual o más.",
     "como_funciona": "Se corrige recorriendo el checklist completo (N12, 12.1), no solo su segundo paso.",
     "cuando_lo_uso": "Como chequeo general: '¿estoy mirando toda la situación, o solo mis cartas?'.",
@@ -14400,7 +14384,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "No leer la textura del board (N12, T257) antes de decidir: seco o coordinado, con o sin proyectos posibles.",
+    "que_es": "Error 11: no leer la textura del board (N12, T257) antes de decidir — seco o coordinado, con o sin proyectos posibles.",
     "por_que_importa": "La misma mano vale distinto según el board — ignorarlo te hace tomar la misma decisión en situaciones muy distintas.",
     "como_funciona": "Se corrige volviendo al quinto paso del checklist (N12, T257): siempre clasificar el board antes de decidir.",
     "cuando_lo_uso": "Cada vez que llegás a una decisión postflop.",
@@ -14451,7 +14435,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Apostar por costumbre, sin un motivo concreto de valor o farol detrás de esa apuesta puntual.",
+    "que_es": "Error 12: apostar por costumbre, sin un motivo concreto de valor o farol detrás de esa apuesta puntual.",
     "por_que_importa": "Cada apuesta debería tener un motivo claro (N9, T207-T208): valor, farol, o ninguno de los dos (y entonces pasar).",
     "como_funciona": "Se corrige preguntándote, antes de cada apuesta: '¿esto es valor, farol, o no tengo motivo real?'.",
     "cuando_lo_uso": "Como chequeo antes de cada apuesta que estés por hacer.",
@@ -14502,7 +14486,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "C-betear siempre que tenés la iniciativa, sin ajustar por board, posición o cantidad de rivales (N8).",
+    "que_es": "Error 13: c-betear siempre que tenés la iniciativa, sin ajustar por board, posición o cantidad de rivales (N8).",
     "por_que_importa": "Es la versión específica de T281 aplicada a la c-bet: una de las jugadas más automatizadas del juego, y por eso una de las más fáciles de explotar si se hace sin criterio.",
     "como_funciona": "Se corrige volviendo a N8 completo: board (8.3), posición (8.4) y multiway (TN18) ajustan cuándo y cómo c-betear.",
     "cuando_lo_uso": "Cada vez que tenés la iniciativa y estás por c-betear.",
@@ -14553,7 +14537,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Farolear sin preguntarte si el rival tiene manos mejores que realmente se retirarían frente a tu apuesta (N9, T210).",
+    "que_es": "Error 14: farolear sin preguntarte si el rival tiene manos mejores que realmente se retirarían frente a tu apuesta (N9, T210).",
     "por_que_importa": "Un farol sin fold equity real detrás no gana nada: es simplemente regalar fichas.",
     "como_funciona": "Se corrige volviendo a T210: antes de farolear, chequeá específicamente si existen manos mejores del rival dispuestas a foldear.",
     "cuando_lo_uso": "Cada vez que estás por farolear.",
@@ -14604,7 +14588,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "No apostar una mano que sí tiene valor real, por miedo excesivo a que el rival tenga algo mejor.",
+    "que_es": "Error 15: no apostar una mano que sí tiene valor real, por miedo excesivo a que el rival tenga algo mejor.",
     "por_que_importa": "Es el error opuesto a T283: tan caro como farolear sin motivo es dejar de cobrar valor real por miedo injustificado, sobre todo en NL2 (T247).",
     "como_funciona": "Se corrige aplicando T209 (¿qué manos peores me pagan?): si la respuesta es 'varias', apostá.",
     "cuando_lo_uso": "Cada vez que dudás si apostar una mano que probablemente es la mejor.",
@@ -14655,7 +14639,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Pagar una apuesta grande solo por curiosidad de ver las cartas del rival, sin un análisis real detrás.",
+    "que_es": "Error 16: pagar una apuesta grande solo por curiosidad de ver las cartas del rival, sin un análisis real detrás.",
     "por_que_importa": "Es una versión específica y muy cara de T273: en NL2 en particular (T243), estos calls suelen ser fuertemente -EV.",
     "como_funciona": "Se corrige volviendo a T202 (uso del bluff catcher): pagar solo cuando la línea completa del rival (N10) realmente sugiere un farol.",
     "cuando_lo_uso": "Cada vez que sentís ganas de pagar 'solo para ver'.",
@@ -14706,7 +14690,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Tomar decisiones influenciado por la frustración o la emoción del momento (el tilt), en vez de por el análisis frío de la situación.",
+    "que_es": "Error 17: tomar decisiones influenciado por la frustración o la emoción del momento —el tilt—, en vez de por el análisis frío de la situación.",
     "por_que_importa": "El tilt hace que abandones todo lo aprendido en la Academia justo cuando más rentable sería aplicarlo con claridad.",
     "como_funciona": "Se corrige reconociendo la señal (jugar más rápido de lo normal, ampliar rangos sin motivo, buscar 'recuperar' lo perdido) y haciendo una pausa antes de seguir decidiendo.",
     "cuando_lo_uso": "Cada vez que notás que estás jugando distinto después de una mano frustrante.",
@@ -14757,7 +14741,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": false,
    "contenido": {
-    "que_es": "Medir tu propio juego por si ganaste o perdiste cada mano puntual, en vez de por la calidad de tus decisiones (N6, T127; N12, T269).",
+    "que_es": "Y el último, el más importante de los 18: medir tu propio juego por si ganaste o perdiste cada mano puntual, en vez de por la calidad de tus decisiones (N6, T127; N12, T269).",
     "por_que_importa": "Es, probablemente, el error de mentalidad más importante de toda la Academia — el que hace que todo lo demás (disciplina, EV, checklist) se sostenga o se abandone.",
     "como_funciona": "Se corrige volviendo a T269, el cierre del checklist: juzgá cada decisión por su EV en el momento, no por el resultado de esa mano puntual.",
     "cuando_lo_uso": "Después de cada mano, sobre todo las que perdiste con una decisión que sabías correcta.",
@@ -14793,7 +14777,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Aplicar el checklist completo (N12) a la decisión de apostar por valor en el río (N9, T199), en una mano completa de principio a fin.",
+    "que_es": "Empecemos a aplicar todo el checklist a manos completas, calle por calle, arrancando por el río: aplicar el checklist completo (N12) a la decisión de apostar por valor (N9, T199), de principio a fin.",
     "por_que_importa": "Es la primera de cuatro aplicaciones del checklist a spots completos del river, el momento más definitorio de cualquier mano.",
     "como_funciona": "Recorrés todo el checklist (posición, mano, línea completa, board, mano hecha) y llegás a T209 (¿qué manos peores pagan?) para decidir el tamaño de tu apuesta de valor.",
     "cuando_lo_uso": "En cualquier river donde tenés una mano fuerte y estás considerando apostar por valor.",
@@ -14831,7 +14815,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Aplicar el checklist completo a la decisión de farolear en el río (N9, T201), incluyendo bloqueadores (N11) y coherencia de línea (N10).",
+    "que_es": "Sigamos con el caso más exigente: aplicar el checklist completo a la decisión de farolear en el río (N9, T201), incluyendo bloqueadores (N11) y coherencia de línea (N10).",
     "por_que_importa": "Es la aplicación más exigente del checklist: junta casi todo lo aprendido en la Academia en una sola decisión.",
     "como_funciona": "Recorrés el checklist, verificás T210 (¿qué manos mejores foldean?), elegís una mano con buenos bloqueadores (N11, T232), y confirmás que tu línea completa (N10) cuenta una historia coherente.",
     "cuando_lo_uso": "En cualquier river donde estés considerando farolear.",
@@ -14869,7 +14853,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Aplicar el checklist completo a la decisión de pagar como bluff catcher (N9, T202), leyendo la línea completa del rival (N10) para decidir.",
+    "que_es": "Y ahora del otro lado: aplicar el checklist completo a la decisión de pagar como bluff catcher (N9, T202), leyendo la línea completa del rival (N10) para decidir.",
     "por_que_importa": "Es de las decisiones más difíciles de toda la Academia: estás apostando sobre el rival, no sobre tus cartas.",
     "como_funciona": "Recorrés el checklist, aplicás T221-T223 (coherencia de línea, identificar valor o farol) y decidís según si la línea completa parece más creíble como valor o como farol.",
     "cuando_lo_uso": "En cualquier river donde tu mano solo le gana a un farol.",
@@ -14907,7 +14891,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Aplicar el checklist completo a la decisión de ir o pagar un all-in, usando el SPR (N7, N11) para saber qué tan comprometida está tu mano.",
+    "que_es": "Para cerrar esta sección, la decisión de mayor riesgo de todas: aplicar el checklist completo a ir o pagar un all-in, usando el SPR (N7, N11) para saber qué tan comprometida está tu mano.",
     "por_que_importa": "Es la decisión de mayor riesgo de toda la mano: merece el checklist completo, no una decisión apurada.",
     "como_funciona": "Recorrés el checklist completo y sumás el SPR (N11, T229): con SPR bajo, manos buenas ya alcanzan; con SPR alto, hace falta mucho más para sentirte cómodo yendo por todo.",
     "cuando_lo_uso": "En cualquier decisión donde ir o pagar signifique comprometer todo tu stack.",
@@ -14945,7 +14929,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Apoyar una decisión completa específicamente en las pot odds (N6): comparar lo que arriesgás contra lo que podés ganar.",
+    "que_es": "Llegamos a la síntesis final de toda la Academia. Vamos a armarla con cuatro pilares, uno por uno. El primero: apoyar una decisión completa específicamente en las pot odds (N6) — comparar lo que arriesgás contra lo que podés ganar.",
     "por_que_importa": "Es uno de los cuatro pilares (junto a equity, rango y posición) que la última teoría de la Academia (T308) va a juntar en una sola decisión.",
     "como_funciona": "Repasás pot odds (T115), equity necesaria (T116) y la comparación final (T117) como el ángulo puramente matemático de cualquier decisión.",
     "cuando_lo_uso": "Como uno de los cuatro ángulos de la decisión integrada final.",
@@ -14984,7 +14968,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Apoyar una decisión completa en tu equity real (N6): tu porcentaje de ganar contra el rango del rival.",
+    "que_es": "El segundo pilar: apoyar una decisión completa en tu equity real (N6) — tu porcentaje de ganar contra el rango del rival.",
     "por_que_importa": "Es el segundo pilar: las pot odds te dicen cuánto necesitás; la equity te dice cuánto tenés de verdad.",
     "como_funciona": "Repasás outs, la regla del 2/4, y la equity contra un rango completo (N6) como el segundo ángulo de la decisión.",
     "cuando_lo_uso": "Como segundo ángulo de la decisión integrada final.",
@@ -15023,7 +15007,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Apoyar una decisión completa en la lectura del rango del rival (N5-N10): no solo el número de equity, sino la historia completa detrás de su línea.",
+    "que_es": "El tercer pilar: apoyar una decisión completa en la lectura del rango del rival (N5-N10) — no solo el número de equity, sino la historia completa detrás de su línea.",
     "por_que_importa": "Es el tercer pilar: pot odds y equity son números; el rango es contexto — te dice si esos números están bien calculados o si la línea completa sugiere ajustarlos.",
     "como_funciona": "Repasás la línea completa del rival (N10), su coherencia (T221), y si representa más probablemente valor o farol (T222-T223).",
     "cuando_lo_uso": "Como tercer ángulo de la decisión integrada final.",
@@ -15062,7 +15046,7 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "Apoyar una decisión completa considerando tu posición (N3, N11): cuánto de tu equity vas a poder realizar de verdad (TN15) según si jugás en posición o no.",
+    "que_es": "Y el cuarto pilar: apoyar una decisión completa considerando tu posición (N3, N11) — cuánto de tu equity vas a poder realizar de verdad (TN15) según si jugás en posición o no.",
     "por_que_importa": "Es el cuarto pilar: incluso con la misma equity cruda, la posición cambia cuánto de esa equity terminás cobrando en la práctica.",
     "como_funciona": "Repasás la realización de equity (N11, TN15) y la ventaja posicional estratégica (T226) como el cuarto ángulo, sobre todo en decisiones cercanas.",
     "cuando_lo_uso": "Como cuarto ángulo de la decisión integrada final, especialmente para desempatar decisiones muy cerradas.",
@@ -15105,9 +15089,9 @@
    "conceptos_clave": [],
    "visualizacion_mesa": true,
    "contenido": {
-    "que_es": "La decisión integrada es juntar los cuatro pilares — pot odds, equity, rango y posición — en una sola decisión completa. Es el cierre de las 326 teorías de la Academia.",
+    "que_es": "Llegamos al final. La decisión integrada es juntar los cuatro pilares que acabás de ver —pot odds, equity, rango y posición— en una sola decisión completa. Es el cierre de las 326 teorías de la Academia.",
     "por_que_importa": "Ningún pilar solo alcanza: las pot odds sin equity no dicen si tenés lo suficiente; la equity sin rango puede estar mal calculada; ni la equity ni el rango sin posición consideran cuánto de esa equity vas a cobrar de verdad.",
-    "como_funciona": "Recorrés el checklist completo (N12): leés la situación, calculás pot odds y equity necesaria (T304), estimás tu equity real (T305), ajustás por la línea y el rango del rival (T306), y desempatás con la posición si hace falta (T307). Elegís la acción de mejor EV, la ejecutás, y después juzgás la decisión por su calidad — no por el resultado de esa mano puntual (T269).",
+    "como_funciona": "Recorrés el checklist completo (N12): leés la situación, calculás pot odds y equity necesaria (T304), estimás tu equity real (T305), ajustás por la línea y el rango del rival (T306), y desempatás con la posición si hace falta (T307). Elegís la acción de mejor EV, la ejecutás, y después juzgás la decisión por su calidad — no por el resultado de esa mano puntual (T269). Esto es, en definitiva, todo lo que veníamos armando pieza por pieza desde la primera teoría.",
     "cuando_lo_uso": "En cualquier decisión importante de póker, como el proceso completo que reemplaza jugar 'a sentimiento'.",
     "ejemplo": "Pot odds 2 a 1 (33% necesario) + equity real 36% + línea del rival que no cierra del todo con valor + jugás en posición: los cuatro pilares apuntan en la misma dirección, y la decisión de seguir queda mucho más sólida que si te hubieras quedado con uno solo.",
     "error_comun": "Decidir con un solo pilar (solo equity, o solo 'sensación' del rango) en vez de juntar los cuatro.",

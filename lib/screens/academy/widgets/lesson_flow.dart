@@ -21,21 +21,27 @@ import 'written_theory_view.dart';
 /// correspondiente (`theory_view` / `exercise_view` / `feedback_view` /
 /// `lesson_result_view` / `interactive_table_*`).
 class LessonFlow extends StatelessWidget {
-  const LessonFlow({super.key, required this.controller});
+  const LessonFlow({super.key, required this.controller, this.isPremium = false});
 
   final AcademyController controller;
+  final bool isPremium;
 
   @override
   Widget build(BuildContext context) {
     final lessonId = controller.activeLessonId;
     final lesson =
         lessonId == null ? null : controller.academy.lessonById(lessonId);
+    final reviewTitle =
+        controller.isCumulativeReview && lessonId != null
+            ? controller.reviewTitle(lessonId)
+            : null;
 
     final header = LessonFlowHeader(
-      title: lesson == null ? '' : '${lesson.id}  ${lesson.title}',
+      title: reviewTitle ??
+          (lesson == null ? '' : '${lesson.id}  ${lesson.title}'),
       subtitle: controller.isRecovering
           ? AppStrings.academyRecoveryTitle
-          : (lesson?.kind.label ?? ''),
+          : (reviewTitle != null ? AppStrings.academyReviewSubtitle : (lesson?.kind.label ?? '')),
       onBack: controller.exitLesson,
     );
 
@@ -122,7 +128,7 @@ class LessonFlow extends StatelessWidget {
       case AcademyPhase.feedback:
         return FeedbackView(controller: controller);
       case AcademyPhase.result:
-        return LessonResultView(controller: controller);
+        return LessonResultView(controller: controller, isPremium: isPremium);
       case AcademyPhase.map:
         return const SizedBox.shrink();
     }

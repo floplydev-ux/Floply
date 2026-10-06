@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>FLOPly — Account Deletion</title>
+  <meta name="description" content="How to delete your FLOPly account and what data is removed.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="FLOPly — Account Deletion">
+  <meta property="og:description" content="Learn how to delete your FLOPly account, what data is removed, and what data is retained.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+      <a href="index.html" class="logo" aria-label="FLOPly Legal — home">
+        FLOPly
+        <span>Legal Documents</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="terminos.html">Terms</a>
+        <a href="privacidad.html">Privacy</a>
+        <a href="eliminacion-cuenta.html" class="active" aria-current="page">Account Deletion</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main id="main-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="container">
+        <p class="breadcrumb"><a href="index.html">Home</a> / Account Deletion</p>
+        <h1>Account Deletion</h1>
+        <div class="meta">
+          <span>FLOPly — Poker Training App</span>
+          <span>Android</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Callout: primary action -->
+      <div class="callout important" role="note" style="margin-bottom: 40px;">
+        <p>
+          <strong>To delete your FLOPly account, open the app → tap your avatar or profile → go to <em>Account Settings</em> → tap <em>Delete Account</em>.</strong>
+          Your account and all associated cloud data will be permanently removed.
+        </p>
+      </div>
+
+      <!-- Article -->
+      <article class="article">
+
+        <!-- 1. How to request account deletion -->
+        <section id="how-to-delete">
+          <h2><span class="num">01</span> How to Request Account Deletion</h2>
+
+          <p>
+            FLOPly provides an in-app account deletion option that is available to all signed-in users.
+            You do not need to contact support to delete your account — you can complete the process
+            entirely within the app.
+          </p>
+
+          <h3>Steps to delete your account in the app</h3>
+          <ol>
+            <li>Open the FLOPly app on your Android device.</li>
+            <li>Make sure you are signed in to the account you want to delete.</li>
+            <li>Tap your avatar or profile icon (top area of the home screen).</li>
+            <li>Navigate to <strong>Account Settings</strong>.</li>
+            <li>Tap <strong>Delete Account</strong>.</li>
+            <li>Confirm the deletion when prompted.</li>
+          </ol>
+
+          <p>
+            The deletion is permanent and immediate. Once confirmed, your account cannot be recovered.
+          </p>
+
+          <h3>Alternative: request by email</h3>
+          <p>
+            If you cannot access the app, you may submit an account deletion request by email to:
+            <strong><span class="placeholder">[COMPLETAR: email de contacto]</span></strong>.
+            Please include the email address associated with your FLOPly account (the Google account
+            you used to sign in). We will process your request and confirm deletion within a
+            reasonable timeframe.
+          </p>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 2. Data deleted -->
+        <section id="data-deleted">
+          <h2><span class="num">02</span> Data Deleted</h2>
+
+          <p>
+            When you delete your account (whether through the app or by email request),
+            the following data is <strong>permanently and immediately deleted</strong>:
+          </p>
+
+          <ul>
+            <li>
+              <strong>FLOPly account profile</strong> — your display name, email address,
+              profile photo URL, country, locale, account creation date, and all linked
+              sign-in providers (e.g., your Google account association).
+              Stored in: Firestore <code>users/{uid}</code>.
+            </li>
+            <li>
+              <strong>Academy progress</strong> — all completed lessons, unlocked levels,
+              concept mastery records, and exercise history stored in the cloud.
+              Stored in: Firestore <code>users/{uid}/academy/progress</code>.
+            </li>
+            <li>
+              <strong>Firebase Authentication account</strong> — your sign-in identity is
+              permanently deleted from Firebase Authentication. You will no longer be able
+              to sign in with the same account.
+            </li>
+          </ul>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 3. Data retained -->
+        <section id="data-retained">
+          <h2><span class="num">03</span> Data Retained After Deletion</h2>
+
+          <p>
+            The following data is <strong>not deleted</strong> when you delete your FLOPly account,
+            for the reasons described below:
+          </p>
+
+          <h3>Promo code redemption records</h3>
+          <p>
+            If you redeemed a promotional code while your account was active, a record of that
+            redemption (containing your user ID and the redeemed code) is stored in our database
+            (<code>promo_redemptions</code> collection). These records are created by our backend
+            system and cannot be deleted through the in-app deletion flow. They are retained to
+            prevent abuse of promotional codes (e.g., preventing the same code from being
+            redeemed multiple times by creating and deleting accounts). If you wish to request
+            deletion of these records, please contact us at
+            <strong><span class="placeholder">[COMPLETAR: email de contacto]</span></strong>.
+          </p>
+
+          <h3>RevenueCat purchase history</h3>
+          <p>
+            FLOPly uses RevenueCat to process in-app subscriptions and purchases. RevenueCat
+            retains your purchase history (subscription transactions, purchase dates, and
+            renewal records) independently of your FLOPly account, in accordance with
+            <a href="https://www.revenuecat.com/privacy" target="_blank" rel="noopener noreferrer">RevenueCat's Privacy Policy</a>.
+            Deleting your FLOPly account does not automatically delete your data from RevenueCat's
+            servers. To request deletion of your RevenueCat data, you must contact RevenueCat
+            directly.
+          </p>
+
+          <h3>Local data on your device</h3>
+          <p>
+            FLOPly stores some data locally on your device to support offline functionality.
+            This local data is <strong>not transmitted to our servers</strong> and is not
+            linked to your account identity:
+          </p>
+          <ul>
+            <li>FLOPly Coins balance and ad history (<code>floply_coins_economy.json</code>)</li>
+            <li>Daily training quota usage (<code>floply_training_quota.json</code>)</li>
+            <li>Saved poker ranges (<code>saved_ranges.json</code>)</li>
+            <li>App UI preferences, such as dismissed tooltips (<code>floply_prefs.json</code>, <code>tool_explainers_dismissed.json</code>)</li>
+            <li>A local copy of Academy progress (used as cache for offline access)</li>
+          </ul>
+          <p>
+            This local data is automatically removed when you uninstall FLOPly from your device.
+            It is not accessible to FLOPly after your account is deleted, as it exists only on
+            your device.
+          </p>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 4. Active subscriptions -->
+        <section id="subscriptions">
+          <h2><span class="num">04</span> Active Subscriptions</h2>
+
+          <p>
+            <strong>Deleting your FLOPly account does not automatically cancel any active
+            Google Play subscription.</strong>
+          </p>
+          <p>
+            If you have an active FLOPly Premium subscription, you must cancel it separately
+            through the Google Play Store to stop future charges. Deleting your in-app account
+            will remove your access to Premium features, but the subscription billing through
+            Google Play is managed independently.
+          </p>
+          <p>
+            To cancel your subscription:
+          </p>
+          <ol>
+            <li>Open the Google Play Store on your Android device.</li>
+            <li>Tap your profile icon → <strong>Payments &amp; subscriptions</strong> → <strong>Subscriptions</strong>.</li>
+            <li>Find <strong>FLOPly</strong> and tap <strong>Cancel subscription</strong>.</li>
+          </ol>
+          <p>
+            Refund requests for subscription payments must be directed to
+            <a href="https://support.google.com/googleplay/answer/2479637" target="_blank" rel="noopener noreferrer">Google Play's refund policy</a>.
+          </p>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 5. Google Sign-In -->
+        <section id="google-signin">
+          <h2><span class="num">05</span> Google Account Data</h2>
+
+          <p>
+            FLOPly uses Google Sign-In for authentication. Signing in with Google grants FLOPly
+            read access to your Google account's name, email address, and profile picture for
+            display purposes only. Deleting your FLOPly account removes this association from
+            our systems, but does not affect your Google account itself.
+          </p>
+          <p>
+            You can review and revoke FLOPly's access to your Google account at any time at
+            <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>.
+          </p>
+        </section>
+
+        <hr class="divider">
+
+        <!-- 6. Contact -->
+        <section id="contact">
+          <h2><span class="num">06</span> Contact Us</h2>
+          <p>
+            For questions about account deletion or data removal, or to submit a deletion
+            request if you cannot access the app, contact us at:
+          </p>
+          <p>
+            <strong><span class="placeholder">[COMPLETAR: email de contacto]</span></strong>
+          </p>
+          <p>
+            For more information on how FLOPly handles your personal data, see our
+            <a href="privacidad.html">Privacy Policy</a> and
+            <a href="terminos.html">Terms and Conditions</a>.
+          </p>
+        </section>
+
+      </article>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <span class="footer-brand">FLOPly</span>
+      <div class="footer-links" role="navigation" aria-label="Footer navigation">
+        <a href="terminos.html">Terms &amp; Conditions</a>
+        <a href="privacidad.html">Privacy Policy</a>
+        <a href="eliminacion-cuenta.html">Account Deletion</a>
+      </div>
+      <span class="footer-copy">© FLOPly. All rights reserved.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

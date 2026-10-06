@@ -35,13 +35,30 @@ class _InteractiveTableExerciseViewState
   /// 0 = feedback de la opción elegida; 1..N = paso de explicación N-1.
   int _explainIndex = 0;
 
+  /// Orden de PRESENTACIÓN de `ex.choices`: `_order[posiciónEnPantalla] =
+  /// índiceOriginalEnEx.choices`. Se sortea una sola vez por ejercicio (acá
+  /// en `initState`, porque este widget recibe una key nueva —
+  /// `ValueKey('itex$itemNumber')` en `lesson_flow.dart`— por cada ítem, así
+  /// que el estado se recrea solo en cada pregunta nueva). La respuesta
+  /// correcta y el resto de la lógica de evaluación no cambian: siguen
+  /// viviendo en `ExerciseChoice.rating`/`AcademyController.answerInteractive`
+  /// indexados por la posición ORIGINAL — esto solo reordena qué se dibuja.
+  late List<int> _order;
+
   AcademyController get c => widget.controller;
 
   bool get _answered => c.interactiveChoice != null;
 
-  void _choose(int i) {
+  @override
+  void initState() {
+    super.initState();
+    final n = c.currentInteractive?.choices.length ?? 0;
+    _order = List<int>.generate(n, (i) => i)..shuffle();
+  }
+
+  void _choose(int displayIndex) {
     if (_answered) return;
-    c.answerInteractive(i);
+    c.answerInteractive(_order[displayIndex]);
     setState(() => _explainIndex = 0);
   }
 
@@ -126,7 +143,8 @@ class _InteractiveTableExerciseViewState
         if (!_answered)
           _ChoiceButtons(
             labels: [
-              for (final ch in ex.choices) c.resolveText(ch.label, table),
+              for (final origIdx in _order)
+                c.resolveText(ex.choices[origIdx].label, table),
             ],
             onChoose: _choose,
           )

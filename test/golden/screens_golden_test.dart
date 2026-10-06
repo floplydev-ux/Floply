@@ -62,6 +62,7 @@ void main() {
                 onGoToAcademy: () {},
                 onGoToLaboratory: () {},
                 onGoToProfile: () {},
+                onGoToCoach: () {},
               ));
             },
           ),

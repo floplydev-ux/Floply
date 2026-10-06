@@ -163,17 +163,17 @@ void main() {
       for (final s in spec.allSublevels)
         ...?s.legacy?.tableScripts,
     };
-    expect(scripts, containsAll(['1.1', '1.2', '1.3', '2.1', '3.1', '3.3', '4.1', '5.1']));
+    expect(scripts, containsAll(['1.2', '2.1', '3.1', '3.3', '4.1', '5.1']));
     final sets = <String>{
       for (final s in spec.allSublevels) ...?s.legacy?.exerciseSets,
     };
-    // Los viejos '1.1' (ejercicio de showdown, heredado por 1.2) y '1.3'
-    // (calles y acciones, heredado por 1.3) se borraron: 1.1, 1.2 y 1.3
-    // migraron al piloto de 3 bloques con ejercicios propios en Dart puro
-    // (`N1PilotExercises`, sin legacy), y dejarlos sin re-anclar rompía el
-    // test de cobertura de `academy_content_test.dart` (todo guion/set
-    // histórico debe usarse).
-    expect(sets, containsAll(['1.4', '1.5', '2.1', '2.2', '2.3',
+    // Los viejos '1.1'/'1.3' (guiones de mesa) y '1.4'/'1.5' (sets de
+    // ejercicios) ya no se re-anclan: 1.1, 1.2, 1.3 y 1.4 migraron al
+    // piloto de 3 bloques con ejemplos/ejercicios propios en Dart puro
+    // (`AcademyClosingExamples`/`N1PilotExercises`, sin legacy) — con las
+    // 4 migradas no queda ningún subnivel nuevo que necesite mostrar ese
+    // contenido histórico. Solo '1.2' sigue re-anclado (vía '3.4'/'3.5').
+    expect(sets, containsAll(['2.1', '2.2', '2.3',
       '2.4', '2.5', '3.1', '3.2', '3.3', '3.4', '3.5', '5.4']));
   });
 

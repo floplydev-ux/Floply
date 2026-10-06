@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="poker_trainer"
+        android:label="FLOPly"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -30,6 +31,12 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Google Mobile Ads — App ID real de FLOPly (producción).
+             Los Ad Unit IDs de prueba/producción se seleccionan en
+             `services/ads/ad_config.dart` según kDebugMode. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3250574167221735~9516140706"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

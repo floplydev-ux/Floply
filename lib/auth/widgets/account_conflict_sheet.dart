@@ -52,9 +52,8 @@ class _AccountConflictSheetBodyState extends State<_AccountConflictSheetBody> {
     final ok = switch (provider) {
       AuthProviderType.google => await widget.controller.signInWithGoogle(),
       AuthProviderType.apple => await widget.controller.signInWithApple(),
-      // El email ya pasó por su propia pantalla — reintentar acá no
-      // aplica del mismo modo; se cierra y el usuario reintenta desde ahí.
-      AuthProviderType.email => false,
+      // Email y teléfono tienen su propio flujo de pantalla — no se reintentan acá.
+      AuthProviderType.email || AuthProviderType.phone => false,
     };
     if (!mounted) return;
     setState(() => _busy = false);

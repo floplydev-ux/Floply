@@ -7,6 +7,8 @@ import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/l10n/app_strings.dart';
 import 'package:poker_trainer/persistence/local_auth_flag_store.dart';
 import 'package:poker_trainer/screens/root/app_shell.dart';
+import 'package:poker_trainer/services/premium/premium_service.dart';
+import 'package:poker_trainer/widgets/bottom_navigation.dart';
 
 Widget _harness() => MaterialApp(
       home: AppShell(
@@ -18,6 +20,7 @@ Widget _harness() => MaterialApp(
           localStoreBuilder: () => InMemoryAcademyStore(),
           remoteAcademyStoreBuilder: (_) => InMemoryAcademyStore(),
         ),
+        premium: StubPremiumService(),
       ),
     );
 
@@ -38,7 +41,14 @@ void main() {
     await tester.pumpWidget(_harness());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text(AppStrings.navAcademy.toUpperCase()));
+    // `find.text` a secas es ambiguo: el Home rediseñado también muestra
+    // "ACADEMIA" como título de su tarjeta (`AppStrings.academyTitle`,
+    // mismo string en mayúsculas que la etiqueta de navegación) — acotar
+    // la búsqueda a la barra inferior evita el choque entre ambos.
+    await tester.tap(find.descendant(
+      of: find.byType(AppBottomNavigation),
+      matching: find.text(AppStrings.navAcademy.toUpperCase()),
+    ));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../models/app_user.dart';
 import '../../screens/root/app_shell.dart';
+import '../../services/premium/premium_service.dart';
 import '../../theme/app_colors.dart';
+import '../../widgets/sala_verde/floply_loading_indicator.dart';
 import '../auth_controller.dart';
 import '../models/auth_state.dart';
 import 'auth_screen.dart';
@@ -17,9 +18,14 @@ import 'auth_screen.dart';
 ///  - [AuthGuest] / [AuthAuthenticated] → `AppShell`, con el
 ///    `AcademyStore` que corresponda (local puro o sincronizado).
 class AuthGate extends StatefulWidget {
-  const AuthGate({super.key, required this.controller});
+  const AuthGate({
+    super.key,
+    required this.controller,
+    required this.premium,
+  });
 
   final AuthController controller;
+  final PremiumService premium;
 
   @override
   State<AuthGate> createState() => _AuthGateState();
@@ -29,29 +35,7 @@ class _AuthGateState extends State<AuthGate> {
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener(_syncAppUser);
     widget.controller.bootstrap();
-  }
-
-  @override
-  void dispose() {
-    widget.controller.removeListener(_syncAppUser);
-    super.dispose();
-  }
-
-  /// Home y la mesa de Academia leen [AppUser.current] sin saber que
-  /// Firebase existe (ver sus propios comentarios) — este es el único
-  /// puente entre la sesión real y ese dato, exactamente donde
-  /// `AppUser` ya invitaba a conectarlo. Vive en un listener, no en
-  /// `build()`, para no mutar estado global durante el render.
-  void _syncAppUser() {
-    final state = widget.controller.state;
-    if (state is AuthAuthenticated) {
-      AppUser.current = AppUser(
-        displayName: state.user.displayName,
-        photoUrl: state.user.avatarUrl,
-      );
-    }
   }
 
   @override
@@ -62,16 +46,16 @@ class _AuthGateState extends State<AuthGate> {
         final state = widget.controller.state;
         return switch (state) {
           AuthLoading() => const _SplashView(),
-          AuthUnauthenticated() => AuthScreen(controller: widget.controller),
-          AuthGuest() => AppShell(
-              key: const ValueKey('guest'),
-              academyStore: widget.controller.academyStore,
-              authController: widget.controller,
-            ),
+          // AuthGuest es un estado legado que no debería ocurrir con el nuevo
+          // sistema de cuentas obligatorio — se trata como no autenticado.
+          AuthUnauthenticated() ||
+          AuthGuest() =>
+            AuthScreen(controller: widget.controller),
           AuthAuthenticated(:final user) => AppShell(
               key: ValueKey('auth-${user.id}'),
               academyStore: widget.controller.academyStore,
               authController: widget.controller,
+              premium: widget.premium,
             ),
         };
       },
@@ -92,16 +76,7 @@ class _SplashView extends StatelessWidget {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: Center(
-        child: SizedBox(
-          width: 28,
-          height: 28,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            color: AppColors.violetSoft,
-          ),
-        ),
-      ),
+      child: Center(child: FloplyLoadingIndicator(size: 72)),
     );
   }
 }

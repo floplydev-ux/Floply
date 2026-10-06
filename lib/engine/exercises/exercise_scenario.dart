@@ -37,7 +37,26 @@ enum PreflopScenarioKind {
   /// en un flop que favorece a su rango (`PostflopStrategy.
   /// boardFavorsAggressor`), antes de cualquier apuesta en esta calle.
   /// El rival defensor checkea de guion (acción mecánica, no evaluada).
-  cbetDecision;
+  cbetDecision,
+
+  /// Postflop — el héroe defendió preflop (no fue el agresor), pasó un
+  /// flop de guion (mecánico, sin evaluar) y encara una apuesta real del
+  /// agresor en el turn, con posición sobre él/ella. Decisión de
+  /// fold/call/raise fundamentada en equity real (`EquityEngine.
+  /// handVsRange` contra el rango de apertura del agresor) comparada con
+  /// las pot odds reales de la apuesta.
+  facingCbet,
+
+  /// Postflop — el héroe fue el agresor preflop y en el flop (c-bet más
+  /// call del rival, de guion), decide si sigue apostando en el turn
+  /// ("segundo barril") o pasa a controlar el bote. Fundamentado en la
+  /// misma equity real contra el rango de apertura del rival.
+  turnBarrel,
+
+  /// Postflop — misma decisión que [turnBarrel] un paso más adelante:
+  /// flop y turn ya fueron apuesta más pago (de guion), el héroe decide
+  /// el tercer barril de valor en el río o pasar a showdown.
+  riverBarrel;
 
   /// Nombre en lenguaje de jugador — Fase 8, promovido desde el
   /// `_kindLabel` privado de `preflop_session_summary_view.dart` (Fase 7)
@@ -51,6 +70,9 @@ enum PreflopScenarioKind {
         PreflopScenarioKind.facingThreeBet => 'Encarar un 3-Bet',
         PreflopScenarioKind.shortStack => 'Stack corto',
         PreflopScenarioKind.cbetDecision => 'C-Bet',
+        PreflopScenarioKind.facingCbet => 'Encarar presión (Turn)',
+        PreflopScenarioKind.turnBarrel => 'Segundo barril (Turn)',
+        PreflopScenarioKind.riverBarrel => 'Tercer barril (River)',
       };
 }
 

@@ -47,6 +47,16 @@ abstract final class SalaVerdeColors {
   static const steelBlueBright = Color(0xFF5DA5D5);
   static const graphiteSteelBright = Color(0xFF8C949F);
 
+  // Acento violeta — tratamiento puntual de la tarjeta grande de Academia
+  // y del bloque de nivel en el Home rediseñado (pedido explícito del
+  // usuario). Deliberadamente NO es un cambio de la identidad de sección:
+  // el resto de Academia (mapa, lección, ejercicios, Estadísticas) sigue
+  // usando feltGreen/feltGreenBright de arriba, sin tocar — dos pantallas
+  // pueden mostrar un acento distinto para la misma sección durante esta
+  // transición, a propósito, hasta que se decida si conviene extenderlo.
+  static const violet = Color(0xFF5B3FA6);
+  static const violetBright = Color(0xFF9C7EE8);
+
   // Semánticos
   static const success = Color(0xFF3FA66B);
   static const warning = Color(0xFFC97A3B);
@@ -142,6 +152,7 @@ abstract final class SalaVerdeType {
       letterSpacing: letterSpacing,
       height: height ?? 1.4,
       color: color ?? SalaVerdeColors.textPrimary,
+      decoration: TextDecoration.none,
     );
   }
 
@@ -175,8 +186,13 @@ abstract final class SalaVerdeType {
   /// embebidas en oraciones (`academyLessonsDone`) y se dejan en Public
   /// Sans hasta que valga la pena separar dígitos de prosa con RichText
   /// (ver `docs/design/FLOPLY_PHASE_2_HOME.md` §N, pendiente documentado).
+  ///
+  /// Usa IBM Plex Mono SemiBold (w600) — para las constantes reutilizables de
+  /// [SvMonoStyles] con más granularidad de peso, ver
+  /// `lib/theme/sala_verde/sala_verde_typography.dart`.
   static TextStyle numeric({double size = 14, Color? color}) => TextStyle(
-        fontFamily: 'IBMPlexMonoSemiBold',
+        fontFamily: 'IBMPlexMono',
+        fontWeight: FontWeight.w600,
         fontSize: size,
         fontFeatures: const [FontFeature.tabularFigures()],
         color: color ?? SalaVerdeColors.textPrimary,

@@ -24,7 +24,9 @@ N12 = {
 # ============================================================
 
 "T253": dict(  # ¿Cuál es mi posición?
- que_es="El primer paso de cualquier decisión: identificar dónde estás "
+ que_es="Ya tenés todas las piezas sueltas de N1 a N11. Ahora vamos a "
+        "armar con ellas un checklist que podés usar en cualquier mesa. "
+        "El primer paso de cualquier decisión: identificar dónde estás "
         "sentado en la mesa en este momento de la mano.",
  por_que_importa="Toda la Academia, desde N3, viene mostrando que la "
         "posición cambia todo lo demás. Por eso es la primera pregunta "
@@ -164,9 +166,11 @@ N12 = {
 # ============================================================
 
 "T260": dict(  # ¿Qué equity tengo?
- que_es="El primer paso de 'tomar la decisión': estimar tu equity (N6) "
-        "contra el rango del rival (T256), usando lo que tenés hecho "
-        "(T258) y tus proyectos (T259).",
+ que_es="Ya leíste el spot completo con las siete preguntas de 12.1. "
+        "Ahora pasamos a la segunda mitad del checklist: tomar la "
+        "decisión. El primer paso acá es estimar tu equity (N6) contra "
+        "el rango del rival (T256), usando lo que tenés hecho (T258) y "
+        "tus proyectos (T259).",
  por_que_importa="Es donde el 'leer el spot' (12.1) se convierte en un "
         "número concreto con el que trabajar.",
  como_funciona="Combiná tu mano hecha y tus outs contra el rango del "
@@ -369,9 +373,10 @@ N12 = {
 # ============================================================
 
 "T288": dict(  # Integrar: el RFI preflop
- que_es="Aplicar el checklist completo (12.1-12.2) a la decisión de "
-        "abrir (RFI, N5): posición, mano, rango de apertura, y la "
-        "acción que corresponde.",
+ que_es="Ya tenés el checklist completo armado. Ahora vamos a probarlo "
+        "en situaciones reales, empezando por el preflop: aplicarlo a la "
+        "decisión de abrir (RFI, N5) — posición, mano, rango de "
+        "apertura, y la acción que corresponde.",
  por_que_importa="Es la primera aplicación práctica de todo lo que "
         "veníamos armando por separado: acá se ve cómo el checklist "
         "resuelve una decisión real de punta a punta.",
@@ -457,8 +462,10 @@ N12 = {
 # ============================================================
 
 "T292": dict(  # Integrar: un bote 3-bet
- que_es="Aplicar el checklist completo a jugar el flop de un bote "
-        "3-bet (N7): con SPR bajo y el rango de ambos ya más acotado.",
+ que_es="Ya viste el checklist aplicado al preflop. Pasemos al "
+        "postflop, empezando por el caso con menos margen: aplicar el "
+        "checklist completo a jugar el flop de un bote 3-bet (N7), con "
+        "SPR bajo y el rango de ambos ya más acotado.",
  por_que_importa="Un bote 3-bet se juega distinto (N7, T164-T169): el "
         "checklist tiene que reflejar ese SPR bajo y esos rangos más "
         "concentrados.",

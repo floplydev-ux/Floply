@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
+import 'sala_verde/sala_verde_typography.dart';
 
 /// Tema visual global (Material 3, modo oscuro).
 class AppTheme {
@@ -8,6 +9,12 @@ class AppTheme {
 
   static ThemeData get dark {
     final base = ThemeData(brightness: Brightness.dark, useMaterial3: true);
+
+    // TextTheme base con fuentes Sala Verde, colores de AppColors aplicados.
+    final svTextTheme = SalaVerdeTypography.textTheme.apply(
+      bodyColor: AppColors.textPrimary,
+      displayColor: AppColors.textPrimary,
+    );
 
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.background,
@@ -21,30 +28,7 @@ class AppTheme {
         onSecondary: Colors.black,
         onSurface: AppColors.textPrimary,
       ),
-      textTheme: base.textTheme
-          .apply(
-            bodyColor: AppColors.textPrimary,
-            displayColor: AppColors.textPrimary,
-          )
-          .copyWith(
-            headlineSmall: const TextStyle(
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-              letterSpacing: 0.2,
-            ),
-            titleMedium: const TextStyle(
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-            bodyMedium: const TextStyle(
-              color: AppColors.textSecondary,
-              height: 1.35,
-            ),
-            labelLarge: const TextStyle(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.4,
-            ),
-          ),
+      textTheme: svTextTheme,
       splashFactory: InkRipple.splashFactory,
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.surfaceElevated,

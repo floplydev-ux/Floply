@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import '../../../engine/pedagogy/playable_exercise.dart';
 import '../../../engine/pedagogy/playable_exercise_controller.dart';
 import '../../../engine/pedagogy/table_lesson.dart';
+import '../../../engine/strategy/decision_math.dart';
 import '../../../l10n/app_strings.dart';
+import '../../../services/poker_audio_service.dart';
 import '../../../theme/sala_verde/sala_verde_tokens.dart';
 import '../../../widgets/pressable_scale.dart';
 import '../../../widgets/sala_verde/sala_verde_widgets.dart';
+import 'educational_panel.dart' show kEducationalPanelTextStyle;
 import 'lesson_widgets.dart' show ratingBadge;
 import 'table_explanation_view.dart';
 
@@ -31,9 +34,17 @@ class PlayableTableExerciseView extends StatefulWidget {
     required this.controller,
     this.progressAccent = SalaVerdeColors.feltGreenBright,
     this.pendingAccent = SalaVerdeColors.feltGreen,
+    this.onReviewInAcademy,
   });
 
   final PlayableExerciseController controller;
+
+  /// "Repasá en Academia" de la devolución estructurada de Laboratorio —
+  /// `null` en Academia (que nunca puebla `richFeedback`, así que el
+  /// enlace no tiene forma de aparecer ahí) y en cualquier host que no lo
+  /// pase. Recibe el `lessonId` real ya validado contra el currículo (ver
+  /// `LabFeedbackBuilder`).
+  final ValueChanged<String>? onReviewInAcademy;
 
   /// Temperatura de la sección que aloja este widget — barra de progreso
   /// y el ícono de "ya respondiste" del eco de la acción. Default
@@ -59,12 +70,39 @@ class _PlayableTableExerciseViewState extends State<PlayableTableExerciseView> {
   /// 0 = devolución completa; 1..N = paso de explicación N-1.
   int _explainIndex = 0;
 
+  /// El ejercicio jugable que corresponde al valor actual de
+  /// [_explainIndex] — para detectar cuándo [c.currentPlayable] pasó a ser
+  /// un ejercicio nuevo (`advancePlayable()` arma una instancia de
+  /// `PlayableTableExercise` distinta en cada ejercicio, nunca reutiliza
+  /// la anterior). Sin esto, `_explainIndex` quedaba pegado en el último
+  /// paso de explicación del ejercicio anterior (se resetea solo en
+  /// [_chooseReasoning], que Laboratorio nunca usa — sus ejercicios no
+  /// tienen paso de "¿por qué?"): a partir del segundo ejercicio, la
+  /// devolución real quedaba tapada por el texto genérico del paso de
+  /// explicación en vez de mostrarse (causa raíz real del reporte
+  /// "después del primer ejercicio algunos siguientes no muestran la
+  /// corrección").
+  PlayableTableExercise? _trackedExercise;
+
   PlayableExerciseController get c => widget.controller;
 
   bool get _answered => c.lastPlayableFeedback != null;
 
   void _chooseAction(int i) {
     if (c.playableActionIndex != null) return;
+    final actionType = c.currentPlayable?.actions[i].action;
+    if (actionType != null) {
+      final audio = switch (actionType) {
+        ActionType.fold => PokerAudio.fold,
+        ActionType.check => PokerAudio.check,
+        ActionType.call => PokerAudio.call,
+        ActionType.limp => PokerAudio.call,
+        ActionType.bet => PokerAudio.bet,
+        ActionType.raise => PokerAudio.raise,
+        ActionType.allIn => PokerAudio.allIn,
+      };
+      PokerAudioService.instance.play(audio);
+    }
     c.choosePlayableAction(i);
   }
 
@@ -93,6 +131,15 @@ class _PlayableTableExerciseViewState extends State<PlayableTableExerciseView> {
     final ex = c.currentPlayable;
     if (ex == null) return const SizedBox.shrink();
 
+    // Nuevo ejercicio (instancia distinta a la que ya veníamos mostrando)
+    // → el paso de explicación vuelve a 0. Mutación directa (no
+    // `setState`): se usa en este mismo build, no hace falta programar
+    // uno nuevo.
+    if (!identical(ex, _trackedExercise)) {
+      _trackedExercise = ex;
+      _explainIndex = 0;
+    }
+
     final actionIdx = c.playableActionIndex;
     final action = actionIdx == null ? null : ex.actions[actionIdx];
     final sizeIdx = c.playableSizeIndex;
@@ -108,6 +155,7 @@ class _PlayableTableExerciseViewState extends State<PlayableTableExerciseView> {
     final TableAnchor anchor;
     final List<TableAnchor> highlight;
     final bool dimOthers;
+    Widget? richBody;
 
     if (!c.needsPlayableSizing && action != null) {
       table = size?.afterDecision ??
@@ -136,7 +184,18 @@ class _PlayableTableExerciseViewState extends State<PlayableTableExerciseView> {
       highlight = const [];
       dimOthers = false;
     } else if (_explainIndex == 0) {
-      bubbleText = _fullFeedbackText(ex, feedback!);
+      final rich = feedback!.size?.richFeedback ?? feedback.action.richFeedback;
+      if (rich != null) {
+        bubbleText = '';
+        richBody = _RichFeedbackBody(
+          feedback: rich,
+          rating: feedback.combined,
+          strategyDependent: ex.strategyDependent,
+          onReviewInAcademy: widget.onReviewInAcademy,
+        );
+      } else {
+        bubbleText = _fullFeedbackText(ex, feedback);
+      }
       anchor = ex.questionAnchor;
       highlight = const [];
       dimOthers = false;
@@ -191,6 +250,7 @@ class _PlayableTableExerciseViewState extends State<PlayableTableExerciseView> {
           child: TableExplanationView(
             table: table,
             text: bubbleText,
+            richBody: richBody,
             anchor: anchor,
             highlight: highlight,
             dimOthers: dimOthers,
@@ -263,6 +323,190 @@ class _PlayableTableExerciseViewState extends State<PlayableTableExerciseView> {
         ExerciseRating.acceptable => (SalaVerdeColors.warning, Icons.check_rounded),
         ExerciseRating.poor => (SalaVerdeColors.errorBright, Icons.close_rounded),
       };
+}
+
+// ================================================================
+// Devolución estructurada de Laboratorio: Decisión → Por qué → Números →
+// Concepto clave → Repasá en Academia. Solo aparece cuando
+// `ActionChoice.richFeedback`/`BetSizeOption.richFeedback` no es `null`
+// (hoy: exclusivo de Laboratorio, ver `ExerciseScenarioAdapter`) — en
+// cualquier otro caso, `PlayableTableExerciseView` sigue mostrando
+// `_fullFeedbackText` de siempre.
+// ================================================================
+
+class _RichFeedbackBody extends StatelessWidget {
+  const _RichFeedbackBody({
+    required this.feedback,
+    required this.rating,
+    required this.strategyDependent,
+    required this.onReviewInAcademy,
+  });
+
+  final LabFeedback feedback;
+  final ExerciseRating rating;
+  final bool strategyDependent;
+  final ValueChanged<String>? onReviewInAcademy;
+
+  @override
+  Widget build(BuildContext context) {
+    final (verdictLabel, verdictColor) =
+        ratingBadge(rating, strategyDependent: strategyDependent);
+    final math = feedback.math;
+
+    return SingleChildScrollView(
+      primary: false,
+      physics: const ClampingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _SectionLabel('DECISIÓN', verdictColor),
+          const SizedBox(height: 4),
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              Text(verdictLabel,
+                  style: kEducationalPanelTextStyle.copyWith(
+                      fontWeight: FontWeight.w900, color: verdictColor)),
+              Text(
+                  '· ${feedback.strategicRating.emoji} '
+                  '${feedback.strategicRating.label}',
+                  style: kEducationalPanelTextStyle),
+              Text('· Esperado: ${feedback.expectedLabel}',
+                  style: kEducationalPanelTextStyle),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const _SectionLabel('POR QUÉ', SalaVerdeColors.textMuted),
+          const SizedBox(height: 4),
+          Text(feedback.whyText, style: kEducationalPanelTextStyle),
+          if (math != null && math.hasAny) ...[
+            const SizedBox(height: 12),
+            const _SectionLabel('NÚMEROS', SalaVerdeColors.textMuted),
+            const SizedBox(height: 6),
+            _NumbersRow(math),
+          ],
+          if (feedback.conceptTitle != null) ...[
+            const SizedBox(height: 12),
+            const _SectionLabel('CONCEPTO CLAVE', SalaVerdeColors.textMuted),
+            const SizedBox(height: 4),
+            Text.rich(
+              TextSpan(
+                style: kEducationalPanelTextStyle,
+                children: [
+                  TextSpan(
+                    text: '${feedback.conceptTitle}. ',
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  TextSpan(text: feedback.conceptExplanation ?? ''),
+                ],
+              ),
+            ),
+          ],
+          if (feedback.hasReview && onReviewInAcademy != null) ...[
+            const SizedBox(height: 14),
+            PressableScale(
+              onTap: () => onReviewInAcademy!(feedback.academyReviewLessonId!),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.menu_book_rounded,
+                      size: 15, color: SalaVerdeColors.steelBlueBright),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      'Repasá en Academia: ${feedback.academyReviewLabel}',
+                      style: SalaVerdeType.bodyStrong(
+                          color: SalaVerdeColors.steelBlueBright),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text, this.color);
+
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 10.5,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 0.6,
+        color: color,
+      ),
+    );
+  }
+}
+
+class _NumbersRow extends StatelessWidget {
+  const _NumbersRow(this.math);
+
+  final DecisionMath math;
+
+  static String _pct(double v) => '${v.toStringAsFixed(0)}%';
+  static String _bb(double v) =>
+      '${v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1)} BB';
+
+  @override
+  Widget build(BuildContext context) {
+    final entries = <(String, String)>[
+      if (math.equityPct != null) ('Equity', _pct(math.equityPct!)),
+      if (math.requiredEquityPct != null)
+        ('Equity necesaria', _pct(math.requiredEquityPct!)),
+      if (math.potBb != null) ('Bote', _bb(math.potBb!)),
+      if (math.toCallBb != null) ('Pagás', _bb(math.toCallBb!)),
+      if (math.betBb != null) ('Apuesta', _bb(math.betBb!)),
+      if (math.stackBb != null) ('Stack', _bb(math.stackBb!)),
+      if (math.sprValue != null) ('SPR', math.sprValue!.toStringAsFixed(1)),
+      if (math.mdfPct != null) ('MDF', _pct(math.mdfPct!)),
+    ];
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final (label, value) in entries)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(SalaVerdeRadius.sharp),
+              color: SalaVerdeColors.surfaceElevated,
+              border: Border.all(color: SalaVerdeColors.borderSubtle),
+            ),
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: '$label ',
+                    style: SalaVerdeType.label(color: SalaVerdeColors.textMuted)
+                        .copyWith(fontSize: 10),
+                  ),
+                  TextSpan(
+                    text: value,
+                    style: SalaVerdeType.numeric(
+                        size: 12.5, color: SalaVerdeColors.textPrimary),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 }
 
 // ================================================================

@@ -71,6 +71,16 @@ class AnswerResult {
 /// [StrategyOption.contextSensitivity], que es lo que cada generador de
 /// estrategia ya declara por opción — este evaluador no vuelve a mirar
 /// `frequency` para decidir nada, solo el motor que arma la estrategia.
+///
+/// **Corrección de Open Raise (Campo de Entrenamiento)**: usa
+/// [Strategy.optionForSized] en vez de `optionFor` a secas — una subida
+/// con un tamaño razonable pero distinto al único tamaño "ideal" que una
+/// familia preflop tenga codificado ya no cae a la opción de peor
+/// calificación de TODA la estrategia (que podía ser un tipo de acción
+/// completamente distinto, p. ej. fold): se evalúa contra la mejor
+/// opción que comparta el mismo tipo de acción. Separa así validez de la
+/// ACCIÓN (qué tipo conviene) de validez del TAMAÑO (qué tan cerca del
+/// ideal), sin inventar ninguna regla nueva de póker.
 class AnswerEvaluator {
   const AnswerEvaluator._();
 
@@ -78,7 +88,7 @@ class AnswerEvaluator {
     final strategy =
         ScenarioStrategy.forDecision(scenario.initialState, scenario.heroSlot);
 
-    final option = strategy.optionFor(chosenAction) ?? _worstOption(strategy);
+    final option = strategy.optionForSized(chosenAction);
 
     return AnswerResult(
       verdict: preflopVerdict(
@@ -93,11 +103,4 @@ class AnswerEvaluator {
       recommendedAction: strategy.primary.action,
     );
   }
-
-  /// Si la acción elegida no corresponde a ninguna opción contemplada
-  /// (p. ej. un tamaño de subida que la estrategia de referencia no
-  /// consideró), no explota: la trata como la peor opción conocida —
-  /// nunca deja al evaluador sin veredicto.
-  static StrategyOption _worstOption(Strategy strategy) =>
-      strategy.options.reduce((a, b) => a.rating.score <= b.rating.score ? a : b);
 }

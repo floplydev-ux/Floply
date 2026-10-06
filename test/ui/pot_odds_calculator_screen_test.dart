@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/l10n/app_strings.dart';
+import 'package:poker_trainer/persistence/tool_explainer_store.dart';
+import 'package:poker_trainer/screens/tools/ev_calculator_screen.dart';
 import 'package:poker_trainer/screens/tools/pot_odds_calculator_screen.dart';
 
 Widget _harness() =>
     const MaterialApp(home: PotOddsCalculatorScreen());
 
 void main() {
+  // Ver el mismo comentario en blocker_explorer_screen_test.dart: evita
+  // la carrera del sistema de explicación contextual (Grupo 3).
+  setUpAll(() async {
+    await defaultToolExplainerStore.setDismissed('pot_odds', true);
+  });
+
   testWidgets('muestra un resultado real con los valores por defecto',
       (tester) async {
     await tester.pumpWidget(_harness());
@@ -48,11 +56,75 @@ void main() {
     await tester.pumpWidget(_harness());
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField).last, '-5');
+    // Índice 1 = campo "Lo que tenés que pagar" (0 = bote, 2 = tu equity
+    // real, agregado después — no es parte del cálculo de PotOddsEngine).
+    await tester.enterText(find.byType(TextField).at(1), '-5');
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
     expect(find.text(AppStrings.potOddsInvalidInput), findsOneWidget);
+  });
+
+  testWidgets('el campo "Tu equity real" compara contra la necesaria sin '
+      'decidir por el usuario', (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).at(2), '50');
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    // requiredEquity = 33.3%, tu equity 50% -> la supera.
+    expect(
+      find.text(AppStrings.potOddsEquityComparison(
+        yourEquityPct: 50,
+        requiredEquityPct: 100 / 3,
+      )),
+      findsOneWidget,
+    );
+    // Nunca un veredicto CALL/FOLD.
+    expect(find.textContaining('CALL'), findsNothing);
+    expect(find.textContaining('FOLD'), findsNothing);
+  });
+
+  testWidgets('vacío el campo de equity, no se muestra ninguna comparación',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.textContaining('Tu equity ('), findsNothing);
+  });
+
+  testWidgets('precarga desde otra herramienta (pot/call)', (tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: PotOddsCalculatorScreen(initialPotBb: 20, initialCallBb: 10),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    // finalPot=30, requiredEquity=10/30=33.3%.
+    expect(find.text('33.3%'), findsOneWidget);
+    expect(find.text('30 BB'), findsOneWidget);
+  });
+
+  testWidgets('"Calcular EV" abre EV con pot/call/equity precargados',
+      (tester) async {
+    await tester.pumpWidget(_harness());
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).at(2), '50');
+    await tester.pumpAndSettle();
+    final calcEv = find.text(AppStrings.potOddsCalculateEv);
+    await tester.ensureVisible(calcEv);
+    await tester.pumpAndSettle();
+    await tester.tap(calcEv);
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(EvCalculatorScreen), findsOneWidget);
+    // pot=10, call=5, equity=50% -> finalPot=15, EV = 0.5*15-5 = +2.5 BB.
+    expect(find.text('+2.5 BB'), findsOneWidget);
   });
 
   testWidgets('el botón de volver hace pop', (tester) async {

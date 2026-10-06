@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_trainer/engine/concepts/user_concept_mastery.dart';
 import 'package:poker_trainer/engine/exercises/laboratory_difficulty.dart';
+import 'package:poker_trainer/l10n/app_strings.dart';
 import 'package:poker_trainer/engine/poker/deck.dart';
 import 'package:poker_trainer/engine/poker/game/legal_action_engine.dart';
 import 'package:poker_trainer/engine/poker_trainer_engine.dart';
@@ -61,9 +62,66 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(controller.lastPlayableFeedback, isNotNull);
     expect(controller.phase, LabPhase.feedback);
-    // El feedback mostrado es exactamente el que ya se había calificado
-    // con AnswerEvaluator al armar la mesa — no se re-evalúa nada acá.
-    expect(find.textContaining(foldChoice.feedback), findsWidgets);
+    // El feedback mostrado (la devolución estructurada de Laboratorio,
+    // ver `LabFeedbackBuilder`) es exactamente el que ya se había
+    // calificado con AnswerEvaluator al armar la mesa — no se re-evalúa
+    // nada acá.
+    expect(foldChoice.richFeedback, isNotNull);
+    expect(find.textContaining(foldChoice.richFeedback!.whyText), findsWidgets);
+  });
+
+  testWidgets(
+      'la corrección aparece después de CADA ejercicio, no solo el '
+      'primero (regresión real: el paso de explicación de un ejercicio '
+      'dejaba "pegado" el siguiente en texto genérico)', (tester) async {
+    final controller = LabSessionController(
+      engine: PokerTrainerEngine(seed: 20),
+      sessionLength: 3,
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(body: LaboratoryScreen(controller: controller)),
+    ));
+    await tester.pumpAndSettle();
+    controller.loadNewEnginePreflopExercise(deck: Deck(Random(21)));
+    await tester.pumpAndSettle();
+
+    Future<void> resolveAndCheckFeedback() async {
+      final exercise = controller.currentPlayable!;
+      final foldChoice = exercise.actions.firstWhere((a) => a.label == 'FOLD',
+          orElse: () => exercise.actions.first);
+      await tester.tap(find.text(foldChoice.label));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(controller.phase, LabPhase.feedback);
+      final rich = foldChoice.richFeedback;
+      expect(rich, isNotNull);
+      // La devolución real (POR QUÉ real del ejercicio) tiene que estar
+      // en pantalla — nunca reemplazada por el texto genérico fijo
+      // "Conceptos en juego acá: …" del paso de explicación de un
+      // ejercicio anterior.
+      expect(find.textContaining(rich!.whyText), findsWidgets);
+    }
+
+    // Ejercicio 1: responde y confirma la devolución real.
+    await resolveAndCheckFeedback();
+
+    // Avanza un paso más (el paso de explicación de ESTE ejercicio, con
+    // "CONTINUAR") y recién con el siguiente tap ("SIGUIENTE") pasa al
+    // ejercicio 2 — exactamente el camino real que exponía el bug (el
+    // `_explainIndex` quedaba pegado en 1 para el ejercicio siguiente).
+    await tester.tap(find.text(AppStrings.academyContinue));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(AppStrings.academyNext));
+    await tester.pumpAndSettle();
+    expect(controller.phase, LabPhase.question);
+
+    // Ejercicio 2: la devolución real tiene que volver a aparecer — antes
+    // de la corrección, acá se veía el texto genérico "Conceptos en
+    // juego…" en su lugar.
+    await resolveAndCheckFeedback();
   });
 
   testWidgets(

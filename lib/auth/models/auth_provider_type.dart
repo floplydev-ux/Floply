@@ -5,7 +5,8 @@
 enum AuthProviderType {
   google,
   apple,
-  email;
+  email,
+  phone;
 
   /// El `providerId` que usa `firebase_auth` internamente
   /// (`UserInfo.providerId`), para traducir de/hacia Firebase sin que el
@@ -13,16 +14,16 @@ enum AuthProviderType {
   String get firebaseProviderId => switch (this) {
         AuthProviderType.google => 'google.com',
         AuthProviderType.apple => 'apple.com',
-        AuthProviderType.email =>
-          'password', // ver nota en firebase_auth_repository.dart
+        AuthProviderType.email => 'password',
+        AuthProviderType.phone => 'phone',
       };
 
   static AuthProviderType? fromFirebaseProviderId(String id) {
     for (final type in AuthProviderType.values) {
       if (type.firebaseProviderId == id) return type;
     }
-    // firebase_auth reporta el método de email-link como 'emailLink', no
-    // 'password' (que es el de contraseña clásica, que no usamos).
+    // firebase_auth reporta el método de email-link como 'emailLink' en
+    // cuentas antiguas migradas.
     if (id == 'emailLink') return AuthProviderType.email;
     return null;
   }

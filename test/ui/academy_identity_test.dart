@@ -39,6 +39,15 @@ void main() {
     c.openLesson('3.1');
     await tester.pumpAndSettle();
 
+    // 3.1 usa el flujo canónico: teoría escrita primero, mesa al cierre.
+    // Avanzar por las fichas hasta llegar al ejemplo de cierre (la mesa).
+    while (!c.isClosingExample) {
+      c.advanceTheory();
+      await tester.pumpAndSettle();
+      if (c.phase != AcademyPhase.theory) break;
+    }
+    expect(c.isClosingExample, isTrue);
+
     // El nombre del usuario está en la mesa.
     expect(find.text('Camila'), findsWidgets);
 
@@ -56,7 +65,7 @@ void main() {
 
     // Cambiar el nombre del usuario se refleja sin tocar el guion.
     c.userName = 'Rodri';
-    c.nextTableStep();
+    c.nextClosingExampleStep();
     await tester.pumpAndSettle();
     expect(find.text('Rodri'), findsWidgets);
     expect(find.text('Camila'), findsNothing);
@@ -81,10 +90,17 @@ void main() {
     c.openLesson('3.3');
     await tester.pumpAndSettle();
 
-    // Paso 1 de N3.3 (guion "ventaja posicional"): "Estás en el CO. {UTG} y
-    // {HJ} foldearon…" → los marcadores resuelven a nombres reales.
-    await tester.pumpAndSettle();
+    // 3.3 usa el flujo canónico: teoría escrita primero (con clase de mentor
+    // T020 intercalada), mesa al cierre. Avanzar hasta el ejemplo de cierre.
+    while (!c.isClosingExample) {
+      c.advanceTheory();
+      await tester.pumpAndSettle();
+      if (c.phase != AcademyPhase.theory) break;
+    }
+    expect(c.isClosingExample, isTrue);
 
+    // Paso 1 del guion de cierre de N3.3: los marcadores resuelven a nombres
+    // reales del elenco, no a etiquetas genéricas.
     final bubble = c.currentBubbleText!;
     expect(bubble.contains('{'), isFalse);
     expect(bubble.toLowerCase().contains('villain'), isFalse);

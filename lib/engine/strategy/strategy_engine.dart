@@ -43,17 +43,33 @@ class StrategyEngine {
       ConceptIds.positionAdvantage,
     ];
 
-    // Mano claramente en rango.
+    // Mano claramente en rango: el tamaño ideal de la posición es
+    // "óptimo", pero cualquier otro tamaño dentro de la banda defendible
+    // de verdad (`OpeningRanges.reasonableSizingBounds`) sigue siendo una
+    // apertura correcta — nunca un único tamaño exacto marcando como
+    // error cualquier otro (ver `AnswerEvaluator.optionForSized`, que
+    // además cubre cualquier tamaño que ni siquiera esté en esta lista).
     if (freq >= 0.75) {
+      // El ideal real de la posición — nunca `raiseSize`/`_openSize`:
+      // esa función puede devolver otra cosa si `situation.
+      // availableRaiseSizes` trae candidatos propios (vestigio del
+      // sistema de templates viejo), y `openSizingStrategy` siempre
+      // califica "óptimo" contra `OpeningRanges.sizingFor(position)` —
+      // usar un valor distinto acá dejaría a veces sin ninguna opción en
+      // frecuencia 1.0 (ningún tamaño "coincide" con el ideal real).
+      final ideal = OpeningRanges.sizingFor(position);
+      final (minReasonable, maxReasonable) = OpeningRanges.reasonableSizingBounds(position);
+      // Reutiliza `openSizingStrategy` (ya calificaba tamaños de verdad,
+      // Fase 0.5, pero solo lo llamaba el sistema de templates viejo) con
+      // los bordes YA curados de `OpeningRanges` — nunca un tamaño
+      // inventado ni un segundo cálculo de calidad de tamaño en paralelo.
+      final sizingOptions = openSizingStrategy(
+        situation,
+        ({minReasonable, ideal, maxReasonable}.toList()..sort()),
+      ).options;
       return Strategy(
         [
-          StrategyOption(
-            action: raiseAction,
-            frequency: 1.0,
-            rating: StrategicRating.optimal,
-            justifyingConcepts: concepts,
-            rationaleKey: 'open.raise.in_range',
-          ),
+          ...sizingOptions,
           const StrategyOption(
             action: PokerAction.fold,
             frequency: 0.0,

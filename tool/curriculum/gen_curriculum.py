@@ -721,15 +721,15 @@ SUBCONCEPTS = {
 #     teoría en texto (academy_content) / practice specs / checks.
 # ------------------------------------------------------------------ #
 LEGACY = {
- # "1.1", "1.2" y "1.3" (piloto Fase 3 del nuevo patrón de 3 bloques) ya NO
- # heredan sus guiones/ejercicios legados. El guion "1.1" sigue vivo vía
- # "1.4" (primer elemento de su lista); el guion "1.3" queda solo listado en
- # "1.4" (nunca se resuelve ahí — `forLesson` usa el primero, "1.1" — pero
- # sigue contando como "re-anclado" para el test de cobertura). El guion
- # "1.2" lo siguen usando "3.4"/"3.5". Los ejemplos de mesa y ejercicios
- # nuevos de 1.1/1.2/1.3 viven aparte, en
- # `AcademyClosingExamples`/`N1PilotExercises` (Dart puro, no currículo).
- "1.4":{"table_scripts":["1.1","1.3"],"exercise_sets":["1.4","1.5"]},
+ # "1.1", "1.2", "1.3" y "1.4" (piloto Fase 3 del nuevo patrón de 3
+ # bloques) ya NO heredan sus guiones/ejercicios legados. El guion "1.2" lo
+ # siguen usando "3.4"/"3.5". Los guiones "1.1"/"1.3" y los sets "1.4"/"1.5"
+ # quedaron sin re-anclar (ver el test de cobertura actualizado en
+ # `curriculum_spec_test.dart`, que ya no los exige): con las 4 migradas al
+ # piloto no queda ningún subnivel nuevo que necesite mostrar ese contenido
+ # legado. Los ejemplos de mesa y ejercicios nuevos de 1.1/1.2/1.3/1.4 viven
+ # aparte, en `AcademyClosingExamples`/`N1PilotExercises` (Dart puro, no
+ # currículo).
  "2.1":{"table_scripts":["2.1"],"exercise_sets":["2.1","2.2"]},
  "2.2":{"exercise_sets":["2.3","2.4","2.5"]},
  "3.1":{"table_scripts":["3.1"],"exercise_sets":["3.1","3.2"]},

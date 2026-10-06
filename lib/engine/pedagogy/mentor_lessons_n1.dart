@@ -1,11 +1,11 @@
 /// Clases de mentor — Nivel 1 "Cómo funciona una mano" (Fase 4).
 ///
-/// T001-T005 (1.1), T008-T010 (1.2) y T033-T042 (1.3) migraron al piloto de
-/// 3 bloques y ya no tienen clase de mentor — ver
-/// `academy_mentor_lessons.dart` y `academy_closing_examples.dart`. Acá
-/// quedan las 7 teorías restantes del nivel (T043-T049, subnivel 1.4). Mismo
-/// criterio de fidelidad técnica que el resto: los hechos (las 4 calles) no
-/// cambian — lo que cambia es cómo se presentan.
+/// Las 25 teorías del nivel (T001-T005 de 1.1, T008-T010 de 1.2, T033-T042
+/// de 1.3 y T043-T049 de 1.4, estas últimas antes acá) migraron al piloto
+/// de 3 bloques y ya no tienen clase de mentor — ver
+/// `academy_mentor_lessons.dart` y `academy_closing_examples.dart`. Esta
+/// clase queda sin uso en tiempo de ejecución (no se borra, mismo criterio
+/// de "re-anclar, no borrar" que el resto del contenido histórico).
 library;
 
 import 'mentor_lesson.dart';

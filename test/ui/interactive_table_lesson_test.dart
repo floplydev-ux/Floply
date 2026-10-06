@@ -46,13 +46,15 @@ Future<AcademyController> _openInteractive(
 
 void main() {
   // Subniveles con teoría interactiva sobre la mesa Y ejercicios después.
-  // (1.2 y 1.3 migraron al piloto de 3 bloques y ya no tienen guion legado
-  // — ver `academy_1_2_pilot_test.dart` / `academy_1_3_pilot_test.dart` —
-  // así que 1.4 ocupa su lugar acá.)
-  for (final id in ['1.4', '2.1', '3.1', '3.3']) {
+  // (1.1, 1.2, 1.3 y 1.4 migraron al piloto de 3 bloques y ya no tienen
+  // guion legado — ver `academy_1_1_pilot_test.dart` /
+  // `academy_1_2_pilot_test.dart` / `academy_1_3_pilot_test.dart`; 1.4
+  // todavía no tiene su propio test dedicado, pendiente, no bloquea esta
+  // prueba.)
+  for (final id in ['2.1', '3.1', '3.3']) {
     testWidgets('$id: la mesa interactiva se recorre sin overflow ni '
         'excepciones', (tester) async {
-      final c = await _openInteractive(tester, id, width: id == '1.4' ? 320 : 360);
+      final c = await _openInteractive(tester, id, width: 360);
 
       expect(c.isInteractiveTheory, isTrue);
       expect(find.text('CONTINUAR'), findsOneWidget);

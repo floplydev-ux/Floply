@@ -9,6 +9,7 @@ import 'package:poker_trainer/auth/widgets/auth_gate.dart';
 import 'package:poker_trainer/engine/academy/academy_store.dart';
 import 'package:poker_trainer/l10n/app_strings.dart';
 import 'package:poker_trainer/persistence/local_auth_flag_store.dart';
+import 'package:poker_trainer/services/premium/premium_service.dart';
 import 'package:poker_trainer/widgets/bottom_navigation.dart';
 
 ({AuthController controller, FakeAuthRepository auth}) _harness() {
@@ -33,7 +34,7 @@ void main() {
 
     final controller = _harness().controller;
     await tester
-        .pumpWidget(MaterialApp(home: AuthGate(controller: controller)));
+        .pumpWidget(MaterialApp(home: AuthGate(controller: controller, premium: StubPremiumService())));
     await tester.pumpAndSettle();
 
     expect(find.text(AppStrings.authContinueGoogle), findsOneWidget);
@@ -65,7 +66,7 @@ void main() {
     ));
 
     await tester
-        .pumpWidget(MaterialApp(home: AuthGate(controller: controller)));
+        .pumpWidget(MaterialApp(home: AuthGate(controller: controller, premium: StubPremiumService())));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text(AppStrings.authContinueGoogle));

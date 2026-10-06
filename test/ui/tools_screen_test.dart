@@ -6,7 +6,7 @@ import 'package:poker_trainer/screens/tools/combo_calculator_screen.dart';
 import 'package:poker_trainer/screens/tools/equity_calculator_screen.dart';
 import 'package:poker_trainer/screens/tools/ev_calculator_screen.dart';
 import 'package:poker_trainer/screens/tools/pot_odds_calculator_screen.dart';
-import 'package:poker_trainer/screens/tools/range_explorer_screen.dart';
+import 'package:poker_trainer/screens/tools/range/range_explorer_screen.dart';
 import 'package:poker_trainer/screens/tools/tools_screen.dart';
 
 void main() {

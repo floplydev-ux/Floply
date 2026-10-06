@@ -10,7 +10,15 @@ class N10Exercises {
     '10.1': InteractiveExerciseSet([_checkNoEsNada()]),
     '10.2': InteractiveExerciseSet([_rangoTrasRaise()]),
     '10.3': InteractiveExerciseSet([_contarCombos()]),
-    '10.4': InteractiveExerciseSet([_valorOFarol()]),
+    // 10.4 es el checkpoint del nivel: la evaluación del módulo repasa
+    // que un check no es "nada", el rango tras un raise y contar combos,
+    // antes de cerrar con su propio contenido (¿valor o farol?).
+    '10.4': InteractiveExerciseSet([
+      _checkNoEsNada(),
+      _rangoTrasRaise(),
+      _contarCombos(),
+      _valorOFarol(),
+    ]),
   };
 
   // ================================================================

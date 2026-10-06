@@ -56,6 +56,13 @@ __pycache__/
 tree_fragment.html
 niveles_resumen.tsv
 
+# Alchemist (golden tests) — PNGs de diagnóstico que arma cada vez que un
+# goldenTest() falla (master/test/masked/isolated diff): output de debug
+# de la corrida local, nunca la fuente de verdad (esa vive en
+# test/golden/goldens/). v0.3.0 encontró 8 de estos ya commiteados por
+# error en un checkpoint anterior — no debe volver a pasar.
+test/golden/failures/
+
 # Firebase — configuración real de un proyecto (ver AUTH_SETUP.md).
 # lib/firebase_options.dart NO está acá: hoy tiene solo valores
 # placeholder, versionados a propósito como referencia de formato. El día
@@ -64,4 +71,20 @@ niveles_resumen.tsv
 # "qué no sube a Git").
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
+
+# Android signing — credenciales de firma del keystore de release.
+# NUNCA subir al repo: contienen contraseñas del keystore.
+# Ver android/app/build.gradle.kts para la estructura esperada.
+android/key.properties
+*.jks
+*.keystore
+
+# Android Gradle build directory (subdirectorio — no cubierto por /build/)
+android/build/
+
+# iOS Flutter ephemeral (generado por flutter build, nunca fuente de verdad)
+ios/Flutter/ephemeral/
+
+# Legacy sounds directory (supersedido por assets/audio/)
+sounds/
 

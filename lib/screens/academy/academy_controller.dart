@@ -8,6 +8,7 @@ import '../../engine/evaluation/evaluation_result.dart';
 import '../../engine/evaluation/user_answer.dart';
 import '../../engine/exercises/exercise.dart';
 import '../../engine/pedagogy/academy_closing_examples.dart';
+import '../../engine/pedagogy/academy_cumulative_reviews.dart';
 import '../../engine/pedagogy/academy_exercise_scripts.dart';
 import '../../engine/pedagogy/academy_players.dart';
 import '../../engine/pedagogy/academy_playable_scripts.dart';
@@ -139,11 +140,13 @@ class AcademyController extends ChangeNotifier with PlayableExerciseController {
   String resolveText(String raw, TableSnapshot casted) =>
       resolveTableText(raw, casted);
 
-  /// Texto de la burbuja del paso de teoría actual, ya resuelto (nombres).
+  /// Texto de la burbuja del paso de mesa activo, ya resuelto (nombres).
+  /// Funciona tanto en [isInteractiveTheory] (guion legacy, antes de la
+  /// teoría) como en [isClosingExample] (ejemplo de cierre, después).
   String? get currentBubbleText {
-    final s = currentTableStep;
-    if (s == null) return null;
-    return resolveText(s.bubble, castTable(s.table));
+    final step = isClosingExample ? currentClosingExampleStep : currentTableStep;
+    if (step == null) return null;
+    return resolveText(step.bubble, castTable(step.table));
   }
 
   /// Resuelve un texto del ejercicio interactivo actual contra su mesa.
@@ -169,6 +172,64 @@ class AcademyController extends ChangeNotifier with PlayableExerciseController {
   String? activeLessonId;
   bool _recovering = false;
   bool get isRecovering => _recovering;
+
+  // --- repaso acumulativo (después de aprobar el checkpoint de N3/6/9/13) ---
+  bool _inCumulativeReview = false;
+  bool get isCumulativeReview => _inCumulativeReview;
+
+  /// El repaso pendiente más antiguo: el checkpoint que lo habilita ya está
+  /// aprobado, pero el repaso todavía no se hizo. `null` si no hay ninguno
+  /// (incluye el caso de haberlos hecho todos). Sirve tanto para ofrecerlo
+  /// apenas se aprueba el checkpoint correspondiente (`LessonResultView`)
+  /// como para recordarlo después desde el mapa (`LevelMap`).
+  String? get pendingReviewId {
+    for (final entry in AcademyCumulativeReviews.reviewByCheckpointLesson.entries) {
+      if (progress.isCompleted(entry.key) && !progress.isCompleted(entry.value)) {
+        return entry.value;
+      }
+    }
+    return null;
+  }
+
+  String reviewTitle(String reviewId) =>
+      AcademyCumulativeReviews.titles[reviewId] ?? reviewId;
+
+  /// Arranca un repaso acumulativo: reutiliza el mismo recorrido
+  /// ítem-por-ítem que cualquier lesson (mismo `_items`, misma fase
+  /// `exercise` → `feedback` → `result`, misma vista
+  /// `InteractiveTableExerciseView`), solo que los ítems no vienen de
+  /// `AcademyExerciseScripts.forLesson(activeLessonId)` sino de la
+  /// selección curada de [AcademyCumulativeReviews]. Al terminar,
+  /// `_finishLesson()` llama a `academy.submitLesson('review.N', ...)`
+  /// igual que con cualquier lesson: como `'review.N'` no es un subnivel
+  /// real del currículo, `submitLesson` no lo trata como evaluación con
+  /// umbral (no bloquea el progreso si sale bajo el puntaje) pero sí guarda
+  /// el puntaje real en su propio `LessonProgress`, bajo su propio id
+  /// sintético — no pisa el progreso de ningún subnivel real.
+  void startCumulativeReview(String reviewId) {
+    final set = AcademyCumulativeReviews.forId(reviewId);
+    if (set == null || set.isEmpty) return;
+
+    activeLessonId = reviewId;
+    _recovering = false;
+    _inCumulativeReview = true;
+    // `_formative` es un campo de `_buildItems()` (Grupo 4, lessons de
+    // teoría) que este método nunca llama — sin este reset, un repaso
+    // disparado después de haber abierto un lesson de teoría en el medio
+    // (banner del mapa, no el botón inmediato tras el checkpoint) hereda
+    // `_formative == true` de esa lección y `_finishLesson()` fuerza el
+    // puntaje del repaso a 1.0 sin importar cómo respondió — justo lo
+    // que el repaso no debe hacer (su puntaje real tiene que quedar
+    // guardado, ver el doc-comment de esta clase más arriba).
+    _formative = false;
+    _resetRun();
+    // Mismo motivo que en _buildItems(): orden aleatorio, no el de autoría.
+    final shuffled = List<InteractiveTableExercise>.from(set.exercises)
+      ..shuffle();
+    _items = shuffled.map(AcademyItem.interactive).toList();
+    phase = AcademyPhase.exercise;
+    notifyListeners();
+  }
 
   // --- lección interactiva sobre la mesa (fase teoría) ---
   int tableStep = 0;
@@ -797,6 +858,7 @@ class AcademyController extends ChangeNotifier with PlayableExerciseController {
 
     activeLessonId = lessonId;
     _recovering = false;
+    _inCumulativeReview = false;
     tableStep = 0;
     _inWrittenTheory = false;
     writtenTheoryStep = 0;
@@ -887,6 +949,7 @@ class AcademyController extends ChangeNotifier with PlayableExerciseController {
     final RecoverySession? session = engine.suggestedRecovery(knowledge);
     if (session == null) return;
     _recovering = true;
+    _inCumulativeReview = false;
     _resetRun();
     _items = List.generate(
       session.exerciseCount,
@@ -912,6 +975,7 @@ class AcademyController extends ChangeNotifier with PlayableExerciseController {
   void exitLesson() {
     activeLessonId = null;
     _recovering = false;
+    _inCumulativeReview = false;
     _inWrittenTheory = false;
     writtenTheoryStep = 0;
     _inVisualTheory = false;
@@ -971,7 +1035,14 @@ class AcademyController extends ChangeNotifier with PlayableExerciseController {
     // 1) Ejercicios interactivos sobre la mesa (si el lesson tiene set).
     final set = AcademyExerciseScripts.forLesson(id);
     if (set != null && set.exercises.isNotEmpty) {
-      _items = set.exercises.map(AcademyItem.interactive).toList();
+      // Orden aleatorio, no el orden de autoría: un lesson (sobre todo una
+      // evaluación de módulo) se puede reintentar, y no debería mostrar
+      // siempre exactamente la misma secuencia de preguntas. La respuesta
+      // correcta de cada una no cambia — esto solo reordena CUÁL pregunta
+      // sale primero.
+      final shuffled = List<InteractiveTableExercise>.from(set.exercises)
+        ..shuffle();
+      _items = shuffled.map(AcademyItem.interactive).toList();
       _formative = false;
       return;
     }

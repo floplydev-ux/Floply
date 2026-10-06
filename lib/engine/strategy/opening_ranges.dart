@@ -40,7 +40,15 @@ class OpeningRanges {
   /// `[2.0, 3.0]` si [position] no tiene entrada propia — mismo default
   /// que el branch `else` de antes de esta migración.
   static bool isReasonableSizing(Position position, double sizeBb) {
-    final (min, max) = kOpeningRangeSizingBounds[position.name] ?? (2.0, 3.0);
+    final (min, max) = reasonableSizingBounds(position);
     return sizeBb >= min && sizeBb <= max;
   }
+
+  /// La banda `(mínimo, máximo)` defendible de [isReasonableSizing] — para
+  /// quien necesite los bordes reales en vez de solo la pregunta sí/no
+  /// (p. ej. `StrategyEngine._gradedRaiseOptions`, que arma las opciones
+  /// de tamaño de apertura a partir de estos mismos bordes ya curados, en
+  /// vez de inventar números nuevos).
+  static (double, double) reasonableSizingBounds(Position position) =>
+      kOpeningRangeSizingBounds[position.name] ?? (2.0, 3.0);
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -82,7 +83,11 @@ class FirebaseAuthRepository implements AuthRepository {
   // Google
   // ----------------------------------------------------------------
 
-  Future<fb.OAuthCredential?> _googleCredential() async {
+  /// Devuelve la credencial de Firebase JUNTO con la cuenta de Google en
+  /// sí (`GoogleSignInAccount`) — hace falta la cuenta aparte porque
+  /// `GoogleAuthProvider.credential` solo viaja con el idToken, nunca con
+  /// la foto de perfil.
+  Future<(fb.OAuthCredential, GoogleSignInAccount)?> _googleCredential() async {
     await _ensureGoogleInitialized();
     if (!_googleSignIn.supportsAuthenticate()) {
       // Web: requiere el botón renderizado por el SDK de Google, no un
@@ -93,23 +98,48 @@ class FirebaseAuthRepository implements AuthRepository {
     final account = await _googleSignIn.authenticate();
     final idToken = account.authentication.idToken;
     if (idToken == null) return null;
-    return fb.GoogleAuthProvider.credential(idToken: idToken);
+    return (fb.GoogleAuthProvider.credential(idToken: idToken), account);
+  }
+
+  /// Firebase solo completa `User.photoURL`/`displayName` con lo que
+  /// traía la credencial en el momento en que la cuenta de Firebase se
+  /// CREÓ — no los vuelve a sincronizar solo en logins posteriores (el
+  /// mismo motivo por el que `_fillDisplayNameFromApple`, más abajo, hace
+  /// falta para el nombre de Apple). Acá el equivalente para la foto de
+  /// perfil de Google: si Firebase no tiene una todavía pero la cuenta de
+  /// Google sí, se completa a mano — así una cuenta de Google real nunca
+  /// se queda mostrando el avatar genérico por esto.
+  Future<fb.User?> _fillPhotoFromGoogle(fb.User? user, GoogleSignInAccount account) async {
+    if (user == null) return null;
+    if (user.photoURL != null && user.photoURL!.isNotEmpty) return user;
+    final photo = account.photoUrl;
+    if (photo == null || photo.isEmpty) return user;
+    await user.updatePhotoURL(photo);
+    await user.reload();
+    return _auth.currentUser;
   }
 
   @override
   Future<AuthAttemptResult> signInWithGoogle() async {
     try {
-      final credential = await _googleCredential();
-      if (credential == null) {
+      final result = await _googleCredential();
+      if (result == null) {
         return const AuthAttemptFailure(AuthFailureReason.providerError);
       }
-      return _success(await _auth.signInWithCredential(credential));
+      final (credential, account) = result;
+      final signedIn = await _auth
+          .signInWithCredential(credential)
+          .timeout(const Duration(seconds: 20));
+      final user = await _fillPhotoFromGoogle(signedIn.user, account);
+      return AuthAttemptSuccess(_toIdentity(user));
     } on GoogleSignInException catch (e) {
       return e.code == GoogleSignInExceptionCode.canceled
           ? const AuthAttemptCancelled()
           : const AuthAttemptFailure(AuthFailureReason.providerError);
     } on fb.FirebaseAuthException catch (e) {
       return _mapFirebaseException(e, AuthProviderType.google);
+    } on TimeoutException {
+      return const AuthAttemptFailure(AuthFailureReason.network);
     } catch (_) {
       return const AuthAttemptFailure(AuthFailureReason.unknown);
     }
@@ -118,15 +148,18 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<AuthAttemptResult> linkGoogle() async {
     try {
-      final credential = await _googleCredential();
-      if (credential == null) {
+      final result = await _googleCredential();
+      if (result == null) {
         return const AuthAttemptFailure(AuthFailureReason.providerError);
       }
-      final user = _auth.currentUser;
-      if (user == null) {
+      final (credential, account) = result;
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
         return const AuthAttemptFailure(AuthFailureReason.unknown);
       }
-      return _success(await user.linkWithCredential(credential));
+      final linked = await currentUser.linkWithCredential(credential);
+      final user = await _fillPhotoFromGoogle(linked.user, account);
+      return AuthAttemptSuccess(_toIdentity(user));
     } on GoogleSignInException catch (e) {
       return e.code == GoogleSignInExceptionCode.canceled
           ? const AuthAttemptCancelled()
@@ -242,6 +275,117 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   // ----------------------------------------------------------------
+  // Email + contraseña
+  // ----------------------------------------------------------------
+
+  @override
+  Future<AuthAttemptResult> signInWithEmailPassword(
+    String email,
+    String password,
+  ) async {
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return _success(credential);
+    } on fb.FirebaseAuthException catch (e) {
+      return _mapFirebaseException(e, AuthProviderType.email);
+    } catch (_) {
+      return const AuthAttemptFailure(AuthFailureReason.unknown);
+    }
+  }
+
+  // ----------------------------------------------------------------
+  // Verificación telefónica (SMS)
+  // ----------------------------------------------------------------
+
+  @override
+  Future<String?> sendSmsVerificationCode(String phoneNumber) {
+    final completer = Completer<String?>();
+    _auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (credential) {
+        // En Android, Firebase puede recuperar el código automáticamente
+        // (instant verification). Si verificationId es nulo o vacío, no
+        // completamos: esperamos a codeSent que trae el ID real.
+        final id = credential.verificationId;
+        if (id != null && id.isNotEmpty && !completer.isCompleted) {
+          completer.complete(id);
+        }
+      },
+      verificationFailed: (e) {
+        if (!completer.isCompleted) completer.complete(null);
+      },
+      codeSent: (verificationId, _) {
+        if (!completer.isCompleted) completer.complete(verificationId);
+      },
+      codeAutoRetrievalTimeout: (verificationId) {
+        if (!completer.isCompleted) completer.complete(verificationId);
+      },
+    );
+    return completer.future;
+  }
+
+  @override
+  Future<AuthAttemptResult> createAccountWithPhone({
+    required String name,
+    required String email,
+    required String password,
+    required String phoneVerificationId,
+    required String smsCode,
+  }) async {
+    fb.User? newPhoneUser;
+    try {
+      final phoneCredential = fb.PhoneAuthProvider.credential(
+        verificationId: phoneVerificationId,
+        smsCode: smsCode,
+      );
+      final phoneSignIn = await _auth.signInWithCredential(phoneCredential);
+      final phoneUser = phoneSignIn.user;
+      if (phoneUser == null) {
+        return const AuthAttemptFailure(AuthFailureReason.unknown);
+      }
+
+      // Si el teléfono ya estaba registrado en Firebase, NO borramos la
+      // cuenta existente — simplemente cerramos la sesión y reportamos el
+      // conflicto. Solo hacemos rollback (delete) si era una cuenta NUEVA.
+      final isNew = phoneSignIn.additionalUserInfo?.isNewUser ?? true;
+      if (!isNew) {
+        try { await _auth.signOut(); } catch (_) {}
+        return const AuthAttemptFailure(AuthFailureReason.phoneAlreadyRegistered);
+      }
+
+      // A partir de aquí, phoneUser es nuevo — el rollback (delete) es seguro.
+      newPhoneUser = phoneUser;
+
+      final emailCredential = fb.EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+      await newPhoneUser.linkWithCredential(emailCredential);
+      await newPhoneUser.updateDisplayName(name.trim());
+      await newPhoneUser.reload();
+      return AuthAttemptSuccess(_toIdentity(_auth.currentUser));
+    } on fb.FirebaseAuthException catch (e) {
+      if (newPhoneUser != null) {
+        try { await newPhoneUser.delete(); } catch (_) {}
+        try { await _auth.signOut(); } catch (_) {}
+      }
+      if (e.code == 'email-already-in-use') {
+        return const AuthAttemptFailure(AuthFailureReason.emailAlreadyInUse);
+      }
+      return _mapFirebaseException(e, AuthProviderType.email);
+    } catch (_) {
+      if (newPhoneUser != null) {
+        try { await newPhoneUser.delete(); } catch (_) {}
+        try { await _auth.signOut(); } catch (_) {}
+      }
+      return const AuthAttemptFailure(AuthFailureReason.unknown);
+    }
+  }
+
+  // ----------------------------------------------------------------
   // Email link (passwordless)
   // ----------------------------------------------------------------
 
@@ -340,13 +484,13 @@ class FirebaseAuthRepository implements AuthRepository {
       fb.AuthCredential? credential;
       switch (type) {
         case AuthProviderType.google:
-          credential = await _googleCredential();
+          credential = (await _googleCredential())?.$1;
         case AuthProviderType.apple:
           credential = await _appleCredential();
         case AuthProviderType.email:
-          // La reautenticación por email-link requiere el flujo completo
-          // de "mandar link y confirmarlo" — se resuelve en la UI llamando
-          // primero a sendEmailSignInLink + confirmEmailSignInLink.
+        case AuthProviderType.phone:
+          // La reautenticación por email/teléfono requiere el flujo completo
+          // de reingreso de credenciales — se maneja en la UI.
           return const AuthAttemptFailure(AuthFailureReason.providerError);
       }
       if (credential == null) {
@@ -379,6 +523,26 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   // ----------------------------------------------------------------
+  // Reviewer Custom Claim
+  // ----------------------------------------------------------------
+
+  /// Lee el Firebase ID token para comprobar si el claim `reviewerPremium`
+  /// vale `true`. Se fuerza un refresh para capturar claims recién
+  /// asignados por el Admin SDK. Si el usuario no está autenticado, o si
+  /// hay algún error de red, devuelve `false` de forma segura.
+  @override
+  Future<bool> isReviewerAccount() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) return false;
+      final token = await user.getIdTokenResult(true);
+      return token.claims?['reviewerPremium'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // ----------------------------------------------------------------
   // Errores (Fase 23: nunca el texto técnico crudo llega a la UI)
   // ----------------------------------------------------------------
 
@@ -394,7 +558,20 @@ class FirebaseAuthRepository implements AuthRepository {
           provider: attempted,
           existingEmail: e.email,
         );
+      case 'wrong-password':
+      case 'invalid-credential':
+        return const AuthAttemptFailure(AuthFailureReason.wrongPassword);
+      case 'user-not-found':
+        return const AuthAttemptFailure(AuthFailureReason.emailNotFound);
+      case 'invalid-phone-number':
+        return const AuthAttemptFailure(AuthFailureReason.invalidPhone);
+      case 'phone-number-already-exists':
+        return const AuthAttemptFailure(
+            AuthFailureReason.phoneAlreadyRegistered);
+      case 'weak-password':
+        return const AuthAttemptFailure(AuthFailureReason.weakPassword);
       case 'invalid-action-code':
+      case 'invalid-verification-code':
         return const AuthAttemptFailure(AuthFailureReason.invalidCode);
       case 'expired-action-code':
         return const AuthAttemptFailure(AuthFailureReason.expiredCode);

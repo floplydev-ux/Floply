@@ -23,10 +23,20 @@ class LegalActionEngine {
     if (owed <= 0) {
       // Nadie apostó todavía en esta calle, o el jugador ya iguala lo que
       // hay (p. ej. la BB con su propia ciega antes de su opción): CHECK
-      // siempre disponible, BET si tiene con qué.
+      // siempre disponible. Si tiene con qué, BET — pero solo un BET de
+      // tamaño completo (`minRaiseToBb`) si el stack le alcanza; con un
+      // stack más corto que eso, la única apuesta real posible es
+      // ALL-IN (regla estándar: un all-in no tiene que cumplir el
+      // mínimo). Sin esto, `maxRaiseToBb` (todo el stack) podía quedar
+      // por DEBAJO de `minRaiseToBb`, un rango `[min, max]` imposible
+      // que `ActionResolver` rechazaba — hallazgo real de la Mesa con
+      // Coach (Grupo 8) con stacks cortos tras varias calles de acción.
+      if (player.stackBb <= 0) return const {ActionType.check};
+      final canFullBet =
+          player.investedThisStreetBb + player.stackBb >= minRaiseToBb(state);
       return {
         ActionType.check,
-        if (player.stackBb > 0) ActionType.bet,
+        canFullBet ? ActionType.bet : ActionType.allIn,
       };
     }
 

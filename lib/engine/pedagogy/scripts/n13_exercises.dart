@@ -15,7 +15,18 @@ class N13Exercises {
     '13.2': InteractiveExerciseSet([_apostarMasFuerte()]),
     '13.3': InteractiveExerciseSet([_detectarError()]),
     '13.4': InteractiveExerciseSet([_allIn()]),
-    '13.5': InteractiveExerciseSet([_decisionIntegrada()]),
+    // 13.5 es el checkpoint del último nivel Y el cierre de las 326
+    // teorías: la evaluación del módulo repasa el entorno NL2, apostar
+    // más fuerte por valor, detectar un error y la decisión de all-in,
+    // antes de cerrar con la decisión integrada (pot odds + equity +
+    // rango + posición, el mismo criterio que T308).
+    '13.5': InteractiveExerciseSet([
+      _entornoNL2(),
+      _apostarMasFuerte(),
+      _detectarError(),
+      _allIn(),
+      _decisionIntegrada(),
+    ]),
   };
 
   // ================================================================
